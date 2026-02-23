@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 8: Conversión Decimal a Maya - 5to Primaria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-red: #993921;
+            --secondary-green: #10b981;
+            --bg-light: #fdfaf6;
+            --white: #ffffff;
+            --transition-speed: 0.5s;
+            --maya-stone: #d2b48c;
+            --maya-gold: #b8860b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 600px;
+            background: var(--white);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-light);
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 40px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3rem;
+            color: var(--primary-orange);
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.22rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.25rem;
+            color: #444;
+            max-width: 800px;
+            line-height: 1.6;
+        }
+
+        .info-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin: 1rem 0;
+            width: 100%;
+            max-width: 750px;
+            border-left: 6px solid var(--primary-yellow);
+            text-align: left;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 55px;
+            height: 55px;
+            background-color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 250;
+            border: 2px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.5rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            border-color: var(--primary-orange);
+            color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 20px;
+        }
+
+        #next-btn {
+            right: 20px;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 6px;
+            background: linear-gradient(to right, var(--primary-yellow), var(--primary-orange));
+            width: 0%;
+            transition: width 0.4s ease;
+            z-index: 100;
+        }
+
+        .slide-num {
+            position: absolute;
+            bottom: 20px;
+            font-weight: 700;
+            color: var(--primary-blue-dark);
+            font-size: 0.9rem;
+            z-index: 250;
+        }
+
+        /* Maya Level Styles */
+        .maya-stack {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 15px;
+            margin: 1.5rem 0;
+        }
+
+        .maya-level {
+            width: 140px;
+            height: 90px;
+            border: 2px solid var(--maya-stone);
+            background: #fff9f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .maya-level::after {
+            content: attr(data-val);
+            position: absolute;
+            left: 110%;
+            white-space: nowrap;
+            font-size: 0.85rem;
+            color: var(--maya-gold);
+            font-weight: 800;
+            background: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .maya-symbol {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            background: #333;
+            border-radius: 50%;
+            margin: 2px 4px;
+        }
+
+        .bar {
+            width: 60px;
+            height: 10px;
+            background: #333;
+            border-radius: 5px;
+            margin: 3px 0;
+        }
+
+        .shell {
+            font-size: 3rem;
+        }
+
+        .btn-check {
+            background: var(--primary-orange);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            margin-top: 15px;
+            transition: all 0.3s;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+        }
+
+        .btn-check:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(219, 96, 21, 0.3);
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 1rem;
+        }
+
+        .quiz-option {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            color: var(--primary-blue-dark);
+        }
+
+        .quiz-option:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        #maya-lab-input {
+            padding: 12px;
+            font-size: 1.3rem;
+            width: 180px;
+            border-radius: 30px;
+            border: 3px solid var(--primary-blue-dark);
+            text-align: center;
+            margin-right: 15px;
+            outline: none;
+        }
+
+        #maya-lab-input:focus {
+            border-color: var(--primary-orange);
+        }
+
+        .feedback-msg {
+            margin-top: 15px;
+            font-weight: 800;
+            min-height: 24px;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header>
+            <span>Colegio Escolaris - Matemática 5toP</span>
+            <span>Lección 8: Conversión Decimal a Maya</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="container">
+                <!-- Portada -->
+                <div class="slide">
+                    <div
+                        style="font-size: 6rem; margin-bottom: 1rem; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">
+                        🌉🐚</div>
+                    <h1>Puente Maya</h1>
+                    <h2>De Decimal a Base 20</h2>
+                    <p style="color: var(--primary-orange); font-weight: 800; font-size: 1.4rem;">¡Domina el arte de
+                        traducir números entre culturas!</p>
+                </div>
+
+                <!-- Objetivos -->
+                <div class="slide">
+                    <div style="font-size: 4rem;">🎯</div>
+                    <h2>¿Qué aprenderemos?</h2>
+                    <div class="info-card">
+                        <ul style="list-style: none;">
+                            <li style="margin-bottom: 15px;">✨ <strong>Módulo 1:</strong> Convertir por inspección
+                                mental.</li>
+                            <li style="margin-bottom: 15px;">✨ <strong>Módulo 2:</strong> Usar divisiones para números
+                                grandes.</li>
+                            <li>✨ <strong>Módulo 3:</strong> Entender la "Torre de Veintenas".</li>
+                        </ul>
+                    </div>
+                    <p class="nice-phrase"
+                        style="font-style: italic; color: var(--primary-blue-dark); margin-top: 1rem;">"Tu mente es el
+                        mejor traductor universal."</p>
+                </div>
+
+                <!-- Inspección Simple -->
+                <div class="slide">
+                    <div style="font-size: 4rem;">🧠</div>
+                    <h2>Simple Inspección</h2>
+                    <p>Para números pequeños, no necesitas calculadora. Solo debes pensar cuántas
+                        <strong>veintenas</strong> (20) tiene el número.
+                    </p>
+                    <div class="info-card" style="border-left-color: var(--secondary-green);">
+                        <p><strong>Truco:</strong> Cuenta de 20 en 20 (20, 40, 60, 80...) y mira cuánto te falta para
+                            llegar al número original.</p>
+                    </div>
+                </div>
+
+                <!-- Ejemplo 25 -->
+                <div class="slide">
+                    <h2>Caso Real 1: El 25</h2>
+                    <p><strong>25 = 20 + 5</strong> (Una veintena y 5 unidades)</p>
+                    <div class="maya-stack">
+                        <div class="maya-level" data-val="Nivel 2 (20s): 1 punto">
+                            <div class="maya-symbol"><span class="dot"></span></div>
+                        </div>
+                        <div class="maya-level" data-val="Nivel 1 (1s): 5 (una barra)">
+                            <div class="maya-symbol">
+                                <div class="bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <p>¡Ves qué fácil! La "torre" nos dice cómo se arma el número.</p>
+                </div>
+
+                <!-- Ejemplo 56 -->
+                <div class="slide">
+                    <h2>Caso Real 2: El 56</h2>
+                    <p><strong>56 = 40 + 16</strong> (Dos veintenas y 16 unidades)</p>
+                    <div class="maya-stack">
+                        <div class="maya-level" data-val="Nivel 2 (20s): 2 puntos = 40">
+                            <div class="maya-symbol">
+                                <div><span class="dot"></span><span class="dot"></span></div>
+                            </div>
+                        </div>
+                        <div class="maya-level" data-val="Nivel 1 (1s): 16 (3 barras y 1 punto)">
+                            <div class="maya-symbol">
+                                <span class="dot"></span>
+                                <div class="bar"></div>
+                                <div class="bar"></div>
+                                <div class="bar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Divisiones Sucesivas Intro -->
+                <div class="slide">
+                    <div style="font-size: 4rem;">➗</div>
+                    <h2>Números Grandes</h2>
+                    <p>Cuando el número es muy grande para nuestra inspección mental, usamos el <strong>Método de la
+                            División</strong>.</p>
+                    <div class="info-card" style="border-left-color: var(--primary-red);">
+                        <p><strong>Mecánica:</strong> Dividimos el número entre el valor del nivel superior. El
+                            <strong>residuo</strong> se queda y el <strong>cociente</strong> sube al siguiente nivel.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Ejemplo Paso a Paso 1 (División) -->
+                <div class="slide">
+                    <h2>El Secreto del Residuo</h2>
+                    <p>Si quieres convertir <strong>415</strong>:</p>
+                    <div class="info-card" style="line-height: 2;">
+                        1. Divides 415 ÷ 20.<br>
+                        2. El cociente es <strong>20</strong> (¡Esto sube al siguiente nivel!).<br>
+                        3. El residuo es <strong>15</strong> (¡Esto se queda abajo!).
+                    </div>
+                    <p style="font-size: 1rem;">*Nota: Como 20 es igual a una unidad del nivel siguiente (400), subimos
+                        de nuevo.</p>
+                </div>
+
+                <!-- TUTORIAL INTERACTIVO 956 -->
+                <div class="slide">
+                    <h2>Tutorial: El Caso 956</h2>
+                    <div id="tuto-956" style="width: 100%; max-width: 800px; position: relative; min-height: 350px;">
+                        <div id="step-desc" class="info-card" style="margin-top: 0;">
+                            <p id="tuto-text">Vamos a convertir el número <strong>956</strong> paso a paso.</p>
+                        </div>
+
+                        <div
+                            style="display: flex; justify-content: space-around; align-items: flex-start; margin-top: 20px;">
+                            <!-- Panel de División -->
+                            <div id="div-panel"
+                                style="font-family: 'Outfit', sans-serif; font-size: 1.5rem; border: 2px solid #ddd; padding: 20px; border-radius: 15px; background: white; min-width: 200px; display: none;">
+                                <div
+                                    style="text-align: right; border-bottom: 2px solid #333; width: fit-content; margin-left: auto;">
+                                    <span id="cociente-val"
+                                        style="color: var(--primary-orange); font-weight: 800;"></span><br>
+                                    <span id="divisor-val" style="margin-right: 10px;"></span>|<span
+                                        id="dividendo-val"></span>
+                                </div>
+                                <div style="text-align: right;">
+                                    <span id="resta-val" style="color: var(--primary-red);"></span><br>
+                                    <span style="border-top: 2px solid #333; font-weight: 800;" id="residuo-val"></span>
+                                </div>
+                            </div>
+
+                            <!-- Torre Resultante -->
+                            <div id="tuto-stack" class="maya-stack" style="margin: 0; opacity: 0.3;">
+                                <div class="maya-level" id="l3-tuto" data-val="Nivel 400s"></div>
+                                <div class="maya-level" id="l2-tuto" data-val="Nivel 20s"></div>
+                                <div class="maya-level" id="l1-tuto" data-val="Nivel 1s"></div>
+                            </div>
+                        </div>
+
+                        <button id="btn-next-tuto" class="btn-check" onclick="nextTuto()"
+                            style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%);">Empezar
+                            Tutorial ▶</button>
+                    </div>
+                </div>
+
+                <!-- Laboratorio Interactivo -->
+                <div class="slide">
+                    <h2>Laboratorio de Conversión</h2>
+                    <p style="margin-bottom: 20px;">Pon a prueba el sistema. Escribe cualquier número decimal:</p>
+                    <div
+                        style="display: flex; align-items: center; justify-content: center; background: #eee; padding: 20px; border-radius: 50px;">
+                        <input type="number" id="maya-lab-input" value="100" min="0" max="7999">
+                        <button class="btn-check" onclick="updateMayaLab()">¡Convertir! ✨</button>
+                    </div>
+                    <div id="maya-lab-result" class="maya-stack">
+                        <!-- Generado dinámicamente -->
+                    </div>
+                    <div id="maya-lab-feedback" class="feedback-msg" style="color: var(--maya-gold);"></div>
+                </div>
+
+                <!-- Quiz 1 -->
+                <div class="slide">
+                    <h2>Desafío de Inspección</h2>
+                    <p>¿Qué número decimal representa esta torre: <strong>2 puntos arriba y 0 abajo</strong>?</p>
+                    <div class="quiz-container">
+                        <button class="quiz-option" onclick="checkQ(1, false, this)">A) 22</button>
+                        <button class="quiz-option" onclick="checkQ(1, true, this)">B) 40</button>
+                        <button class="quiz-option" onclick="checkQ(1, false, this)">C) 2</button>
+                    </div>
+                    <div id="feed-1" class="feedback-msg"></div>
+                </div>
+
+                <!-- Quiz 2 -->
+                <div class="slide">
+                    <h2>Desafío de Divisiones</h2>
+                    <p>En el método de divisiones sucesivas, ¿qué valor representa el <strong>residuo</strong> de la
+                        primera división?</p>
+                    <div class="quiz-container">
+                        <button class="quiz-option" onclick="checkCheckQ(2, true, this)">A) Las unidades (Nivel
+                            1)</button>
+                        <button class="quiz-option" onclick="checkCheckQ(2, false, this)">B) Las veintenas (Nivel
+                            2)</button>
+                        <button class="quiz-option" onclick="checkCheckQ(2, false, this)">C) El número total</button>
+                    </div>
+                    <div id="feed-2" class="feedback-msg"></div>
+                </div>
+
+                <!-- Reflexión -->
+                <div class="slide">
+                    <div style="font-size: 4rem;">💡</div>
+                    <h2>Pensamiento Matemático</h2>
+                    <div class="info-card">
+                        <p>¿Te diste cuenta? Traducir números es como aprender un nuevo idioma donde las reglas son
+                            multiplicarse por 20.</p>
+                        <p style="margin-top: 15px; font-style: italic;">¡Ahora tienes el poder de ver el mundo de dos
+                            formas diferentes!</p>
+                    </div>
+                </div>
+
+                <!-- Cierre -->
+                <div class="slide">
+                    <div style="font-size: 6rem;">🎓</div>
+                    <h1>¡Graduado en Sistemas!</h1>
+                    <p>Dominas la conversión decimal a maya. ¡Tu agilidad mental está en otro nivel!</p>
+                    <button class="btn-check" onclick="goTo(0)" style="margin-top: 2rem; font-size: 1.2rem;">Volver a
+                        Repasar</button>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevS()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextS()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-num" id="s-num">1 / 13</div>
+        <div class="progress-bar" id="p-bar"></div>
+    </div>
+
+    <script>
+        let cur = 0;
+        const slides = document.querySelectorAll('.slide');
+        const cont = document.getElementById('container');
+        const prevB = document.getElementById('prev-btn');
+        const nextB = document.getElementById('next-btn');
+        const sNum = document.getElementById('s-num');
+        const pBar = document.getElementById('p-bar');
+
+        function upG() {
+            cont.style.transform = `translateX(-${cur * 100}%)`;
+            prevB.disabled = cur === 0;
+            nextB.disabled = cur === slides.length - 1;
+            sNum.innerText = `${cur + 1} / ${slides.length}`;
+            pBar.style.width = `${((cur + 1) / slides.length) * 100}%`;
+        }
+
+        function nextS() { if (cur < slides.length - 1) { cur++; upG(); } }
+        function prevS() { if (cur > 0) { cur--; upG(); } }
+        function goTo(n) { cur = n; upG(); }
+
+        function checkQ(id, cor, btn) {
+            const f = document.getElementById(`feed-${id}`);
+            if (cor) {
+                btn.style.background = "#dcfce7";
+                btn.style.borderColor = "var(--secondary-green)";
+                f.innerText = "¡Correcto! 2 x 20 = 40. ¡Excelente vista!";
+                f.style.color = "var(--secondary-green)";
+            } else {
+                btn.style.background = "#fee2e2";
+                btn.style.borderColor = "var(--primary-red)";
+                f.innerText = "Revisa de nuevo su valor posicional.";
+                f.style.color = "var(--primary-red)";
+            }
+        }
+
+        function checkCheckQ(id, cor, btn) {
+            const f = document.getElementById(`feed-${id}`);
+            if (cor) {
+                btn.style.background = "#dcfce7";
+                btn.style.borderColor = "var(--secondary-green)";
+                f.innerText = "¡Exacto! El residuo siempre es lo que sobra del nivel actual.";
+                f.style.color = "var(--secondary-green)";
+            } else {
+                btn.style.background = "#fee2e2";
+                btn.style.borderColor = "var(--primary-red)";
+                f.innerText = "Recuerda: El residuo se queda en el nivel que estamos dividiendo.";
+                f.style.color = "var(--primary-red)";
+            }
+        }
+
+        function generateMayaSymbols(val) {
+            if (val === 0) return '<span class="shell">🐚</span>';
+            let bars = Math.floor(val / 5);
+            let dots = val % 5;
+            let html = '';
+            if (dots > 0) {
+                html += '<div style="margin-bottom:5px; display:flex; justify-content:center;">';
+                for (let i = 0; i < dots; i++) html += '<span class="dot"></span>';
+                html += '</div>';
+            }
+            for (let i = 0; i < bars; i++) html += '<div class="bar"></div>';
+            return html;
+        }
+
+        function updateMayaLab() {
+            const input = document.getElementById('maya-lab-input');
+            const res = document.getElementById('maya-lab-result');
+            const feed = document.getElementById('maya-lab-feedback');
+            let num = parseInt(input.value);
+            if (isNaN(num) || num < 0) {
+                feed.innerText = "Ingresa un número válido.";
+                return;
+            }
+
+            let html = '';
+            let levels = [];
+
+            if (num === 0) levels.push(0);
+            else {
+                let temp = num;
+                while (temp > 0) {
+                    levels.push(temp % 20);
+                    temp = Math.floor(temp / 20);
+                }
+            }
+
+            levels.forEach((lVal, idx) => {
+                let label = "Nivel " + (idx + 1);
+                if (idx === 0) label = "Unidades";
+                if (idx === 1) label = "Veintenas (20s)";
+                if (idx === 2) label = "Cuatrosientas (400s)";
+                html += `<div class="maya-level" data-val="${label}: ${lVal}">${generateMayaSymbols(lVal)}</div>`;
+            });
+
+            res.innerHTML = html;
+            feed.innerText = `Equivalente Maya de: ${num}`;
+        }
+
+        let tStep = 0;
+        function nextTuto() {
+            const txt = document.getElementById('tuto-text');
+            const panel = document.getElementById('div-panel');
+            const stack = document.getElementById('tuto-stack');
+            const btn = document.getElementById('btn-next-tuto');
+            const l1 = document.getElementById('l1-tuto');
+            const l2 = document.getElementById('l2-tuto');
+            const l3 = document.getElementById('l3-tuto');
+
+            tStep++;
+            stack.style.opacity = "1";
+            panel.style.display = "block";
+
+            if (tStep === 1) {
+                txt.innerHTML = "<strong>Paso 1:</strong> Dividimos 956 entre 400 (nivel máximo). Cabe <strong>2</strong> veces.";
+                document.getElementById('cociente-val').innerText = "2";
+                document.getElementById('divisor-val').innerText = "400";
+                document.getElementById('dividendo-val').innerText = "956";
+                document.getElementById('resta-val').innerText = "-800";
+                document.getElementById('residuo-val').innerText = "156";
+                l3.innerHTML = generateMayaSymbols(2);
+                l3.style.boxShadow = "0 0 15px var(--primary-orange)";
+                btn.innerText = "Siguiente Paso ▶";
+            } else if (tStep === 2) {
+                l3.style.boxShadow = "none";
+                txt.innerHTML = "<strong>Paso 2:</strong> Dividimos el residuo 156 entre 20. Cabe <strong>7</strong> veces.";
+                document.getElementById('cociente-val').innerText = "7";
+                document.getElementById('divisor-val').innerText = "20";
+                document.getElementById('dividendo-val').innerText = "156";
+                document.getElementById('resta-val').innerText = "-140";
+                document.getElementById('residuo-val').innerText = "16";
+                l2.innerHTML = generateMayaSymbols(7);
+                l2.style.boxShadow = "0 0 15px var(--primary-orange)";
+            } else if (tStep === 3) {
+                l2.style.boxShadow = "none";
+                txt.innerHTML = "<strong>Paso 3:</strong> El residuo final (16) es menor a 20, así que baja directo a las unidades.";
+                panel.style.opacity = "0.5";
+                l1.innerHTML = generateMayaSymbols(16);
+                l1.style.boxShadow = "0 0 15px var(--primary-orange)";
+                btn.innerText = "Finalizar ✨";
+            } else {
+                l1.style.boxShadow = "none";
+                txt.innerHTML = "¡Listo! El número <strong>956</strong> en maya está compuesto por 2(400) + 7(20) + 16(1).";
+                panel.style.display = "none";
+                btn.innerText = "Reiniciar Tutorial 🔄";
+                tStep = 0;
+            }
+        }
+        updateMayaLab();
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextS();
+            if (e.key === 'ArrowLeft') prevS();
+        });
+        upG();
+    </script>
+</body>
+
+</html>

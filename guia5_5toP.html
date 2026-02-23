@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 5: Movimiento y Simetría en el Plano - 5to Primaria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-red: #993921;
+            --bg-light: #fdfaf6;
+            --white: #ffffff;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', Segoe UI, Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 600px;
+            background: var(--white);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: var(--bg-light);
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 30px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.8rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.8rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.3rem;
+            color: #444;
+            max-width: 780px;
+            line-height: 1.5;
+        }
+
+        .info-card {
+            padding: 1.2rem;
+            border-radius: 15px;
+            background: var(--white);
+            margin: 0.8rem 0;
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid var(--primary-yellow);
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 70px;
+            height: 70px;
+            background-color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 250;
+            border: 2px solid #eee;
+            color: var(--primary-blue-dark);
+            font-size: 2rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.15);
+            background-color: var(--primary-orange);
+            color: white;
+            border-color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 15px;
+        }
+
+        #next-btn {
+            right: 15px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 25px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-blue-dark);
+            z-index: 100;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 8px;
+            background: linear-gradient(to right, var(--primary-yellow), var(--primary-orange));
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .emoji-box {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.1));
+        }
+
+        .nice-phrase {
+            font-style: italic;
+            color: var(--primary-orange);
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        /* Plano Cartesiano Simple */
+        .cartesian-grid {
+            border-left: 3px solid var(--primary-blue-dark);
+            border-bottom: 3px solid var(--primary-blue-dark);
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 1rem auto;
+            background: repeating-linear-gradient(#f0f0f0 0, #f0f0f0 1px, transparent 1px, transparent 40px),
+                repeating-linear-gradient(90deg, #f0f0f0 0, #f0f0f0 1px, transparent 1px, transparent 40px);
+        }
+
+        .moving-object {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-orange);
+            border-radius: 8px;
+            position: absolute;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Espejo */
+        .mirror-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 1rem;
+        }
+
+        .mirror-plane {
+            width: 4px;
+            height: 150px;
+            background: var(--primary-blue-dark);
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .mirror-plane::after {
+            content: 'Eje';
+            position: absolute;
+            top: -25px;
+            left: -15px;
+            font-size: 0.8rem;
+            color: var(--primary-blue-dark);
+            font-weight: bold;
+        }
+
+        .shape-box {
+            width: 100px;
+            height: 100px;
+            border: 3px solid var(--primary-orange);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border-radius: 10px;
+        }
+
+        .mirror-shape {
+            transform: scaleX(-1);
+            filter: opacity(0.5);
+            border-style: dashed;
+        }
+
+        /* Semejanza */
+        .similar-shapes {
+            display: flex;
+            align-items: flex-end;
+            gap: 30px;
+            margin: 1rem 0;
+        }
+
+        .box-s {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--primary-yellow);
+            background: rgba(247, 190, 0, 0.1);
+        }
+
+        .box-m {
+            width: 80px;
+            height: 80px;
+            border: 3px solid var(--primary-yellow);
+            background: rgba(247, 190, 0, 0.1);
+        }
+
+        .box-l {
+            width: 120px;
+            height: 120px;
+            border: 3px solid var(--primary-yellow);
+            background: rgba(247, 190, 0, 0.1);
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            width: 100%;
+            max-width: 600px;
+            margin: 1rem auto;
+        }
+
+        .option-btn {
+            padding: 1rem 1.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: var(--white);
+            cursor: pointer;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: var(--primary-blue-dark);
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px 40px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.6rem;
+            }
+
+            .nav-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Escolaris - Matemática 5&deg; Primaria</span>
+            <span>Lección 5: Movimiento y Simetría</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                <!-- Slide 1: Portada -->
+                <div class="slide active">
+                    <div class="emoji-box">📐📍</div>
+                    <h1>Transformadores Geométricos</h1>
+                    <h2 style="color: var(--primary-orange);">Geometría en Movimiento</h2>
+                    <p class="nice-phrase">✨ ¡Tu mente es capaz de mover mundos! ✨</p>
+                </div>
+
+                <!-- Slide 2: Introducción -->
+                <div class="slide">
+                    <div class="emoji-box">🗺️</div>
+                    <h2>¿Qué haremos hoy?</h2>
+                    <p>Vamos a descubrir cómo las figuras pueden viajar, mirarse al espejo y crecer sin perder su forma.
+                    </p>
+                    <div class="info-card">
+                        <ul style="list-style: none; text-align: left; font-size: 1.1rem; line-height: 1.8;">
+                            <li>🚀 <strong>Traslación:</strong> Viajar por el plano.</li>
+                            <li>🪞 <strong>Simetría:</strong> El efecto espejo.</li>
+                            <li>📐 <strong>Semejanza:</strong> Crecer y encoger con orden.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Slide 3: Misión -->
+                <div class="slide">
+                    <div class="emoji-box">🎯</div>
+                    <h2>Misión de Hoy</h2>
+                    <div class="info-card">
+                        <p>Aprenderás a reconocer transformaciones que ocurren a nuestro alrededor y a representarlas en
+                            el plano.</p>
+                        <p class="nice-phrase">¡Eres un experto transformador! 🏆</p>
+                    </div>
+                </div>
+
+                <!-- Slide 4: Traslación -->
+                <div class="slide">
+                    <div class="emoji-box">🚀</div>
+                    <h2>Traslación: El Viaje</h2>
+                    <p>Trasladar es mover una figura hacia arriba, abajo, izquierda o derecha sin girarla ni cambiar su
+                        tamaño.</p>
+                    <div class="cartesian-grid">
+                        <div class="moving-object" id="rocket" style="bottom: 0; left: 0;">🚀</div>
+                    </div>
+                    <button onclick="moveRocket()"
+                        style="background: var(--primary-orange); color:white; border:none; padding: 0.8rem 1.2rem; border-radius: 20px; cursor:pointer; font-weight:bold; margin-top:10px;">¡Despegar!
+                        💨</button>
+                    <p id="move-text">Posición: (0, 0)</p>
+                </div>
+
+                <!-- Slide 5: Reto de Movimiento -->
+                <div class="slide">
+                    <div class="emoji-box">🧩</div>
+                    <h2>¿Qué pasó aquí?</h2>
+                    <p>Si una estrella se mueve <strong>3 cuadros a la derecha</strong> y <strong>2 hacia
+                            arriba</strong>...</p>
+                    <div class="info-card" style="border-left-color: var(--primary-red);">
+                        <p>Si estaba en (1, 1), ¿a qué punto llegó?</p>
+                    </div>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, true, this, '¡Correcto! 1+3=4 y 1+2=3.', '(4, 3)')">(4, 3)</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '¡Ups! Revisa bien la suma.', '(3, 2)')">(3, 2)</button>
+                    </div>
+                    <div id="feedback-1" style="margin-top: 10px; font-weight: bold;"></div>
+                </div>
+
+                <!-- Slide 6: Reflexión (Efecto Espejo) -->
+                <div class="slide">
+                    <div class="emoji-box">🪞</div>
+                    <h2>Efecto Espejo: Reflexión</h2>
+                    <p>Es cuando una figura se "copia" al otro lado de una línea llamada <strong>Eje de
+                            Simetría</strong>.</p>
+                    <div class="mirror-container">
+                        <div class="shape-box">🦋</div>
+                        <div class="mirror-plane"></div>
+                        <div class="shape-box mirror-shape">🦋</div>
+                    </div>
+                    <p>¡Se ven iguales pero en direcciones opuestas!</p>
+                </div>
+
+                <!-- Slide 7: Ejes en Figuras -->
+                <div class="slide">
+                    <div class="emoji-box">🔍</div>
+                    <h2>¿Dónde está el eje?</h2>
+                    <p>Algunas figuras tienen un solo eje, ¡y otras tienen muchos!</p>
+                    <div style="display: flex; gap: 20px; margin-top: 1rem;">
+                        <div class="info-card" style="padding: 0.5rem;">
+                            <p style="font-size: 2rem;">❤️</p>
+                            <p>1 Eje vertical</p>
+                        </div>
+                        <div class="info-card" style="padding: 0.5rem;">
+                            <p style="font-size: 2rem;">⭐</p>
+                            <p>5 Ejes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 8: Reto de Espejo -->
+                <div class="slide">
+                    <div class="emoji-box">👀</div>
+                    <h2>¿Quién es el reflejo?</h2>
+                    <p>Si miras la letra <strong>"B"</strong> en un espejo vertical, ¿cómo se vería?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, true, this, '¡Exacto! Las pancitas apuntarían al otro lado.', 'Mirando a la izquierda')">Mirando
+                            a la izquierda</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, false, this, 'No, el espejo invierte la dirección.', 'Igual que siempre')">Igual
+                            que siempre</button>
+                    </div>
+                    <div id="feedback-2" style="margin-top: 10px; font-weight: bold;"></div>
+                </div>
+
+                <!-- Slide 9: Figuras Semejantes -->
+                <div class="slide">
+                    <div class="emoji-box">📐</div>
+                    <h2>Figuras Semejantes</h2>
+                    <p>Son figuras que tienen la <strong>misma forma</strong>, pero <strong>diferente tamaño</strong>.
+                    </p>
+                    <div class="similar-shapes">
+                        <div class="box-s"></div>
+                        <div class="box-m"></div>
+                        <div class="box-l"></div>
+                    </div>
+                    <p>Es como si les hiciéramos ZOOM 🔍.</p>
+                </div>
+
+                <!-- Slide 10: La Proporción -->
+                <div class="slide">
+                    <div class="emoji-box">📏</div>
+                    <h2>El Secreto del Zoom</h2>
+                    <p>Para ser semejantes, todos sus lados deben crecer por el mismo número.</p>
+                    <div class="info-card" style="border-left-color: var(--primary-orange);">
+                        <p>Si el lado mide 2 cm y lo multiplicamos por 2... <br> ¡El nuevo lado debe medir 4 cm!</p>
+                    </div>
+                    <p class="nice-phrase">🌈 ¡La armonía es la clave de la semejanza! 🌈</p>
+                </div>
+
+                <!-- Slide 11: Reto de Semejanza -->
+                <div class="slide">
+                    <div class="emoji-box">🏗️</div>
+                    <h2>Constructor Maestro</h2>
+                    <p>¿Qué figura es semejante a un cuadrado de 1x1?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(3, true, this, '¡Sí! Al multiplicar 1x2 obtenemos 2x2.', 'Un cuadrado de 2x2')">Un
+                            cuadrado de 2x2</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(3, false, this, 'No, eso sería un rectángulo y cambiaría la forma.', 'Un rectángulo de 2x1')">Un
+                            rectángulo de 2x1</button>
+                    </div>
+                    <div id="feedback-3" style="margin-top: 10px; font-weight: bold;"></div>
+                </div>
+
+                <!-- Slide 12: Quiz Final -->
+                <div class="slide">
+                    <div class="emoji-box">⚡</div>
+                    <h2>Reto de Transformación</h2>
+                    <p>Si movemos un círculo, ¿cambia su forma?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(4, true, this, '¡Correcto! Solo cambia su lugar.', 'No, sigue siendo un círculo')">No,
+                            sigue siendo un círculo</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(4, false, this, '¡Cuidado! Trasladar no deforma.', 'Sí, se vuelve óvalo')">Sí,
+                            se vuelve óvalo</button>
+                    </div>
+                    <div id="feedback-4" style="margin-top: 10px; font-weight: bold;"></div>
+                </div>
+
+                <!-- Slide 13: Reflexión -->
+                <div class="slide">
+                    <div class="emoji-box">💡</div>
+                    <h2>Pensamiento Maestro</h2>
+                    <div class="info-card" style="text-align: left;">
+                        <p>🦋 ¿Por qué las mariposas son tan hermosas? (¡Por su simetría!)</p>
+                        <p>🏗️ ¿Por qué los arquitectos usan figuras semejantes en sus planos?</p>
+                        <p>🚀 ¡Imagina que eres un astronauta! ¿Qué movimientos harías en el espacio?</p>
+                    </div>
+                </div>
+
+                <!-- Slide 14: Cierre -->
+                <div class="slide">
+                    <div class="emoji-box">🏆</div>
+                    <h2>¡Misión Cumplida!</h2>
+                    <p>Has dominado el arte de mover, reflejar y escalar figuras en el mundo matemático.</p>
+                    <button onclick="goToSlide(0)"
+                        style="background: var(--primary-orange); color: white; border: none; padding: 1.2rem 2.5rem; border-radius: 40px; font-weight: 700; cursor: pointer; margin-top: 2rem; font-size: 1.2rem; box-shadow: 0 5px 15px rgba(219, 96, 21, 0.3);">Volver
+                        a Empezar 🔄</button>
+                    <p class="nice-phrase" style="margin-top: 2rem;">🌟 ¡Sigue transformando tu mundo con sabiduría! 🌟
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navegación -->
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 14</span>
+        </div>
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const container = document.getElementById('slide-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const slideNum = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+
+        function updateGallery() {
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slides.forEach((slide, index) => slide.classList.toggle('active', index === currentSlide));
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            slideNum.innerText = `${currentSlide + 1} / ${slides.length}`;
+            progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+        }
+
+        function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateGallery(); } }
+        function prevSlide() { if (currentSlide > 0) { currentSlide--; updateGallery(); } }
+        function goToSlide(n) { currentSlide = n; updateGallery(); }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        function checkQuiz(qId, isCorrect, btn, message) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            if (isCorrect) {
+                btn.style.background = "#d1fae5";
+                btn.style.borderColor = "#10b981";
+                feedback.innerHTML = "🌟 " + message;
+                feedback.style.color = "#059669";
+                const btns = btn.parentElement.querySelectorAll('.option-btn');
+                btns.forEach(b => { if (b !== btn) b.style.opacity = "0.5"; b.disabled = true; });
+            } else {
+                btn.style.background = "#fee2e2";
+                btn.style.borderColor = "#993921";
+                feedback.innerHTML = "❌ " + message;
+                feedback.style.color = "#993921";
+                btn.disabled = true;
+            }
+        }
+
+        let rocketPos = 0;
+        function moveRocket() {
+            const rocket = document.getElementById('rocket');
+            const text = document.getElementById('move-text');
+            if (rocketPos === 0) {
+                rocket.style.left = "120px";
+                rocket.style.bottom = "80px";
+                text.innerText = "Posición: (3, 2) 🚀";
+                rocketPos = 1;
+            } else {
+                rocket.style.left = "0";
+                rocket.style.bottom = "0";
+                text.innerText = "Posición: (0, 0) 🏠";
+                rocketPos = 0;
+            }
+        }
+
+        updateGallery();
+    </script>
+</body>
+
+</html>

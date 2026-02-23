@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 10: Operaciones Mayas - 5to Primaria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-red: #993921;
+            --secondary-green: #10b981;
+            --jade-green: #2d6a4f;
+            --bg-light: #fdfaf6;
+            --white: #ffffff;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 600px;
+            background: var(--white);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-light);
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 30px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.8rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #444;
+            max-width: 800px;
+            line-height: 1.5;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 6px solid var(--primary-blue-dark);
+            margin: 15px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            text-align: left;
+        }
+
+        /* Maya Grid System */
+        .maya-grid {
+            display: grid;
+            grid-template-columns: 80px 120px 120px 120px;
+            border: 2px solid var(--primary-blue-dark);
+            background: white;
+            margin: 1rem 0;
+        }
+
+        .grid-cell {
+            border: 1px solid #ccc;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 5px;
+            position: relative;
+        }
+
+        .grid-header {
+            background: #f1f5f9;
+            font-weight: 800;
+            color: var(--primary-blue-dark);
+            font-size: 0.8rem;
+            height: 30px;
+            min-height: 30px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background-color: #333;
+            border-radius: 50%;
+            margin: 2px;
+            display: inline-block;
+            transition: all 0.5s;
+        }
+
+        .bar {
+            width: 50px;
+            height: 7px;
+            background-color: #333;
+            border-radius: 3px;
+            margin: 3px auto;
+            transition: all 0.5s;
+        }
+
+        .shell {
+            font-size: 1.8rem;
+        }
+
+        .tag-sumando {
+            position: absolute;
+            top: -20px;
+            font-size: 0.6rem;
+            background: #64748b;
+            color: white;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        /* UI Elements */
+        .quiz-option {
+            display: block;
+            width: 100%;
+            padding: 15px 20px;
+            margin: 10px 0;
+            background: var(--white);
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-blue-dark);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .quiz-option:hover {
+            transform: translateX(10px);
+            border-color: var(--primary-orange);
+            background: #fff7ed;
+            box-shadow: 0 6px 12px rgba(219, 96, 21, 0.1);
+        }
+
+        .quiz-option::before {
+            content: '➤';
+            position: absolute;
+            right: 20px;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .quiz-option:hover::before {
+            opacity: 1;
+            right: 15px;
+        }
+
+        /* Multi Grid */
+        .multi-grid {
+            display: grid;
+            border: 2px solid var(--primary-blue-dark);
+            background: white;
+            margin: 1rem 0;
+        }
+
+        .multi-cell {
+            border: 1px solid #e2e8f0;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .multi-factor {
+            background: #fff7ed;
+            color: var(--primary-orange);
+            font-weight: 800;
+        }
+
+        /* UI Elements */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 250;
+            border: 2px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.2rem;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            border-color: var(--primary-orange);
+            color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 15px;
+        }
+
+        #next-btn {
+            right: 15px;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 6px;
+            background: linear-gradient(to right, var(--primary-yellow), var(--primary-orange));
+            width: 0%;
+            transition: width 0.4s ease;
+            z-index: 100;
+        }
+
+        .slide-num {
+            position: absolute;
+            bottom: 15px;
+            font-weight: 700;
+            color: var(--primary-blue-dark);
+            font-size: 0.8rem;
+            z-index: 250;
+        }
+
+        .btn-action {
+            background: var(--jade-green);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 700;
+            margin-top: 10px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .btn-action:hover {
+            background: var(--primary-orange);
+            transform: translateY(-2px);
+        }
+
+        .highlight-rect {
+            border: 3px solid var(--primary-orange) !important;
+            box-shadow: 0 0 15px rgba(219, 96, 21, 0.3);
+        }
+
+        .tached {
+            position: relative;
+        }
+
+        .tached::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-red);
+            top: 50%;
+            left: 0;
+            transform: rotate(-20deg);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header>
+            <span>Colegio Escolaris - Matemática 5toP</span>
+            <span>Lección 10: Operaciones Mayas</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="container">
+                <!-- Portada -->
+                <div class="slide">
+                    <div style="font-size: 5rem; margin-bottom: 1rem;">📜🧱</div>
+                    <h1>Aritmética Ancestral</h1>
+                    <h2>Suma, Resta y Multiplicación</h2>
+                    <p style="color: var(--jade-green); font-weight: 800;">Dominando los tableros de los sabios mayas
+                    </p>
+                </div>
+
+                <!-- Objetivos -->
+                <div class="slide">
+                    <div style="font-size: 3rem;">🎯</div>
+                    <h2>Nuestra Misión Interactiva</h2>
+                    <div class="info-card" style="border-left-color: var(--jade-green);">
+                        <ul style="list-style: none;">
+                            <li style="margin-bottom: 10px;">✅ <strong>Suma</strong>: Fila por fila con reagrupación
+                                dinámica.</li>
+                            <li style="margin-bottom: 10px;">✅ <strong>Resta</strong>: Quitar y tachar símbolos en el
+                                tablero.</li>
+                            <li>✅ <strong>Multiplicación</strong>: Cruzar factores y sumar diagonalmente.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Explicación Suma -->
+                <div class="slide">
+                    <div style="font-size: 3rem;">➕</div>
+                    <h2>Reglas de la Suma Maya</h2>
+                    <p>Los mayas usaban un "cuadriculado" para ordenar sus cuentas:</p>
+                    <div class="info-card">
+                        <p>1. Se suma posición por posición (unidades aparte, veintenas aparte).</p>
+                        <p>2. Si juntas <strong>5 puntos</strong>, cámbialos por <strong>1 barra</strong>.</p>
+                        <p>3. Si juntas <strong>4 barras</strong>, sube <strong>1 punto</strong> al nivel de arriba.</p>
+                    </div>
+                </div>
+
+                <!-- Simulador de Suma Rejilla -->
+                <div class="slide">
+                    <h2>Simulador: Suma en Cuadriculado</h2>
+                    <p>Sumemos: <strong>23 + 24</strong></p>
+                    <div class="maya-grid" id="sum-grid">
+                        <div class="grid-cell grid-header">Posición</div>
+                        <div class="grid-cell grid-header">Sumando A</div>
+                        <div class="grid-cell grid-header">Sumando B</div>
+                        <div class="grid-cell grid-header" style="background: #dcfce7;">Resultado</div>
+
+                        <div class="grid-cell">20</div>
+                        <div class="grid-cell" id="s-a-20">
+                            <div class="dot"></div>
+                        </div>
+                        <div class="grid-cell" id="s-b-20">
+                            <div class="dot"></div>
+                        </div>
+                        <div class="grid-cell" id="res-20"></div>
+
+                        <div class="grid-cell">1</div>
+                        <div class="grid-cell" id="s-a-1">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                        <div class="grid-cell" id="s-b-1">
+                            <div style="display:flex;">
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                                <div class="dot"></div>
+                            </div>
+                        </div>
+                        <div class="grid-cell" id="res-1"></div>
+                    </div>
+                    <button class="btn-action" onclick="stepSum()">Siguiente Paso ▶</button>
+                    <p id="sum-step-text" style="font-weight: 700; color: var(--primary-orange); margin-top: 5px;"></p>
+                </div>
+
+                <!-- Explicación Resta -->
+                <div class="slide">
+                    <div style="font-size: 3rem;">➖</div>
+                    <h2>Reglas de la Resta Maya</h2>
+                    <p>¡Restar es deshacer! Operamos puntos con puntos y barras con barras:</p>
+                    <div class="info-card" style="border-left-color: var(--primary-red);">
+                        <p>1. Escribe el <strong>Minuendo</strong> y el <strong>Sustraendo</strong> en el tablero.</p>
+                        <p>2. Tacha los símbolos del sustraendo retirándolos del minuendo.</p>
+                        <p>3. Si no alcanza, pide prestado al nivel superior (1 punto = 4 barras).</p>
+                    </div>
+                </div>
+
+                <!-- Simulador de Resta Rejilla -->
+                <div class="slide">
+                    <h2>Simulador: Resta con Tachado</h2>
+                    <p>Restemos: <strong>65 - 25</strong></p>
+                    <div class="maya-grid">
+                        <div class="grid-cell grid-header">Posición</div>
+                        <div class="grid-cell grid-header">Minuendo</div>
+                        <div class="grid-cell grid-header">Sustraendo</div>
+                        <div class="grid-cell grid-header" style="background: #fee2e2;">Resultado</div>
+
+                        <div class="grid-cell">20</div>
+                        <div class="grid-cell" id="m-20">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                        <div class="grid-cell" id="su-20">
+                            <div class="dot"></div>
+                        </div>
+                        <div class="grid-cell" id="rm-20"></div>
+
+                        <div class="grid-cell">1</div>
+                        <div class="grid-cell" id="m-1">
+                            <div class="bar"></div>
+                        </div>
+                        <div class="grid-cell" id="su-1">
+                            <div class="bar"></div>
+                        </div>
+                        <div class="grid-cell" id="rm-1"></div>
+                    </div>
+                    <button class="btn-action" onclick="stepRest()">Realizar Resta ▶</button>
+                    <p id="rest-step-text" style="font-weight: 700; color: var(--primary-red); margin-top: 5px;"></p>
+                </div>
+
+                <!-- Explicación Multiplicación -->
+                <div class="slide">
+                    <div style="font-size: 3rem;">✖️</div>
+                    <h2>La Multiplicación Maya</h2>
+                    <p>Se utiliza un tablero mágico de doble entrada. ¡Mira cómo funciona!</p>
+                    <div class="info-card" style="border-left-color: var(--jade-green);">
+                        <p>1. Escribe los factores fuera de la tabla (uno a la izquierda, otro arriba).</p>
+                        <p>2. Multiplica cada intersección de símbolos.</p>
+                        <p>3. Suma los resultados siguiendo las <strong>líneas diagonales</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Simulador de Multiplicación -->
+                <div class="slide">
+                    <h2>Simulador: El Tablero Mágico</h2>
+                    <p style="margin-bottom: 1rem;">Multiplicamos <strong>41 × 22</strong> paso a paso:</p>
+
+                    <div
+                        style="display: flex; gap: 20px; align-items: flex-start; justify-content: center; width: 100%;">
+                        <!-- Tablero (Izquierda) -->
+                        <div class="multi-grid" style="grid-template-columns: 80px 80px 80px 100px; margin: 0;">
+                            <div class="multi-cell">x</div>
+                            <div class="multi-cell multi-factor" id="mf-top-1">?</div>
+                            <div class="multi-cell multi-factor" id="mf-top-2">?</div>
+                            <div class="multi-cell grid-header">Suma Diag.</div>
+
+                            <div class="multi-cell multi-factor" id="mf-left-1">?</div>
+                            <div class="multi-cell" id="m-1-1"></div>
+                            <div class="multi-cell" id="m-1-2"></div>
+                            <div class="multi-cell" id="sd-1"></div>
+
+                            <div class="multi-cell multi-factor" id="mf-left-2">?</div>
+                            <div class="multi-cell" id="m-2-1"></div>
+                            <div class="multi-cell" id="m-2-2"></div>
+                            <div class="multi-cell" id="sd-2"></div>
+
+                            <div class="multi-cell" style="grid-column: 4; background: #f8fafc; font-size: 0.7rem;">Sum.
+                                Final</div>
+                            <div class="multi-cell" id="sd-3" style="grid-column: 4; grid-row: 4;"></div>
+                        </div>
+
+                        <!-- Bitácora de Pasos (Derecha) -->
+                        <div id="multi-log"
+                            style="flex: 1; max-width: 320px; background: #fff; border: 2px solid var(--primary-blue-dark); border-radius: 12px; padding: 15px; text-align: left; height: 350px; overflow-y: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column;">
+                            <h3
+                                style="font-size: 1.1rem; color: var(--primary-blue-dark); border-bottom: 3px solid var(--primary-yellow); margin-bottom: 15px; padding-bottom: 5px; font-family: 'Outfit', sans-serif;">
+                                📓 Bitácora de Pasos</h3>
+                            <div id="steps-container" style="font-size: 0.9rem; line-height: 1.5; color: #334155;">
+                                <p style="color: #94a3b8; font-style: italic; text-align: center; margin-top: 50px;">Haz
+                                    clic en el botón inferior para iniciar el procedimiento...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn-action" style="margin-top: 20px;" onclick="stepMulti()">Siguiente Paso ▶</button>
+                    <p id="multi-step-text" style="display:none;"></p>
+                    <!-- Oculto pero mantenido para compatibilidad -->
+                </div>
+
+                <!-- Quiz 1 -->
+                <div class="slide">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🤔</div>
+                    <h2>Reto del Tablero</h2>
+                    <p>¿Qué sucede en el tablero de multiplicación si multiplicas 1 punto por 1 punto?</p>
+                    <div style="width: 100%; max-width: 500px; margin-top: 15px;">
+                        <button class="quiz-option" onclick="checkQ(1, true, this)">A) Da 1 punto.</button>
+                        <button class="quiz-option" onclick="checkQ(1, false, this)">B) Da 1 barra.</button>
+                        <button class="quiz-option" onclick="checkQ(1, false, this)">C) Se vuelve caracol.</button>
+                    </div>
+                    <div id="feed-1" style="margin-top: 15px; font-weight: 700; min-height: 24px;"></div>
+                </div>
+
+                <!-- Quiz 2 -->
+                <div class="slide">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">⚖️</div>
+                    <h2>Ley de Reagrupación</h2>
+                    <p>Si al realizar una suma maya en el Nivel 1 obtienes <strong>4 barras</strong>, ¿qué debes hacer?
+                    </p>
+                    <div style="width: 100%; max-width: 500px; margin-top: 15px;">
+                        <button class="quiz-option" onclick="checkQ(2, false, this)">A) Dejarlas así, el resultado es
+                            20.</button>
+                        <button class="quiz-option" onclick="checkQ(2, true, this)">B) Cambiarlas por 1 punto en el
+                            nivel superior.</button>
+                        <button class="quiz-option" onclick="checkQ(2, false, this)">C) Cambiarlas por un caracol en el
+                            mismo nivel.</button>
+                    </div>
+                    <div id="feed-2" style="margin-top: 15px; font-weight: 700; min-height: 24px;"></div>
+                </div>
+
+                <!-- Quiz 3 -->
+                <div class="slide">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+                    <h2>El Truco del Préstamo</h2>
+                    <p>¿Qué haces si necesitas restar en el Nivel 1 pero solo tienes un caracol (0)?</p>
+                    <div style="width: 100%; max-width: 500px; margin-top: 15px;">
+                        <button class="quiz-option" onclick="checkQ(3, true, this)">A) Convierto 1 punto de arriba en 4
+                            barras abajo.</button>
+                        <button class="quiz-option" onclick="checkQ(3, false, this)">B) Le pido prestado al caracol un
+                            punto invisible.</button>
+                        <button class="quiz-option" onclick="checkQ(3, false, this)">C) No se puede restar números mayas
+                            así.</button>
+                    </div>
+                    <div id="feed-3" style="margin-top: 15px; font-weight: 700; min-height: 24px;"></div>
+                </div>
+
+                <!-- Cierre -->
+                <div class="slide">
+                    <div style="font-size: 5rem;">🥇</div>
+                    <h1>¡Maestro de Tableros!</h1>
+                    <p>Has dominado los procedimientos oficiales de los sabios mayas. ¡Tus cálculos son precisos y
+                        legendarios!</p>
+                    <button class="btn-action" onclick="goTo(0)">Reiniciar Guía</button>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevS()" disabled>&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextS()">&#8594;</button>
+
+        <div class="slide-num" id="s-num">1 / 13</div>
+        <div class="progress-bar" id="p-bar"></div>
+    </div>
+
+    <script>
+        let cur = 0;
+        const slides = document.querySelectorAll('.slide');
+        const cont = document.getElementById('container');
+        const prevB = document.getElementById('prev-btn');
+        const nextB = document.getElementById('next-btn');
+        const sNum = document.getElementById('s-num');
+        const pBar = document.getElementById('p-bar');
+
+        function upG() {
+            cont.style.transform = `translateX(-${cur * 100}%)`;
+            prevB.disabled = cur === 0;
+            nextB.disabled = cur === slides.length - 1;
+            sNum.innerText = `${cur + 1} / ${slides.length}`;
+            pBar.style.width = `${((cur + 1) / slides.length) * 100}%`;
+        }
+
+        function nextS() { if (cur < slides.length - 1) { cur++; upG(); } }
+        function prevS() { if (cur > 0) { cur--; upG(); } }
+        function goTo(n) { cur = n; upG(); }
+
+        function checkQ(id, cor, btn) {
+            const f = document.getElementById(`feed-${id}`);
+            const options = btn.parentElement.querySelectorAll('.quiz-option');
+
+            // Bloquear otras opciones
+            options.forEach(opt => opt.style.pointerEvents = "none");
+
+            if (cor) {
+                btn.style.background = "#dcfce7";
+                btn.style.borderColor = "var(--secondary-green)";
+                f.style.color = "var(--secondary-green)";
+
+                switch (id) {
+                    case 1: f.innerText = "¡Excelente! 1 punto x 1 punto = 1 punto."; break;
+                    case 2: f.innerText = "¡Correcto! 20 unidades suben al siguiente nivel."; break;
+                    case 3: f.innerText = "¡Exacto! Un punto de arriba vale por 4 barras abajo."; break;
+                }
+            } else {
+                btn.style.background = "#fee2e2";
+                btn.style.borderColor = "var(--primary-red)";
+                f.style.color = "var(--primary-red)";
+
+                switch (id) {
+                    case 1: f.innerText = "Recuerda: El tablero multiplica las cantidades de símbolos."; break;
+                    case 2: f.innerText = "¡Casi! El sistema maya es vigesimal (base 20)."; break;
+                    case 3: f.innerText = "¡Ups! Recuerda que 1 punto en el nivel 2 vale 20."; break;
+                }
+            }
+        }
+
+        // --- Logic Suma ---
+        let sStep = 0;
+        function stepSum() {
+            const r1 = document.getElementById('res-1');
+            const r20 = document.getElementById('res-20');
+            const txt = document.getElementById('sum-step-text');
+            sStep++;
+            if (sStep === 1) {
+                r1.innerHTML = '<div style="display:flex;"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+                r20.innerHTML = '<div class="dot"></div><div class="dot"></div>';
+                txt.innerText = "Paso 1: Juntamos el número de cada posición.";
+            } else if (sStep === 2) {
+                r1.innerHTML = '<div class="bar"></div><div style="display:flex; justify-content:center;"><div class="dot"></div><div class="dot"></div></div>';
+                txt.innerText = "Paso 2: Cambiamos 5 puntos por 1 barra.";
+                r1.classList.add('highlight-rect');
+            } else {
+                r1.classList.remove('highlight-rect');
+                r1.innerHTML = ""; r20.innerHTML = ""; txt.innerText = ""; sStep = 0;
+            }
+        }
+
+        // --- Logic Resta ---
+        let rStep = 0;
+        function stepRest() {
+            const rm1 = document.getElementById('rm-1');
+            const rm20 = document.getElementById('rm-20');
+            const txt = document.getElementById('rest-step-text');
+            const su1 = document.getElementById('su-1');
+            const su20 = document.getElementById('su-20');
+            const m1 = document.getElementById('m-1');
+            const m20 = document.getElementById('m-20');
+
+            rStep++;
+            if (rStep === 1) {
+                su1.classList.add('tached'); su20.classList.add('tached');
+                m1.classList.add('tached'); m20.children[0].classList.add('tached');
+                txt.innerText = "Paso 1: Tachamos símbolos del sustraendo en el minuendo.";
+            } else if (rStep === 2) {
+                rm1.innerHTML = '<span class="shell">🐚</span>';
+                rm20.innerHTML = '<div class="dot"></div><div class="dot"></div>';
+                txt.innerText = "Paso 2: Lo que no se tachó es el resultado (2 veintenas = 40).";
+            } else {
+                su1.classList.remove('tached'); su20.classList.remove('tached');
+                m1.classList.remove('tached'); m20.children[0].classList.remove('tached');
+                rm1.innerHTML = ""; rm20.innerHTML = ""; txt.innerText = ""; rStep = 0;
+            }
+        }
+
+        // --- Logic Multi ---
+        let mStep = 0;
+        function addLog(txt, color) {
+            const container = document.getElementById('steps-container');
+            if (mStep === 1) container.innerHTML = ""; // Limpiar mensaje inicial
+            const p = document.createElement('p');
+            p.innerHTML = `<strong>Paso ${mStep}:</strong> ${txt}`;
+            p.style.marginBottom = "10px";
+            p.style.paddingLeft = "5px";
+            p.style.borderLeft = `3px solid ${color || 'var(--jade-green)'}`;
+            container.appendChild(p);
+            const logPanel = document.getElementById('multi-log');
+            logPanel.scrollTop = logPanel.scrollHeight;
+        }
+
+        function stepMulti() {
+            const m11 = document.getElementById('m-1-1');
+            const m12 = document.getElementById('m-1-2');
+            const m21 = document.getElementById('m-2-1');
+            const m22 = document.getElementById('m-2-2');
+            const mt1 = document.getElementById('mf-top-1');
+            const mt2 = document.getElementById('mf-top-2');
+            const ml1 = document.getElementById('mf-left-1');
+            const ml2 = document.getElementById('mf-left-2');
+            const sd1 = document.getElementById('sd-1');
+            const sd2 = document.getElementById('sd-2');
+            const sd3 = document.getElementById('sd-3');
+
+            // Reset Highlights
+            [m11, m12, m21, m22, mt1, mt2, ml1, ml2, sd1, sd2, sd3].forEach(el => el.style.background = "white");
+            [mt1, mt2, ml1, ml2].forEach(el => el.style.background = "#fff7ed");
+
+            mStep++;
+            if (mStep === 1) {
+                ml1.innerHTML = '●●<br>(40)';
+                ml2.innerHTML = '●<br>(1)';
+                ml1.style.background = "var(--primary-yellow)";
+                ml2.style.background = "var(--primary-yellow)";
+                addLog("Ubicamos el <strong>multiplicando (41)</strong> a la izquierda. La veintena arriba y la unidad abajo.", "var(--primary-orange)");
+            } else if (mStep === 2) {
+                mt1.innerHTML = '●<br>(20)';
+                mt2.innerHTML = '●●<br>(2)';
+                mt1.style.background = "var(--primary-yellow)";
+                mt2.style.background = "var(--primary-yellow)";
+                addLog("Ubicamos el <strong>multiplicador (22)</strong> arriba. Veintena a la izquierda y unidad a la derecha.", "var(--primary-orange)");
+            } else if (mStep === 3) {
+                ml1.style.background = "#dcfce7";
+                mt1.style.background = "#dcfce7";
+                m11.innerHTML = '<div style="display:flex;"><div class="dot"></div><div class="dot"></div></div>';
+                m11.style.background = "#dcfce7";
+                addLog("Multiplicamos las veintenas: <strong>2 x 1 = 2</strong>. Colocamos 2 puntos en el cruce.");
+            } else if (mStep === 4) {
+                ml1.style.background = "#dcfce7";
+                mt2.style.background = "#dcfce7";
+                m12.innerHTML = '<div style="display:flex;"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+                m12.style.background = "#dcfce7";
+                addLog("Multiplicamos veintena x unidad: <strong>2 x 2 = 4</strong>. Colocamos 4 puntos.");
+            } else if (mStep === 5) {
+                ml2.style.background = "#dcfce7";
+                mt1.style.background = "#dcfce7";
+                m21.innerHTML = '<div class="dot"></div>';
+                m21.style.background = "#dcfce7";
+                addLog("Multiplicamos unidad x veintena: <strong>1 x 1 = 1</strong>. Colocamos 1 punto.");
+            } else if (mStep === 6) {
+                ml2.style.background = "#dcfce7";
+                mt2.style.background = "#dcfce7";
+                m22.innerHTML = '<div style="display:flex;"><div class="dot"></div><div class="dot"></div></div>';
+                m22.style.background = "#dcfce7";
+                addLog("Multiplicamos las unidades: <strong>1 x 2 = 2</strong>. Colocamos 2 puntos.");
+            } else if (mStep === 7) {
+                m11.style.background = "var(--primary-yellow)";
+                sd1.innerHTML = '<div class="dot"></div><div class="dot"></div>';
+                sd1.style.background = "var(--primary-yellow)";
+                addLog("<strong>Primer Nivel (400s):</strong> Trasladamos los 2 puntos de arriba.", "var(--primary-blue-dark)");
+            } else if (mStep === 8) {
+                m12.style.background = "var(--primary-yellow)";
+                m21.style.background = "var(--primary-yellow)";
+                sd2.innerHTML = '<div class="bar"></div>';
+                sd2.style.background = "var(--primary-yellow)";
+                addLog("<strong>Segundo Nivel (20s):</strong> Sumamos la diagonal (4+1=5). ¡5 puntos se convierten en 1 barra!", "var(--primary-blue-dark)");
+            } else if (mStep === 9) {
+                m22.style.background = "var(--primary-yellow)";
+                sd3.innerHTML = '<div class="dot"></div><div class="dot"></div>';
+                sd3.style.background = "var(--primary-yellow)";
+                addLog("<strong>Tercer Nivel (1s):</strong> Trasladamos los 2 puntos de las unidades.", "var(--primary-blue-dark)");
+            } else {
+                [ml1, ml2, mt1, mt2].forEach(el => el.innerText = "?");
+                [m11, m12, m21, m22, sd1, sd2, sd3].forEach(el => el.innerHTML = "");
+                document.getElementById('steps-container').innerHTML = '<p style="color: #94a3b8; font-style: italic; text-align: center; margin-top: 50px;">Haz clic en el botón inferior para iniciar el procedimiento...</p>';
+                mStep = 0;
+            }
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowRight' || e.key === ' ') nextS();
+            if (e.key === 'ArrowLeft') prevS();
+        });
+        upG();
+    </script>
+</body>
+
+</html>
