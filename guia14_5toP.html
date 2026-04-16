@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Didáctica 14: Multiplicación y División con Decimales</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #993921;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: #e2e8f0; color: #1e293b; margin: 0; padding: 0; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        #app-container { width: 100%; max-width: 960px; height: 540px; background: #ffffff; display: flex; flex-direction: column; position: relative; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); border-radius: 12px; overflow: hidden; margin: auto; }
+        header { background-color: var(--primary-blue-dark); color: white; padding: 0 1.5rem; height: 48px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; z-index: 200; }
+        #viewport { flex: 1; position: relative; width: 100%; overflow: hidden; background: #ffffff; }
+        @media (max-height: 600px) or (max-width: 960px) { #app-container { height: 100vh; border-radius: 0; } }
+
+        .slide-container { display: flex; width: 100%; height: 100%; transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1); }
+        .slide { min-width: 100%; height: 100%; padding: 30px 80px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; opacity: 0; transition: opacity var(--transition-speed); }
+        .slide.active { opacity: 1; }
+
+        h1 { font-family: 'Outfit', sans-serif; font-size: 2.8rem; color: var(--primary-orange); margin-bottom: 0.5rem; font-weight: 800; line-height: 1.05; }
+        h2 { font-family: 'Outfit', sans-serif; font-size: 2.22rem; color: var(--primary-blue-dark); margin-bottom: 1.5rem; font-weight: 700; }
+        p { font-size: 1.2rem; color: #444; max-width: 700px; line-height: 1.5; }
+
+        .info-card { padding: 1.5rem; border-radius: 12px; background: #f0f8ff; margin: 1rem 0; width: 100%; max-width: 700px; text-align: center; }
+
+        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 60px; height: 60px; background-color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); transition: all 0.2s ease; z-index: 250; border: 1px solid #ddd; color: var(--primary-blue-dark); font-size: 1.5rem; user-select: none; }
+        .nav-btn:hover:not(:disabled) { transform: translateY(-50%) scale(1.1); box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); }
+        .nav-btn:disabled { opacity: 0; pointer-events: none; }
+        #prev-btn { left: 20px; }
+        #next-btn { right: 20px; }
+
+        .slide-indicators { position: absolute; padding: 0; bottom: 2rem; left: 0; right: 0; display: flex; justify-content: center; font-size: 0.9rem; color: #888; z-index: 100; }
+        .progress-bar { position: absolute; bottom: 0; left: 0; height: 6px; background: var(--primary-orange); width: 0%; transition: width 0.4s ease; }
+
+        .quiz-container { display: flex; flex-direction: column; gap: 0.8rem; width: 100%; max-width: 600px; margin: 1rem auto; }
+        .option-btn { padding: 1rem 1.5rem; border: 2px solid #e2e8f0; border-radius: 12px; background: white; cursor: pointer; text-align: left; font-size: 1.1rem; transition: all 0.3s; }
+        .option-btn:hover { border-color: var(--primary-orange); background: #fffcf9; }
+
+        /* Interactividad del punto */
+        .interactive-board { background: #fff; padding: 30px; border-radius: 15px; border: 3px solid var(--primary-blue-dark); box-shadow: 0 5px 15px rgba(36, 75, 90, 0.15); margin: 20px 0; text-align: center; }
+        .number-display { position: relative; display: inline-flex; font-size: 4rem; font-family: 'Outfit', sans-serif; gap: 10px; padding: 0 10px; }
+        .digit { width: 45px; text-align: center; z-index: 10; background: transparent; }
+        .zero-pad { color: #cbd5e1; }
+        #floating-point { position: absolute; color: var(--primary-red); font-weight: 900; z-index: 20; transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); text-shadow: 0 4px 5px rgba(219, 96, 21, 0.3); }
+        .controls { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+        .action-btn { padding: 10px 20px; font-size: 1.1rem; border-radius: 25px; border: none; cursor: pointer; font-weight: bold; transition: transform 0.2s, background 0.2s; color: white; display: flex; align-items: center; gap: 8px;}
+        .action-btn:hover { transform: scale(1.05); }
+        .btn-mult { background-color: var(--primary-green); }
+        .btn-mult:hover { background-color: #16a34a; }
+        .btn-div { background-color: var(--primary-purple); }
+        .btn-div:hover { background-color: #7c3aed; }
+        .btn-reset { background-color: var(--primary-orange); }
+
+        .equation-box {
+            font-size: 1.8rem; font-family: 'Outfit'; color: #444; margin-top: 15px;
+            min-height: 40px; font-weight: bold; background: #f8fafc; padding: 10px 20px; border-radius: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 5to Primaria</span>
+            <span>Guía Didáctica 14: Multiplicación y División con Decimales</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                <!-- Portada -->
+                <div class="slide active">
+                    <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">✖️➗</div>
+                    <h1 style="font-size: 2.8rem;">Multiplicación y División con Decimales</h1>
+                    <h2 style="font-weight: 600; color: #64748b;">Guía Didáctica 14 &bull; 5&deg; Primaria</h2>
+                    <p style="color: #64748b; font-style: italic; margin-top: 1rem;">La magia de deslizar el punto y dominar las operaciones con decimales.</p>
+                </div>
+
+                <!-- Multiplicación básica -->
+                <div class="slide">
+                    <h2>Multiplicación de Decimales</h2>
+                    <p>Cuando multiplicas decimales de manera tradicional, haces la operación <strong style="color: var(--primary-orange);">como si no hubiera punto</strong>. Al final, simplemente cuentas los espacios decimales totales.</p>
+                    <div class="info-card" style="font-size: 1.5rem; display: flex; flex-direction: column; gap: 10px; padding: 20px;">
+                        <div style="display: flex; gap: 20px; align-items: center; justify-content: center; font-family: 'Outfit';">
+                            <span>1.<strong style="color: var(--primary-green);">2</strong></span>
+                            <span style="font-size: 1.2rem;">&times;</span>
+                            <span>0.<strong style="color: var(--primary-green);">3</strong></span>
+                        </div>
+                        <div style="font-size: 1rem; color: #555;">(12 &times; 3 = 36) ... y movemos el punto 2 lugares (1+1).</div>
+                        <div style="font-size: 2.2rem; font-family: 'Outfit'; color: var(--primary-blue-dark); font-weight: bold;">
+                            0.36
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tablero Interactivo -->
+                <div class="slide">
+                    <h2 style="margin-bottom: 0;">La Danza del Punto</h2>
+                    <p style="margin-bottom: 15px;">Para operaciones rápidas con 10, 100 o 1000, ¡solo mueve el punto! Fíjate cómo salta al multiplicar (hacia la derecha) o dividir (a la izquierda).</p>
+                    <div class="interactive-board">
+                        <div class="number-display" id="interactive-number">
+                            <span class="digit zero-pad">0</span>
+                            <span class="digit zero-pad">0</span>
+                            <span class="digit" style="color: var(--primary-blue-dark);">5</span>
+                            <span class="digit" style="color: var(--primary-blue-dark);">2</span>
+                            <span class="digit" style="color: var(--primary-blue-dark);">6</span>
+                            <span class="digit zero-pad">0</span>
+                            <span class="digit zero-pad">0</span>
+                            <!-- initial position: before the 5 digit. Wait, let's start at 52.6 -->
+                            <!-- digit widths: 45px + 10px gap = 55px steps -->
+                            <!-- 0 is span[0], 0 is span[1], 5 is span[2], 2 is span[3] -->
+                            <!-- To be between 2 and 6 (52.6), we need left: (45+10)*4 = 220px... We'll compute it dynamically in JS -->
+                            <span id="floating-point">.</span>
+                        </div>
+                        <div class="equation-box" id="equation-display">52.60</div>
+
+                        <div class="controls">
+                            <button class="action-btn btn-div" onclick="movePointLeft()">➗ &divide; 10 (Izquierda)</button>
+                            <button class="action-btn btn-reset" onclick="resetPoint()">↺ Reiniciar</button>
+                            <button class="action-btn btn-mult" onclick="movePointRight()">✖️ &times; 10 (Derecha)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ¿Por qué funciona? -->
+                <div class="slide">
+                    <h2 style="margin-bottom: 5px;">¿Por qué funciona esto?</h2>
+                    <p style="margin-bottom: 15px;">Nuestro sistema numérico es <strong>Decimal</strong>, lo que significa que funciona a base de decenas (dieces).</p>
+                    <div class="info-card" style="text-align: left; max-width: 650px; font-size: 1.25rem; line-height: 1.6; padding: 25px 40px; border: 2px dashed var(--primary-orange);">
+                        <p>Imagina que cada número vive en una "casa" de valor. Al multiplicar por 10, haces que cada dígito se vuelva 10 veces más valioso y se mude una casa hacia la izquierda (dejando el punto a la derecha).</p>
+                        <p style="margin-top: 10px;">Por efecto óptico, el punto parece haberse movido hacia la derecha, ¡pero en realidad son los números creciendo en magnitud!</p>
+                    </div>
+                </div>
+
+                <!-- Resumen Regla -->
+                <div class="slide">
+                    <h2>Reglas Rápidas (10, 100, 1000)</h2>
+                    <div style="display: flex; gap: 30px; justify-content: center; width: 100%;">
+                        <div class="info-card" style="border: 3px solid var(--primary-green);">
+                            <h3 style="color: var(--primary-green); margin-bottom: 10px;">Multiplicación</h3>
+                            <p style="font-size: 1.1rem;">Mueve el punto a la <strong style="color: var(--primary-green);">DERECHA</strong> tantos lugares como ceros tenga el número.</p>
+                            <br>
+                            <span style="font-family: 'Outfit'; font-size: 1.4rem;">4.5 &times; 100 = <strong>450</strong></span>
+                        </div>
+                        <div class="info-card" style="border: 3px solid var(--primary-purple);">
+                            <h3 style="color: var(--primary-purple); margin-bottom: 10px;">División</h3>
+                            <p style="font-size: 1.1rem;">Mueve el punto a la <strong style="color: var(--primary-purple);">IZQUIERDA</strong> tantos lugares como ceros tenga el número.</p>
+                            <br>
+                            <span style="font-family: 'Outfit'; font-size: 1.4rem;">4.5 &divide; 10 = <strong>0.45</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QUIZ 1 -->
+                <div class="slide">
+                    <h2>Multiplicación Rápida</h2>
+                    <p>¿Cuál es el resultado de <strong>0.15 &times; 1000</strong>?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'Solo tiene 3 ceros. Saltaste demasiados lugares.')">A) 1500</button>
+                        <button class="option-btn" onclick="checkQuiz(1, true, this, '¡Correcto! Mueves el punto 3 lugares a la derecha.', '')">B) 150</button>
+                        <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'Mover 2 lugares da 15. ¡Como hay 3 ceros (1000), muévelo uno más!')">C) 15</button>
+                    </div>
+                    <div id="feedback-1" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- QUIZ 2 -->
+                <div class="slide">
+                    <h2>División Rápida</h2>
+                    <p>¿Qué pasa si calculamos <strong>320.5 &divide; 100</strong>?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Al dividir entre 100 (dos ceros), el punto va a la IZQUIERDA 2 posiciones.')">A) 32050</button>
+                        <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Ese sería el resultado de dividir entre 10, no entre 100.')">B) 32.05</button>
+                        <button class="option-btn" onclick="checkQuiz(2, true, this, '¡Exacto! El punto saltó a la izquierda, pasando de 320.5 a 3.205', '')">C) 3.205</button>
+                    </div>
+                    <div id="feedback-2" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <div class="slide">
+                    <div style="font-size: 80px;">🎯</div>
+                    <h2>¡Misión Cumplida!</h2>
+                    <p>Controlar la posición del punto decimal te da un gran superpoder matemático.</p>
+                    <button onclick="goToSlide(0)"
+                        style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem;">Volver a revisar</button>
+                </div>
+            </div> <!-- slide-container -->
+        </div> <!-- viewport -->
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators"><span id="slide-num">1 / 9</span></div>
+        <div class="progress-bar" id="progress-bar"></div>
+    </div> <!-- app-container -->
+
+    <script>
+        // --- Presentacion y Navegacion Basica ---
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const container = document.getElementById('slide-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const slideNum = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+
+        function updateGallery() {
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slides.forEach((slide, index) => slide.classList.toggle('active', index === currentSlide));
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            slideNum.innerText = `${currentSlide + 1} / ${slides.length}`;
+            progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+        }
+
+        function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateGallery(); } }
+        function prevSlide() { if (currentSlide > 0) { currentSlide--; updateGallery(); } }
+        function goToSlide(n) { currentSlide = n; updateGallery(); }
+
+        document.addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === ' ') nextSlide(); if (e.key === 'ArrowLeft') prevSlide(); });
+
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
+        document.addEventListener('touchend', e => {
+            let touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 40) nextSlide();
+            if (touchEndX > touchStartX + 40) prevSlide();
+        }, false);
+
+        function checkQuiz(qId, isCorrect, btn, correctMsg, incorrectMsg) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const container = btn.parentElement;
+
+            if (isCorrect) {
+                container.querySelectorAll('.option-btn').forEach(b => { b.disabled = true; b.style.opacity = "0.5"; });
+                btn.disabled = false; btn.style.opacity = "1"; btn.style.background = "#dcfce7"; btn.style.borderColor = "#10b981";
+                feedback.innerHTML = `✅ &iexcl;Correcto! ${correctMsg}`; feedback.style.color = "#10b981";
+            } else {
+                btn.style.background = "#fee2e2"; btn.style.borderColor = "#dc2626"; btn.disabled = true;
+                feedback.innerHTML = `❌ <span>${incorrectMsg}</span> <button onclick="resetQuiz(${qId})" style="margin-left:10px; background:var(--primary-blue-dark); color:white; border:none; padding:4px 10px; border-radius:15px; cursor:pointer; font-size:0.8rem;">Reintentar</button>`;
+                feedback.style.color = "#dc2626";
+            }
+        }
+
+        function resetQuiz(qId) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const container = feedback.parentElement.querySelector('.quiz-container');
+            container.querySelectorAll('.option-btn').forEach(b => { b.disabled = false; b.style.opacity = "1"; b.style.background = "white"; b.style.borderColor = "#e2e8f0"; });
+            feedback.innerHTML = "";
+        }
+
+        updateGallery();
+
+        // --- Logica Interactiva del Punto ---
+        // Digitos: 0, 0, 5, 2, 6, 0, 0 (Longitud: 7)
+        // Posiciones posibles (ranuras entre los digitos). 
+        // slot 0: antes del primer 0. slot 7: despues del ultimo 0.
+        // Base value: 52.6, lo que significa que el punto esta despues del 2. 
+        // Indices de digitos: 0(0), 1(0), 2(5), 3(2), 4(6), 5(0), 6(0).
+        // El punto esta despues del digito en indice 3. O sea slot 4.
+        let dotSlot = 4;
+        const totalSlots = 7;
+        const floatingPoint = document.getElementById('floating-point');
+        const eqDisplay = document.getElementById('equation-display');
+        
+        // Configuracion visual
+        const paddingLeft = 10;
+        const digitWidth = 45;
+        const gap = 10;
+        
+        function updatePointPosition() {
+            // El desplazamiento left seria: padding + (slot * digitWidth) + (slot * gap) - offsetCentrado
+            // Offset para que quede en medio del gap: -5px (ya que el gap es 10)
+            const leftPos = paddingLeft + (dotSlot * (digitWidth + gap)) - 8;
+            floatingPoint.style.left = `${leftPos}px`;
+            
+            // Construir la representacion en texto omitiendo ceros innecesarios.
+            let digitsArray = ['0', '0', '5', '2', '6', '0', '0'];
+            let str = "";
+            for(let i=0; i<=7; i++) {
+                if (i === dotSlot) str += ".";
+                if (i < 7) str += digitsArray[i];
+            }
+            // Numeros bonitos (quitar ceros excesivos)
+            let parsed = parseFloat(str);
+            if(isNaN(parsed)) parsed = 0;
+            eqDisplay.innerHTML = `Valor: <strong style="color:var(--primary-orange)">${parsed}</strong>`;
+        }
+
+        function movePointRight() {
+            if (dotSlot < 6) { // Limite derecho visible
+                dotSlot++;
+                updatePointPosition();
+            }
+        }
+
+        function movePointLeft() {
+            if (dotSlot > 2) { // Limite izquierdo visible (llega hasta 0.0526)
+                dotSlot--;
+                updatePointPosition();
+            }
+        }
+
+        function resetPoint() {
+            dotSlot = 4; // 52.60
+            updatePointPosition();
+        }
+
+        // Inicializar posicion tras que cargue un poquito por diseño
+        setTimeout(() => {
+            updatePointPosition();
+        }, 100);
+
+    </script>
+</body>
+</html>

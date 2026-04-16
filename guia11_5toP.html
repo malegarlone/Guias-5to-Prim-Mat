@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Didáctica 11: Potencias y Raíz Cuadrada</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #993921;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: #e2e8f0; color: #1e293b; margin: 0; padding: 0; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        #app-container { width: 100%; max-width: 960px; height: 540px; background: #ffffff; display: flex; flex-direction: column; position: relative; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); border-radius: 12px; overflow: hidden; margin: auto; }
+        header { background-color: var(--primary-blue-dark); color: white; padding: 0 1.5rem; height: 48px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; z-index: 200; }
+        #viewport { flex: 1; position: relative; width: 100%; overflow: hidden; background: #ffffff; }
+        @media (max-height: 600px) or (max-width: 960px) { #app-container { height: 100vh; border-radius: 0; } }
+
+        .slide-container { display: flex; width: 100%; height: 100%; transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1); }
+        .slide { min-width: 100%; height: 100%; padding: 30px 80px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; opacity: 0; transition: opacity var(--transition-speed); }
+        .slide.active { opacity: 1; }
+
+        h1 { font-family: 'Outfit', sans-serif; font-size: 2.5rem; color: var(--primary-orange); margin-bottom: 0.5rem; font-weight: 800; line-height: 1.1; }
+        h2 { font-family: 'Outfit', sans-serif; font-size: 2.2rem; color: var(--primary-blue-dark); margin-bottom: 1.2rem; font-weight: 700; }
+        p { font-size: 1.2rem; color: #444; max-width: 700px; line-height: 1.5; }
+
+        .info-card { padding: 1.2rem; border-radius: 12px; background: #f0f8ff; margin: 0.5rem 0; width: 100%; max-width: 700px; text-align: center; }
+
+        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 60px; height: 60px; background-color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); transition: all 0.2s ease; z-index: 250; border: 1px solid #ddd; color: var(--primary-blue-dark); font-size: 1.5rem; user-select: none; }
+        .nav-btn:hover:not(:disabled) { transform: translateY(-50%) scale(1.1); box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); }
+        .nav-btn:disabled { opacity: 0; pointer-events: none; }
+        #prev-btn { left: 20px; }
+        #next-btn { right: 20px; }
+
+        .slide-indicators { position: absolute; padding: 0; bottom: 1.5rem; left: 0; right: 0; display: flex; justify-content: center; font-size: 0.9rem; color: #888; z-index: 100; }
+        .progress-bar { position: absolute; bottom: 0; left: 0; height: 6px; background: var(--primary-orange); width: 0%; transition: width 0.4s ease; }
+
+        .quiz-container { display: flex; flex-direction: column; gap: 0.8rem; width: 100%; max-width: 600px; margin: 1rem auto 0; }
+        .option-btn { padding: 1rem 1.5rem; border: 2px solid #e2e8f0; border-radius: 12px; background: white; cursor: pointer; text-align: left; font-size: 1.1rem; transition: all 0.3s; }
+        .option-btn:hover { border-color: var(--primary-orange); background: #fffcf9; }
+
+        /* Estilos Matemáticos Especiales */
+        .math-block { 
+            display: inline-flex; align-items: baseline; background: #fff; padding: 15px 30px; 
+            border-radius: 12px; border: 3px solid var(--primary-orange); font-size: 2.8rem; 
+            font-family: 'Outfit', sans-serif; color: var(--primary-blue-dark); margin: 15px; 
+            box-shadow: 0 5px 15px rgba(219, 96, 21, 0.2); 
+            letter-spacing: 2px;
+        }
+        .exponent { font-size: 0.55em; color: var(--primary-red); position: relative; top: -0.8em; left: 0.05em; font-weight: 800; }
+        .root-symbol { font-size: 1.25em; margin-right: 0.1em; color: var(--primary-purple); font-weight: 300; vertical-align: baseline;}
+        .radicand { border-top: 3px solid var(--primary-purple); padding-top: 2px; padding-left: 5px; padding-right: 5px; display: inline-block; position: relative; top: -0.05em;}
+        .operator { color: var(--primary-green); margin: 0 15px; font-weight: 800; }
+        .equals { color: #94a3b8; margin: 0 15px; }
+
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 5to Primaria</span>
+            <span>Guía Didáctica 11: Potencias y Raíces</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                
+                <!-- Portada -->
+                <div class="slide active">
+                    <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">💥📏</div>
+                    <h1 style="font-size: 2.7rem;">Suma y Resta de Potencias y Raíz Cuadrada</h1>
+                    <h2 style="font-weight: 600; color: #64748b;">Guía Didáctica 11 &bull; 5&deg; Primaria</h2>
+                    <p style="color: #64748b; font-style: italic; margin-top: 1rem;">Domina el poder detrás de los exponentes y descubre la magia de las raíces cuadradas.</p>
+                </div>
+
+                <!-- Repaso Potencias -->
+                <div class="slide">
+                    <h2>Repaso de Potencias</h2>
+                    <p>Una potencia es una multiplicación abreviada. Nos indica cuántas veces debemos multiplicar un número (la base) por sí mismo.</p>
+                    <div class="math-block">
+                        3<span class="exponent">2</span> <span class="equals">=</span> 3 &times; 3 <span class="equals">=</span> 9
+                    </div>
+                    <div class="info-card">
+                        <p>No confundas <strong>3<span class="exponent">2</span></strong> (tres al cuadrado) con multiplicar 3 &times; 2.</p>
+                    </div>
+                </div>
+
+                <!-- Suma y Resta de Potencias -->
+                <div class="slide">
+                    <h2>Operaciones con Potencias</h2>
+                    <p>Para sumar o restar potencias, debes enfocarte en un principio de oro: <strong style="color: var(--primary-orange);">Primero calcula el valor de cada potencia.</strong></p>
+                    <div class="math-block" style="font-size: 2.2rem;">
+                        4<span class="exponent">2</span> <span class="operator">+</span> 4<span class="exponent">1</span>
+                    </div>
+                    <div style="display: flex; gap: 20px; justify-content: center; margin-top: 10px;">
+                        <div class="info-card" style="display: flex; flex-direction: column; align-items: center; width: auto; padding: 15px 30px;">
+                            <span style="color: var(--primary-blue-dark); font-weight: bold; font-size: 1.2rem;">Paso 1: Resolver</span>
+                            <span style="font-size: 1.8rem; font-family: 'Outfit'; color: #444; margin-top: 5px;">16 <span class="operator" style="font-size: 1.4rem;">+</span> 4</span>
+                        </div>
+                        <div class="info-card" style="display: flex; flex-direction: column; align-items: center; width: auto; padding: 15px 30px; border: 2px solid var(--primary-green); background: #f0fdf4;">
+                            <span style="color: var(--primary-green); font-weight: bold; font-size: 1.2rem;">Paso 2: Sumar</span>
+                            <span style="font-size: 2.5rem; font-family: 'Outfit'; color: var(--primary-green); font-weight: bold;">20</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resta -->
+                <div class="slide">
+                    <h2>Resta con Potencias</h2>
+                    <p>¡Aplica exactamente el mismo principio! Resuelve los exponentes de cada base y luego realiza tu resta.</p>
+                    <div class="math-block" style="font-size: 2.2rem;">
+                        5<span class="exponent">2</span> <span class="operator" style="color: var(--primary-red);">-</span> 2<span class="exponent">3</span>
+                    </div>
+                    <div class="info-card" style="font-size: 1.8rem; font-family: 'Outfit'; color: #444; margin-top: 10px; border: 2px dashed #cbd5e1; background: white;">
+                        25 <span class="operator" style="font-size: 1.4rem; color: var(--primary-red);">-</span> 8 <span class="equals">=</span> <strong style="color: var(--primary-blue-dark);">17</strong>
+                    </div>
+                </div>
+
+                <!-- Cuadrados Perfectos (Explicación Adicional) -->
+                <div class="slide">
+                    <h2 style="margin-bottom: 5px;">Cuadrados Perfectos</h2>
+                    <p style="margin-bottom: 15px;">En el mundo matemático, potencias como <strong>3<span class="exponent">2</span></strong> y <strong>4<span class="exponent">2</span></strong> se llaman "cuadrados perfectos" porque literalmente representan el área de figuras cuadradas en la vida real.</p>
+                    <div style="display: flex; gap: 30px; justify-content: center; width: 100%; margin-top: 5px;">
+                        <div class="info-card" style="padding: 15px; border-radius: 12px; border: 2px solid var(--primary-orange); box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                            <div style="font-size: 2.5rem; letter-spacing: 5px; color: var(--primary-orange); line-height: 1;">
+                                ⬜⬜⬜<br>⬜⬜⬜<br>⬜⬜⬜
+                            </div>
+                            <p style="margin-top: 15px; font-weight: bold; color: var(--primary-blue-dark); font-size: 1.4rem;">3 &times; 3 = 9</p>
+                        </div>
+                        <div class="info-card" style="padding: 15px; border-radius: 12px; border: 2px solid var(--primary-green); box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                            <div style="font-size: 2.5rem; letter-spacing: 5px; color: var(--primary-green); line-height: 1;">
+                                🟩🟩🟩🟩<br>🟩🟩🟩🟩<br>🟩🟩🟩🟩<br>🟩🟩🟩🟩
+                            </div>
+                            <p style="margin-top: 15px; font-weight: bold; color: var(--primary-blue-dark); font-size: 1.4rem;">4 &times; 4 = 16</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Raíz Cuadrada -->
+                <div class="slide">
+                    <h2>La Raíz Cuadrada</h2>
+                    <p>Es la operación <strong style="color: var(--primary-purple);">inversa</strong> a elevar al cuadrado (potencia 2). Se trata de buscar qué número multiplicado por sí mismo nos da la cantidad que está adentro.</p>
+                    <div class="math-block" style="border-color: var(--primary-purple); box-shadow: 0 5px 15px rgba(139, 92, 246, 0.2);">
+                        <span class="root-symbol">&radic;</span><span class="radicand">16</span> <span class="equals">=</span> 4
+                    </div>
+                    <p style="font-size: 1.1rem; margin-top: 5px; color: #64748b;">Porque <strong>4 &times; 4 = 16</strong></p>
+                </div>
+
+                <!-- QUIZ 1 -->
+                <div class="slide">
+                    <h2>Reto de Potencias</h2>
+                    <p>¿Cuál es el resultado de <strong>3<span class="exponent" style="font-size: 0.6em">2</span> + 3<span class="exponent" style="font-size: 0.6em">1</span></strong>?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'Recuerda hallar cada potencia. 3&times;3 y 3&times;1')">A) 6</button>
+                        <button class="option-btn" onclick="checkQuiz(1, true, this, '¡Correcto! 9 + 3 = 12', '')">B) 12</button>
+                        <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'Parece que multiplicaste 3&times;2. ¡Inténtalo de nuevo!')">C) 9</button>
+                    </div>
+                    <div id="feedback-1" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- QUIZ 2 -->
+                <div class="slide">
+                    <h2>Reto de Raíces</h2>
+                    <p>¿Cuál es el resultado de <strong style="font-family: 'Outfit'; font-size: 1.2em;"><span class="root-symbol">&radic;</span><span class="radicand">25</span></strong>?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Busca el número que multiplicado POR SÍ MISMO dé 25.')">A) 12.5</button>
+                        <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Esa sería la raíz cuadrada de 9.')">B) 3</button>
+                        <button class="option-btn" onclick="checkQuiz(2, true, this, '¡Excelente! Porque 5 &times; 5 = 25', '')">C) 5</button>
+                    </div>
+                    <div id="feedback-2" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- Final -->
+                <div class="slide">
+                    <div style="font-size: 80px;">🎯</div>
+                    <h2>¡Misión Cumplida!</h2>
+                    <p>Las potencias y las raíces ya no son un secreto para ti.</p>
+                    <button onclick="goToSlide(0)"
+                        style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem; transition: transform 0.2s;">Volver a repasar</button>
+                </div>
+            </div> <!-- slide-container -->
+        </div> <!-- viewport -->
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators"><span id="slide-num">1 / 9</span></div>
+        <div class="progress-bar" id="progress-bar"></div>
+    </div> <!-- app-container -->
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const container = document.getElementById('slide-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const slideNum = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+
+        function updateGallery() {
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slides.forEach((slide, index) => slide.classList.toggle('active', index === currentSlide));
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            slideNum.innerText = `${currentSlide + 1} / ${slides.length}`;
+            progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+        }
+
+        function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateGallery(); } }
+        function prevSlide() { if (currentSlide > 0) { currentSlide--; updateGallery(); } }
+        function goToSlide(n) { currentSlide = n; updateGallery(); }
+
+        document.addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === ' ') nextSlide(); if (e.key === 'ArrowLeft') prevSlide(); });
+
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
+        document.addEventListener('touchend', e => {
+            let touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 40) nextSlide();
+            if (touchEndX > touchStartX + 40) prevSlide();
+        }, false);
+
+        function checkQuiz(qId, isCorrect, btn, correctMsg, incorrectMsg) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const container = btn.parentElement;
+
+            if (isCorrect) {
+                container.querySelectorAll('.option-btn').forEach(b => { b.disabled = true; b.style.opacity = "0.5"; });
+                btn.disabled = false; btn.style.opacity = "1"; btn.style.background = "#dcfce7"; btn.style.borderColor = "#10b981";
+                feedback.innerHTML = `✅ &iexcl;Correcto! ${correctMsg}`; feedback.style.color = "#10b981";
+            } else {
+                btn.style.background = "#fee2e2"; btn.style.borderColor = "#dc2626"; btn.disabled = true;
+                feedback.innerHTML = `❌ <span>${incorrectMsg}</span> <button onclick="resetQuiz(${qId})" style="margin-left:10px; background:var(--primary-blue-dark); color:white; border:none; padding:4px 10px; border-radius:15px; cursor:pointer; font-size:0.8rem;">Reintentar</button>`;
+                feedback.style.color = "#dc2626";
+            }
+        }
+
+        function resetQuiz(qId) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const container = feedback.parentElement.querySelector('.quiz-container');
+            container.querySelectorAll('.option-btn').forEach(b => { b.disabled = false; b.style.opacity = "1"; b.style.background = "white"; b.style.borderColor = "#e2e8f0"; });
+            feedback.innerHTML = "";
+        }
+
+        updateGallery();
+    </script>
+</body>
+</html>
