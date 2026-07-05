@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 21: Medidas de Longitud y el Metro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 540px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 600px) or (max-width: 960px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 30px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.3rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.4rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.05rem;
+            color: #444;
+            max-width: 750px;
+            line-height: 1.5;
+            margin-bottom: 0.4rem;
+        }
+
+        .info-card {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            background: #f0f8ff;
+            margin: 0.5rem 0;
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.3rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 15px;
+        }
+
+        #next-btn {
+            right: 15px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #888;
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #edf2f7;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+            max-width: 600px;
+            margin: 0.5rem auto;
+        }
+
+        .option-btn {
+            padding: 0.7rem 1.1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        /* Fraction CSS */
+        .math-fraction {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            padding: 0 4px;
+        }
+        .fraction-num {
+            border-bottom: 2px solid var(--primary-blue-dark);
+            padding-bottom: 2px;
+            font-weight: bold;
+        }
+        .fraction-den {
+            padding-top: 2px;
+            font-weight: bold;
+        }
+        .math-equation {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            background: white;
+            border: 2px dashed #94a3b8;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary-blue-dark);
+        }
+        .cancel-unit {
+            text-decoration: line-through;
+            color: var(--primary-red);
+            font-weight: bold;
+        }
+        .target-unit {
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+
+        /* Ladder styling */
+        .ladder-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px 0;
+            position: relative;
+        }
+        .ladder-step {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-blue-dark);
+            color: white;
+            font-weight: bold;
+            font-size: 0.95rem;
+            width: 80px;
+            height: 25px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .ladder-arrows {
+            font-size: 0.8rem;
+            color: var(--primary-orange);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 140px;
+            margin: 1px 0;
+        }
+
+        /* Tape Measure styling */
+        .ruler-container {
+            background: #fcf8e3;
+            border: 2px solid #fbeed5;
+            border-radius: 8px;
+            padding: 10px;
+            width: 100%;
+            max-width: 600px;
+            margin: 8px 0;
+        }
+        .ruler-ticks {
+            height: 40px;
+            background: repeating-linear-gradient(90deg, #333, #333 1px, transparent 1px, transparent 10px);
+            border-bottom: 2px solid #333;
+            position: relative;
+            margin-bottom: 8px;
+        }
+        .ruler-slider {
+            width: 100%;
+            accent-color: var(--primary-orange);
+        }
+
+        /* Multi converter panel */
+        .conv-panel {
+            background: #f1f5f9;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 12px;
+            width: 100%;
+            max-width: 650px;
+            margin-top: 5px;
+        }
+        .conv-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .input-style {
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            width: 80px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        .select-style {
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            font-weight: bold;
+            background: white;
+        }
+        .action-btn {
+            background: var(--primary-orange);
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 5to Primaria</span>
+            <span>Guía 21: Medidas de Longitud y el Metro</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                <!-- 1. Portada -->
+                <div class="slide active">
+                    <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">📏🐆🐸</div>
+                    <h1>Medidas de Longitud y el Metro</h1>
+                    <h2>Lección 21 &bull; 5&deg; Primaria</h2>
+                    <p style="color: #64748b; font-style: italic;">¡Aprende las equivalencias del metro, la regla de multiplicación/división por 10 por nivel y realiza conversiones matemáticas con fracciones!</p>
+                </div>
+
+                <!-- 2. La Regla del 10 por Nivel -->
+                <div class="slide">
+                    <h2>La Regla de Conversión Métrica</h2>
+                    <p>El sistema métrico decimal se organiza en niveles. Para pasar de una unidad a otra, seguimos esta regla fundamental:</p>
+                    
+                    <div class="info-card" style="text-align: left; background: #fdf2f8; border-left: 5px solid var(--primary-purple); max-width: 600px;">
+                        <span style="font-weight: bold; color: #be185d; display: block; margin-bottom: 5px;">🛹 Regla de Oro:</span>
+                        <p style="font-size: 0.95rem; line-height: 1.5; color: #be185d;">- <strong>De unidad mayor a menor:</strong> Multiplicamos por 10 por cada escalón que bajemos.<br>- <strong>De unidad menor a mayor:</strong> Dividimos entre 10 por cada escalón que subamos.</p>
+                    </div>
+
+                    <div style="display: flex; gap: 30px; margin-top: 10px;">
+                        <span style="font-size: 1.1rem; font-weight: bold; color: var(--primary-green);">Bajar ⬇️ (Multiplicar ×10)</span>
+                        <span style="font-size: 1.1rem; font-weight: bold; color: var(--primary-red);">Subir ⬆️ (Dividir ÷10)</span>
+                    </div>
+                </div>
+
+                <!-- 3. Saltos de Animales (Datos Reales) -->
+                <div class="slide">
+                    <h2>Los Saltos de los Animales</h2>
+                    <p>Observemos las capacidades de salto de tres animales reales representadas con fracciones y cancelación:</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 5px;">
+                        <!-- Pulga -->
+                        <div class="info-card" style="text-align: left; padding: 8px 15px; margin: 2px 0;">
+                            <strong>🦗 Salto de Pulga: 20 centímetros (cm) a milímetros (mm)</strong>
+                            <div class="math-equation" style="display:flex; margin-top: 4px; font-size:1rem; padding: 4px 10px;">
+                                <span>20</span> <span class="cancel-unit">cm</span> <span>×</span>
+                                <div class="math-fraction" style="font-size:0.85rem;">
+                                    <span class="fraction-num">10 <span class="target-unit">mm</span></span>
+                                    <span class="fraction-den">1 <span class="cancel-unit">cm</span></span>
+                                </div>
+                                <span>= 200</span> <span class="target-unit">mm</span>
+                            </div>
+                        </div>
+                        <!-- Rana -->
+                        <div class="info-card" style="text-align: left; padding: 8px 15px; margin: 2px 0;">
+                            <strong>🐸 Salto de Rana: 1.5 metros (m) a centímetros (cm)</strong>
+                            <div class="math-equation" style="display:flex; margin-top: 4px; font-size:1rem; padding: 4px 10px;">
+                                <span>1.5</span> <span class="cancel-unit">m</span> <span>×</span>
+                                <div class="math-fraction" style="font-size:0.85rem;">
+                                    <span class="fraction-num">100 <span class="target-unit">cm</span></span>
+                                    <span class="fraction-den">1 <span class="cancel-unit">m</span></span>
+                                </div>
+                                <span>= 150</span> <span class="target-unit">cm</span>
+                            </div>
+                        </div>
+                        <!-- Puma -->
+                        <div class="info-card" style="text-align: left; padding: 8px 15px; margin: 2px 0;">
+                            <strong>🐆 Salto de Puma: 4 metros (m) a kilómetros (km)</strong>
+                            <div class="math-equation" style="display:flex; margin-top: 4px; font-size:1rem; padding: 4px 10px;">
+                                <span>4</span> <span class="cancel-unit">m</span> <span>×</span>
+                                <div class="math-fraction" style="font-size:0.85rem;">
+                                    <span class="fraction-num">1 <span class="target-unit">km</span></span>
+                                    <span class="fraction-den">1,000 <span class="cancel-unit">m</span></span>
+                                </div>
+                                <span>= 0.004</span> <span class="target-unit">km</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Interactiva 1: La Escalera de Conversión -->
+                <div class="slide">
+                    <h2>Interactiva 1: La Escalera Métrica</h2>
+                    <p>Haz clic en los escalones para ver la relación de multiplicación y división por 10:</p>
+                    
+                    <div style="display: flex; gap: 30px; align-items: center; justify-content: center; width: 100%;">
+                        <!-- Escalera -->
+                        <div class="ladder-container">
+                            <div class="ladder-step" style="background:#1e3a8a;">km</div>
+                            <div class="ladder-arrows"><span>÷10 ⬆️</span><span>⬇️ ×10</span></div>
+                            <div class="ladder-step" style="background:#2563eb;">hm</div>
+                            <div class="ladder-arrows"><span>÷10 ⬆️</span><span>⬇️ ×10</span></div>
+                            <div class="ladder-step" style="background:#3b82f6;">dam</div>
+                            <div class="ladder-arrows"><span>÷10 ⬆️</span><span>⬇️ ×10</span></div>
+                            <div class="ladder-step" style="background:var(--primary-orange);">m</div>
+                            <div class="ladder-arrows"><span>÷10 ⬆️</span><span>⬇️ ×10</span></div>
+                            <div class="ladder-step" style="background:#10b981;">dm</div>
+                            <div class="ladder-arrows"><span>÷10 ⬆️</span><span>⬇️ ×10</span></div>
+                            <div class="ladder-step" style="background:#059669;">cm</div>
+                            <div class="ladder-arrows"><span>÷10 ⬆️</span><span>⬇️ ×10</span></div>
+                            <div class="ladder-step" style="background:#047857;">mm</div>
+                        </div>
+
+                        <div class="info-card" style="width: 250px; text-align: left; min-height: 180px;" id="ladder-info">
+                            <h3 style="color:var(--primary-orange);">¿Cómo funciona?</h3>
+                            <p style="font-size: 0.9rem; margin-top: 5px;">Cada paso que das hacia abajo significa multiplicar por 10.<br><br>Cada paso hacia arriba significa dividir por 10.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Interactiva 2: El Metro de Construcción -->
+                <div class="slide">
+                    <h2>Interactiva 2: El Metro de Construcción</h2>
+                    <p>Mueve la barra del metro de construcción (milímetros) y observa su conversión a centímetros y metros:</p>
+                    
+                    <div class="ruler-container">
+                        <div class="ruler-ticks"></div>
+                        <input type="range" min="0" max="1000" step="10" value="250" class="ruler-slider" id="ruler-val" oninput="actualizarMetroConstruccion(this.value)">
+                        
+                        <div style="display:flex; justify-content:space-around; margin-top:10px; font-weight:bold; font-size:1.1rem; color:var(--primary-blue-dark);">
+                            <div>📏 <span id="ruler-mm" style="color:var(--primary-orange)">250</span> mm</div>
+                            <div>➔</div>
+                            <div>📐 <span id="ruler-cm" style="color:var(--primary-purple)">25</span> cm</div>
+                            <div>➔</div>
+                            <div>🪵 <span id="ruler-m" style="color:var(--primary-green)">0.25</span> m</div>
+                        </div>
+                        
+                        <div style="font-size: 0.85rem; color: #64748b; margin-top: 8px; font-style: italic; text-align: center;" id="ruler-math-desc">
+                            Cálculo: 250 mm ÷ 10 = 25 cm, y luego 25 cm ÷ 100 = 0.25 m
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Interactiva 3: Conversor Multi-unidad -->
+                <div class="slide">
+                    <h2>Interactiva 3: Conversor Multi-unidad</h2>
+                    <p>Ingresa un valor y las unidades inicial y final para realizar el cálculo matemático completo:</p>
+                    
+                    <div class="conv-panel">
+                        <div class="conv-row">
+                            <input type="number" id="conv-input-val" value="5" min="0" class="input-style">
+                            
+                            <select id="conv-from-unit" class="select-style">
+                                <option value="km">Kilómetros (km)</option>
+                                <option value="hm">Hectómetros (hm)</option>
+                                <option value="dam">Decámetros (dam)</option>
+                                <option value="m" selected>Metros (m)</option>
+                                <option value="dm">Decímetros (dm)</option>
+                                <option value="cm">Centímetros (cm)</option>
+                                <option value="mm">Milímetros (mm)</option>
+                            </select>
+                            
+                            <span style="font-weight:bold;">➔</span>
+                            
+                            <select id="conv-to-unit" class="select-style">
+                                <option value="km">Kilómetros (km)</option>
+                                <option value="hm">Hectómetros (hm)</option>
+                                <option value="dam">Decámetros (dam)</option>
+                                <option value="m">Metros (m)</option>
+                                <option value="dm">Decímetros (dm)</option>
+                                <option value="cm" selected>Centímetros (cm)</option>
+                                <option value="mm">Milímetros (mm)</option>
+                            </select>
+                            
+                            <button onclick="convertirUnidades()" class="action-btn">Convertir ⚡</button>
+                        </div>
+                        
+                        <div class="math-equation" id="conv-output-equation" style="width:100%; justify-content:center;">
+                            Escribe valores y haz clic en Convertir.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. QUIZ 1 -->
+                <div class="slide">
+                    <h2>Cuestionario - Pregunta 1</h2>
+                    <p>Una rana verde salta una distancia de exactamente <strong>2 metros (m)</strong>.</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿A cuántos decímetros (dm) equivale la distancia de su salto sabiendo que descendemos 1 nivel (×10)?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'Al bajar de metros a decímetros, multiplicamos por 10 una sola vez.')">A)
+                            0.2 decímetros</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, true, this, '¡Excelente! Multiplicamos: 2 metros × 10 = 20 decímetros (20 dm).', '')">B)
+                            20 decímetros</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'Ese valor sería si convirtieras a centímetros (2 × 100).')">C)
+                            200 decímetros</button>
+                    </div>
+                    <div id="feedback-1" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 8. QUIZ 2 -->
+                <div class="slide">
+                    <h2>Cuestionario - Pregunta 2</h2>
+                    <p>Un puma de la montaña da un espectacular salto de <strong>5 metros (m)</strong> de longitud.</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿A cuántos kilómetros (km) equivale su salto si ascendemos 3 niveles en la escalera (÷1,000)?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, false, this, '', 'Recuerda que al subir dividimos. Como son 3 niveles, dividimos 5 entre 1,000.')">A)
+                            5,000 kilómetros</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, false, this, '', 'Dividir 5 ÷ 1,000 da una cantidad pequeña decimal con tres posiciones decimales.')">B)
+                            0.05 kilómetros</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, true, this, '¡Correcto! Ecuación: 5 m × (1 km / 1,000 m) = 0.005 kilómetros.', '')">C)
+                            0.005 kilómetros</button>
+                    </div>
+                    <div id="feedback-2" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 9. QUIZ 3 -->
+                <div class="slide">
+                    <h2>Cuestionario - Pregunta 3</h2>
+                    <p>El salto de una pequeña pulga mide <strong>250 milímetros (mm)</strong> de largo.</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿A cuántos centímetros (cm) equivale su salto si subimos 1 nivel en la escalera (÷10)?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(3, true, this, '¡Excelente! Al subir un nivel dividimos entre 10: 250 mm ÷ 10 = 25 cm.', '')">A)
+                            25 centímetros</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(3, false, this, '', 'Recuerda dividir entre 10, no multiplicar.')">B)
+                            2,500 centímetros</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(3, false, this, '', 'Al dividir 250 entre 10 se elimina un cero, quedando 25.')">C)
+                            2.5 centímetros</button>
+                    </div>
+                    <div id="feedback-3" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 10. Final -->
+                <div class="slide">
+                    <div style="font-size: 80px;">🎯</div>
+                    <h2>¡Misión Cumplida!</h2>
+                    <p>¡Eres un experto realizando conversiones y calculando equivalencias usando el metro!</p>
+                    <button onclick="goToSlide(0)"
+                        style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Volver a jugar</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 10</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const container = document.getElementById('slide-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const slideNum = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+
+        function updateGallery() {
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slides.forEach((slide, index) => slide.classList.toggle('active', index === currentSlide));
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            slideNum.innerText = `${currentSlide + 1} / ${slides.length}`;
+            progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+        }
+
+        function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateGallery(); } }
+        function prevSlide() { if (currentSlide > 0) { currentSlide--; updateGallery(); } }
+        function goToSlide(n) { currentSlide = n; updateGallery(); }
+
+        document.addEventListener('keydown', e => { 
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide(); 
+            if (e.key === 'ArrowLeft') prevSlide(); 
+        });
+
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
+        document.addEventListener('touchend', e => {
+            let touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 40) nextSlide();
+            if (touchEndX > touchStartX + 40) prevSlide();
+        }, false);
+
+        // Quiz Logic
+        function checkQuiz(qId, isCorrect, btn, correctMsg, incorrectMsg) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const containerOpts = btn.parentElement;
+
+            if (isCorrect) {
+                containerOpts.querySelectorAll('.option-btn').forEach(b => {
+                    b.disabled = true;
+                    b.style.opacity = "0.5";
+                });
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                btn.style.background = "#dcfce7";
+                btn.style.borderColor = "#10b981";
+                feedback.innerHTML = `✅ ¡Correcto! ${correctMsg}`;
+                feedback.style.color = "#10b981";
+            } else {
+                btn.style.background = "#fee2e2";
+                btn.style.borderColor = "#dc2626";
+                btn.disabled = true;
+                feedback.innerHTML = `❌ <span>${incorrectMsg}</span> <button onclick="resetQuiz(${qId})" style="margin-left:10px; background:var(--primary-blue-dark); color:white; border:none; padding:4px 10px; border-radius:15px; cursor:pointer; font-size:0.8rem;">Reintentar</button>`;
+                feedback.style.color = "#dc2626";
+            }
+        }
+
+        function resetQuiz(qId) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const containerOpts = feedback.parentElement.querySelector('.quiz-container');
+            containerOpts.querySelectorAll('.option-btn').forEach(b => {
+                b.disabled = false;
+                b.style.opacity = "1";
+                b.style.background = "white";
+                b.style.borderColor = "#e2e8f0";
+            });
+            feedback.innerHTML = "";
+        }
+
+        // Ruler Logic
+        function actualizarMetroConstruccion(val) {
+            const mm = parseInt(val);
+            document.getElementById('ruler-mm').innerText = mm;
+            
+            const cm = mm / 10;
+            document.getElementById('ruler-cm').innerText = cm;
+            
+            const m = cm / 100;
+            document.getElementById('ruler-m').innerText = m.toFixed(2);
+            
+            document.getElementById('ruler-math-desc').innerText = `Cálculo: ${mm} mm ÷ 10 = ${cm} cm, y luego ${cm} cm ÷ 100 = ${m.toFixed(2)} m`;
+        }
+
+        // Multi converter calculations
+        const unitLevels = {
+            'km': 6, 'hm': 5, 'dam': 4, 'm': 3, 'dm': 2, 'cm': 1, 'mm': 0
+        };
+
+        function convertirUnidades() {
+            const val = parseFloat(document.getElementById('conv-input-val').value);
+            const fromUnit = document.getElementById('conv-from-unit').value;
+            const toUnit = document.getElementById('conv-to-unit').value;
+            const mathEl = document.getElementById('conv-output-equation');
+
+            if (isNaN(val) || val < 0) {
+                mathEl.innerText = "Ingresa un número válido.";
+                return;
+            }
+
+            const fromLevel = unitLevels[fromUnit];
+            const toLevel = unitLevels[toUnit];
+            const diff = toLevel - fromLevel;
+
+            if (diff === 0) {
+                mathEl.innerHTML = `Misma unidad: <strong>${val} ${fromUnit}</strong>`;
+                return;
+            }
+
+            const factor = Math.pow(10, Math.abs(diff));
+            let result = 0;
+            let stepHtml = "";
+
+            if (diff < 0) {
+                // Descending (multiply)
+                result = val * factor;
+                // Fraction using cancellation format
+                stepHtml = `
+                    <span>${val}</span> <span class="cancel-unit">${fromUnit}</span> <span>×</span>
+                    <div class="math-fraction">
+                        <span class="fraction-num">${factor.toLocaleString('es-GT')} <span class="target-unit">${toUnit}</span></span>
+                        <span class="fraction-den">1 <span class="cancel-unit">${fromUnit}</span></span>
+                    </div>
+                    <span>= <strong>${result.toLocaleString('es-GT')} ${toUnit}</strong></span>
+                `;
+            } else {
+                // Ascending (divide)
+                result = val / factor;
+                const formattedResult = result % 1 === 0 ? result : result.toFixed(6).replace(/\.?0+$/, "");
+                stepHtml = `
+                    <span>${val}</span> <span class="cancel-unit">${fromUnit}</span> <span>×</span>
+                    <div class="math-fraction">
+                        <span class="fraction-num">1 <span class="target-unit">${toUnit}</span></span>
+                        <span class="fraction-den">${factor.toLocaleString('es-GT')} <span class="cancel-unit">${fromUnit}</span></span>
+                    </div>
+                    <span>= <strong>${formattedResult} ${toUnit}</strong></span>
+                `;
+            }
+
+            mathEl.innerHTML = stepHtml;
+        }
+
+        // Initial setup
+        actualizarMetroConstruccion(250);
+        convertirUnidades();
+        updateGallery();
+    </script>
+</body>
+
+</html>

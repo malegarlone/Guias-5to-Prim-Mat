@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 19: Regla de Tres Simple Directa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 540px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 600px) or (max-width: 960px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 30px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.3rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.4rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.05rem;
+            color: #444;
+            max-width: 750px;
+            line-height: 1.5;
+            margin-bottom: 0.4rem;
+        }
+
+        .info-card {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            background: #f0f8ff;
+            margin: 0.5rem 0;
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.3rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 15px;
+        }
+
+        #next-btn {
+            right: 15px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #888;
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #edf2f7;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+            max-width: 600px;
+            margin: 0.5rem auto;
+        }
+
+        .option-btn {
+            padding: 0.7rem 1.1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        /* Fraction CSS */
+        .math-fraction {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            padding: 0 4px;
+            font-size: 1.15rem;
+        }
+        .fraction-num {
+            border-bottom: 2px solid var(--primary-blue-dark);
+            padding-bottom: 2px;
+            font-weight: bold;
+        }
+        .fraction-den {
+            padding-top: 2px;
+            font-weight: bold;
+        }
+        .math-equation {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            background: white;
+            border: 2px dashed #94a3b8;
+            padding: 10px 18px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-blue-dark);
+        }
+
+        /* Rule of Three widget styles */
+        .widget-box {
+            background: #f1f5f9;
+            border: 2px solid #cbd5e1;
+            border-radius: 16px;
+            padding: 15px;
+            width: 100%;
+            max-width: 650px;
+            margin: 5px 0;
+        }
+        .widget-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .widget-col {
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        .input-style {
+            padding: 6px;
+            border-radius: 6px;
+            border: 2px solid #cbd5e1;
+            width: 70px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        .action-btn {
+            background: var(--primary-orange);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: transform 0.2s;
+        }
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 5to Primaria</span>
+            <span>Guía 19: Regla de Tres Simple Directa</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                <!-- 1. Portada -->
+                <div class="slide active">
+                    <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">⚖️📈✏️</div>
+                    <h1>Regla de Tres Simple Directa</h1>
+                    <h2>Lección 19 &bull; 5&deg; Primaria</h2>
+                    <p style="color: #64748b; font-style: italic;">¡Aprende a resolver problemas cotidianos de proporcionalidad directa planteando ecuaciones de fracciones cruzadas!</p>
+                </div>
+
+                <!-- 2. Relaciones Directas -->
+                <div class="slide">
+                    <div style="font-size: 40px; margin-bottom: 5px;">🤝</div>
+                    <h2>Proporcionalidad Directa</h2>
+                    <p>Dos magnitudes son <strong>directamente proporcionales</strong> cuando una de ellas aumenta y la otra también aumenta de forma constante.</p>
+                    
+                    <div style="display: flex; gap: 20px; justify-content: center; width: 100%; max-width: 700px; margin-top: 15px;">
+                        <div class="info-card" style="flex: 1; background: #f0fdf4; border: 2px solid var(--primary-green);">
+                            <span style="font-size: 1.5rem;">🚗 Distancia y Gasolina</span>
+                            <p style="font-size: 0.95rem; color: #166534; margin-top: 5px; text-align: left;">Entre más kilómetros viaje el carro de tu papá, más galones de gasolina va a consumir. ¡Ambas crecen juntas!</p>
+                        </div>
+                        <div class="info-card" style="flex: 1; background: #eff6ff; border: 2px solid #3b82f6;">
+                            <span style="font-size: 1.5rem;">🍪 Galletas y Harina</span>
+                            <p style="font-size: 0.95rem; color: #1e40af; margin-top: 5px; text-align: left;">Si queremos hornear más galletas para los compañeros, necesitaremos comprar más tazas de harina. ¡Proporción directa!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Planteamiento en Fracción Cruzada -->
+                <div class="slide">
+                    <h2>Ecuación de Fracciones Cruzadas</h2>
+                    <p>Para plantear una Regla de Tres Directa, organizamos la información en dos fracciones equivalentes:</p>
+                    
+                    <div style="display: flex; flex-direction: column; align-items: center; margin: 10px 0;">
+                        <div class="math-equation">
+                            <div class="math-fraction">
+                                <span class="fraction-num" style="color: #1d4ed8;">Magnitud A1</span>
+                                <span class="fraction-den" style="color: #c2410c;">Magnitud B1</span>
+                            </div>
+                            <span>=</span>
+                            <div class="math-fraction">
+                                <span class="fraction-num" style="color: #1d4ed8;">Magnitud A2</span>
+                                <span class="fraction-den" style="color: var(--primary-green);">X (Incógnita)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-card" style="background: #fff7ed; border-left: 5px solid var(--primary-orange); text-align: left;">
+                        <p style="font-size: 0.95rem; color: #7c2d12;"><strong>La fórmula de resolución:</strong> Para despejar la X, multiplicamos de forma cruzada los valores conocidos y dividimos por el valor que queda libre:</p>
+                        <p style="font-weight: bold; font-size: 1.15rem; text-align: center; color: var(--primary-blue-dark); margin-top: 5px;">
+                            X = (Magnitud B1 × Magnitud A2) ÷ Magnitud A1
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 4. Ejemplo paso a paso -->
+                <div class="slide">
+                    <h2>Ejemplo: Comprando Cuadernos</h2>
+                    <p>Si sabemos que <strong>3 cuadernos cuestan Q15</strong>. ¿Cuánto costarán <strong>9 cuadernos</strong>?</p>
+                    
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 10px;">
+                        <!-- Fraction setup -->
+                        <div class="math-equation">
+                            <div class="math-fraction">
+                                <span class="fraction-num" style="color: #1d4ed8;">3 cuadernos</span>
+                                <span class="fraction-den" style="color: #c2410c;">Q15</span>
+                            </div>
+                            <span>=</span>
+                            <div class="math-fraction">
+                                <span class="fraction-num" style="color: #1d4ed8;">9 cuadernos</span>
+                                <span class="fraction-den" style="color: var(--primary-green);">X</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Calculation step -->
+                        <div class="math-equation" style="border-color: var(--primary-green);">
+                            <span style="color: var(--primary-green); font-weight: bold;">X</span>
+                            <span>=</span>
+                            <div class="math-fraction">
+                                <span class="fraction-num">15 × 9</span>
+                                <span class="fraction-den">3</span>
+                            </div>
+                            <span>=</span>
+                            <div class="math-fraction">
+                                <span class="fraction-num">135</span>
+                                <span class="fraction-den">3</span>
+                            </div>
+                            <span>=</span>
+                            <strong style="color: var(--primary-green); font-size: 1.4rem;">Q45</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Calculadora interactiva -->
+                <div class="slide">
+                    <h2>Calculadora de Regla de Tres Directa</h2>
+                    <p>Modifica los tres valores conocidos y haz clic en "Calcular" para ver la ecuación matemática paso a paso:</p>
+                    
+                    <div class="widget-box">
+                        <div class="widget-grid">
+                            <div class="widget-col">
+                                <span style="display:block; font-size:0.8rem; color:#64748b; font-weight:bold; margin-bottom:5px;">Magnitud A1</span>
+                                <input type="number" id="val-a1" value="4" min="1" class="input-style">
+                            </div>
+                            <div style="font-size:1.2rem; font-weight:bold; color:#64748b;">➔</div>
+                            <div class="widget-col" style="border-color: var(--primary-orange);">
+                                <span style="display:block; font-size:0.8rem; color:#64748b; font-weight:bold; margin-bottom:5px;">Magnitud B1</span>
+                                <input type="number" id="val-b1" value="20" min="1" class="input-style">
+                            </div>
+                            
+                            <div class="widget-col">
+                                <span style="display:block; font-size:0.8rem; color:#64748b; font-weight:bold; margin-bottom:5px;">Magnitud A2</span>
+                                <input type="number" id="val-a2" value="8" min="1" class="input-style">
+                            </div>
+                            <div style="font-size:1.2rem; font-weight:bold; color:#64748b;">➔</div>
+                            <div class="widget-col" style="border-color: var(--primary-green);">
+                                <span style="display:block; font-size:0.8rem; color:#64748b; font-weight:bold; margin-bottom:5px;">Resultado X</span>
+                                <span id="val-x-display" style="font-weight:bold; font-size:1.1rem; color:var(--primary-green);">?</span>
+                            </div>
+                        </div>
+                        
+                        <button onclick="calcularReglaTres()" class="action-btn" style="margin-bottom:10px;">Calcular Paso a Paso ⚡</button>
+                        
+                        <div class="math-equation" id="calc-step-equation" style="width:100%; justify-content:center; font-size:1.15rem;">
+                            Escribe valores arriba y presiona Calcular.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. QUIZ 1 -->
+                <div class="slide">
+                    <h2>Cuestionario - Pregunta 1</h2>
+                    <p>Si <strong>5 manzanas rojas</strong> cuestan un total de <strong>Q15</strong> en el mercado escolar...</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuál es el costo de comprar 8 manzanas bajo proporcionalidad directa?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'Haz el planteamiento: 5 ➔ 15, entonces 8 ➔ X. Multiplica 15 × 8 y divide entre 5.')">A)
+                            Q20.00</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, true, this, '¡Excelente! Ecuación: (8 × 15) ÷ 5 = 120 ÷ 5 = Q24.00.', '')">B)
+                            Q24.00</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'Q40.00 es demasiado dinero para 8 manzanas.')">C)
+                            Q40.00</button>
+                    </div>
+                    <div id="feedback-1" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 7. QUIZ 2 -->
+                <div class="slide">
+                    <h2>Cuestionario - Pregunta 2</h2>
+                    <p>Un automóvil recorre una distancia de <strong>200 kilómetros</strong> consumiendo <strong>5 galones</strong> de combustible.</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Qué distancia podrá recorrer si tiene 8 galones del mismo combustible?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, true, this, '¡Excelente! El auto recorre 40 km por galón (200 ÷ 5), así que con 8 galones recorre: 8 × 40 = 320 km.', '')">A)
+                            320 kilómetros</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, false, this, '', 'Con más galones debe recorrer más de 200 km, pero 250 km es muy poco.')">B)
+                            250 kilómetros</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, false, this, '', 'Revisa la multiplicación: 200 × 8 = 1,600. Luego divide 1,600 ÷ 5.')">C)
+                            400 kilómetros</button>
+                    </div>
+                    <div id="feedback-2" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 8. QUIZ 3 -->
+                <div class="slide">
+                    <h2>Cuestionario - Pregunta 3</h2>
+                    <p>Si <strong>2 entradas para el cine</strong> cuestan en total <strong>Q50</strong>...</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuánto costará comprar 7 entradas para toda la familia?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(3, false, this, '', 'Calcula el precio de una sola entrada: Q50 ÷ 2 = Q25.')">A)
+                            Q150.00</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(3, false, this, '', 'Multiplica el precio de 1 entrada (Q25) por las 7 entradas que queremos.')">B)
+                            Q100.00</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(3, true, this, '¡Correcto! Cada entrada vale Q25, por lo tanto 7 entradas cuestan: 7 × 25 = Q175.00.', '')">C)
+                            Q175.00</button>
+                    </div>
+                    <div id="feedback-3" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 9. Final -->
+                <div class="slide">
+                    <div style="font-size: 80px;">🎯</div>
+                    <h2>¡Misión Cumplida!</h2>
+                    <p>¡Eres un maestro aplicando proporciones y resolviendo la regla de tres simple directa!</p>
+                    <button onclick="goToSlide(0)"
+                        style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Volver a jugar</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 9</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const container = document.getElementById('slide-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const slideNum = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+
+        function updateGallery() {
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slides.forEach((slide, index) => slide.classList.toggle('active', index === currentSlide));
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            slideNum.innerText = `${currentSlide + 1} / ${slides.length}`;
+            progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+        }
+
+        function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateGallery(); } }
+        function prevSlide() { if (currentSlide > 0) { currentSlide--; updateGallery(); } }
+        function goToSlide(n) { currentSlide = n; updateGallery(); }
+
+        document.addEventListener('keydown', e => { 
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide(); 
+            if (e.key === 'ArrowLeft') prevSlide(); 
+        });
+
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
+        document.addEventListener('touchend', e => {
+            let touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 40) nextSlide();
+            if (touchEndX > touchStartX + 40) prevSlide();
+        }, false);
+
+        // Quiz Logic
+        function checkQuiz(qId, isCorrect, btn, correctMsg, incorrectMsg) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const containerOpts = btn.parentElement;
+
+            if (isCorrect) {
+                containerOpts.querySelectorAll('.option-btn').forEach(b => {
+                    b.disabled = true;
+                    b.style.opacity = "0.5";
+                });
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                btn.style.background = "#dcfce7";
+                btn.style.borderColor = "#10b981";
+                feedback.innerHTML = `✅ ¡Correcto! ${correctMsg}`;
+                feedback.style.color = "#10b981";
+            } else {
+                btn.style.background = "#fee2e2";
+                btn.style.borderColor = "#dc2626";
+                btn.disabled = true;
+                feedback.innerHTML = `❌ <span>${incorrectMsg}</span> <button onclick="resetQuiz(${qId})" style="margin-left:10px; background:var(--primary-blue-dark); color:white; border:none; padding:4px 10px; border-radius:15px; cursor:pointer; font-size:0.8rem;">Reintentar</button>`;
+                feedback.style.color = "#dc2626";
+            }
+        }
+
+        function resetQuiz(qId) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const containerOpts = feedback.parentElement.querySelector('.quiz-container');
+            containerOpts.querySelectorAll('.option-btn').forEach(b => {
+                b.disabled = false;
+                b.style.opacity = "1";
+                b.style.background = "white";
+                b.style.borderColor = "#e2e8f0";
+            });
+            feedback.innerHTML = "";
+        }
+
+        // Rule of Three Calculator Logic
+        function calcularReglaTres() {
+            const a1 = parseFloat(document.getElementById('val-a1').value);
+            const b1 = parseFloat(document.getElementById('val-b1').value);
+            const a2 = parseFloat(document.getElementById('val-a2').value);
+            const resultEl = document.getElementById('val-x-display');
+            const mathEl = document.getElementById('calc-step-equation');
+
+            if (isNaN(a1) || isNaN(b1) || isNaN(a2) || a1 <= 0 || b1 <= 0 || a2 <= 0) {
+                resultEl.innerText = "?";
+                mathEl.innerText = "Ingresa números válidos y mayores a cero.";
+                return;
+            }
+
+            const x = (b1 * a2) / a1;
+            
+            // Format to 2 decimal places if not integer
+            const xStr = x % 1 === 0 ? x : x.toFixed(2);
+            resultEl.innerText = xStr;
+
+            // Mathematical representation using vertical fractions
+            mathEl.innerHTML = `
+                <span style="color:var(--primary-green); font-weight:bold;">X</span> = 
+                <div class="math-fraction">
+                    <span class="fraction-num">${b1} × ${a2}</span>
+                    <span class="fraction-den">${a1}</span>
+                </div>
+                = 
+                <div class="math-fraction">
+                    <span class="fraction-num">${b1 * a2}</span>
+                    <span class="fraction-den">${a1}</span>
+                </div>
+                = <strong>${xStr}</strong>
+            `;
+        }
+
+        // Initial Calculation
+        calcularReglaTres();
+        updateGallery();
+    </script>
+</body>
+
+</html>

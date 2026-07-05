@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 18: Operaciones con Naturales, Fracciones y Decimales</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 540px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 600px) or (max-width: 960px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 30px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.3rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.4rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.05rem;
+            color: #444;
+            max-width: 750px;
+            line-height: 1.5;
+            margin-bottom: 0.4rem;
+        }
+
+        .info-card {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            background: #f0f8ff;
+            margin: 0.5rem 0;
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.3rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 15px;
+        }
+
+        #next-btn {
+            right: 15px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #888;
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #edf2f7;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+            max-width: 600px;
+            margin: 0.5rem auto;
+        }
+
+        .option-btn {
+            padding: 0.7rem 1.1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        /* Fraction & Mixed CSS */
+        .mixed-num {
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary-blue-dark);
+        }
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 0 4px;
+            font-size: 1rem;
+            line-height: 1;
+        }
+        .num {
+            border-bottom: 2px solid var(--primary-blue-dark);
+            padding-bottom: 2px;
+            font-weight: bold;
+        }
+        .den {
+            padding-top: 2px;
+            font-weight: bold;
+        }
+        .math-equation {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            background: white;
+            border: 2px dashed #94a3b8;
+            padding: 8px 15px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-blue-dark);
+        }
+
+        /* Pizza simulator box */
+        .pizza-box {
+            background: #f1f5f9;
+            border: 2px solid #cbd5e1;
+            border-radius: 16px;
+            padding: 15px;
+            width: 100%;
+            max-width: 650px;
+            margin: 10px 0;
+        }
+        .select-style {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 2px solid #cbd5e1;
+            font-size: 1rem;
+            font-weight: bold;
+            background: white;
+            cursor: pointer;
+        }
+        .action-btn {
+            background: var(--primary-orange);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+        .pizza-visual {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            font-size: 2.2rem;
+            margin: 10px 0;
+            min-height: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 5to Primaria</span>
+            <span>Guía 18: Naturales, Fracciones y Decimales</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                <!-- 1. Portada -->
+                <div class="slide active">
+                    <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">🍕🔢💵</div>
+                    <h1>Naturales, Fracciones y Decimales</h1>
+                    <h2>Lección 18 &bull; 5&deg; Primaria</h2>
+                    <p style="color: #64748b; font-style: italic;">¡Aprende a resolver problemas reales combinando números naturales, fracciones y decimales en tu día a día!</p>
+                </div>
+
+                <!-- 2. Números Naturales en la Vida Diaria -->
+                <div class="slide">
+                    <div style="font-size: 40px; margin-bottom: 5px;">🏫</div>
+                    <h2>Problemas con Números Naturales</h2>
+                    <p>Los números naturales son los que usamos para contar cosas enteras de forma sencilla.</p>
+                    
+                    <div class="info-card" style="text-align: left; background: #eff6ff; border-left: 5px solid #2563eb;">
+                        <span style="font-weight: bold; color: #1e40af; display: block; margin-bottom: 5px;">Ejemplo en el Aula:</span>
+                        <p style="font-size: 0.95rem; color: #1e40af;">En el salón de 5to grado hay 6 filas de escritorios. Si cada fila tiene exactamente 5 escritorios...</p>
+                        <p style="font-weight: bold; font-size: 1.1rem; color: var(--primary-blue-dark); margin-top: 8px;">Operación: 6 × 5 = 30 escritorios en total.</p>
+                    </div>
+                </div>
+
+                <!-- 3. Fracciones en la Vida Diaria -->
+                <div class="slide">
+                    <div style="font-size: 40px; margin-bottom: 5px;">🍕</div>
+                    <h2>Problemas con Fracciones y Mixtos</h2>
+                    <p>Usamos fracciones cuando dividimos un entero en partes iguales. Mira esta situación en una fiesta:</p>
+                    
+                    <div class="info-card" style="text-align: left; background: #f0fdf4; border-left: 5px solid var(--primary-green);">
+                        <span style="font-weight: bold; color: #166534; display: block; margin-bottom: 5px;">Ejemplo: Repartiendo Pizza</span>
+                        <p style="font-size: 0.95rem; color: #166534;">María tiene 
+                            <span class="mixed-num"><span class="integer" style="font-size: 1.1rem;">2</span><div class="fraction" style="font-size: 0.8rem;"><span class="num">1</span><span class="den">2</span></div></span>
+                            pizzas. Decide cortar porciones de 
+                            <span class="mixed-num"><div class="fraction" style="font-size: 0.8rem;"><span class="num">1</span><span class="den">4</span></div></span>
+                            de pizza cada una para sus amigos. ¿Cuántas porciones obtiene?
+                        </p>
+                        
+                        <div class="math-equation" style="margin-top: 10px; display: flex; justify-content: center;">
+                            <span class="mixed-num"><span class="integer">2</span><div class="fraction"><span class="num">1</span><span class="den">2</span></div></span>
+                            <span>÷</span>
+                            <span class="mixed-num"><div class="fraction"><span class="num">1</span><span class="den">4</span></div></span>
+                            <span>=</span>
+                            <span class="mixed-num"><div class="fraction"><span class="num">5</span><span class="den">2</span></div></span>
+                            <span>÷</span>
+                            <span class="mixed-num"><div class="fraction"><span class="num">1</span><span class="den">4</span></div></span>
+                            <span>=</span>
+                            <span class="mixed-num"><div class="fraction"><span class="num">5 × 4</span><span class="den">2 × 1</span></div></span>
+                            <span>=</span>
+                            <span class="mixed-num"><div class="fraction"><span class="num">20</span><span class="den">2</span></div></span>
+                            <span>=</span>
+                            <strong>10 porciones</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Decimales en la Vida Diaria -->
+                <div class="slide">
+                    <div style="font-size: 40px; margin-bottom: 5px;">💵</div>
+                    <h2>Problemas con Decimales</h2>
+                    <p>Los decimales representan partes de un entero y son perfectos para el dinero o medidas de peso precisas.</p>
+                    
+                    <div class="info-card" style="text-align: left; background: #fff7ed; border-left: 5px solid var(--primary-orange);">
+                        <span style="font-weight: bold; color: #c2410c; display: block; margin-bottom: 5px;">Ejemplo en el Supermercado:</span>
+                        <p style="font-size: 0.95rem; color: #c2410c;">Compramos 3.5 libras de manzanas. Si cada libra cuesta Q6.20...</p>
+                        <p style="font-weight: bold; font-size: 1.1rem; color: var(--primary-blue-dark); margin-top: 8px;">Operación: 3.5 × 6.20 = Q21.70 es el costo total.</p>
+                    </div>
+                </div>
+
+                <!-- 5. Cortador de Pizza Interactivo -->
+                <div class="slide">
+                    <h2>Simulador: Cortador de Pizza</h2>
+                    <p>Elige cuánta pizza tienes (número mixto) y de qué tamaño deseas cortar cada porción:</p>
+                    
+                    <div class="pizza-box">
+                        <div style="display: flex; gap: 15px; justify-content: center; align-items: center; margin-bottom: 12px;">
+                            <span>Pizzas:</span>
+                            <select id="pizza-qty" class="select-style">
+                                <option value="1.5">1 y 1/2 pizzas</option>
+                                <option value="2.0">2 pizzas</option>
+                                <option value="2.5">2 y 1/2 pizzas</option>
+                            </select>
+                            
+                            <span>Porciones de:</span>
+                            <select id="portion-size" class="select-style">
+                                <option value="0.5">1/2 pizza</option>
+                                <option value="0.25">1/4 pizza</option>
+                            </select>
+                            
+                            <button onclick="cortarPizza()" class="action-btn">Cortar 🍕</button>
+                        </div>
+                        
+                        <div class="pizza-visual" id="pizza-visual-container">🍕🍕🍕</div>
+                        
+                        <div class="math-equation" id="pizza-math-result" style="width:100%; justify-content:center;">
+                            Hacer clic en Cortar para ver la ecuación fraccionaria.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Tres formas distintas de Fracciones -->
+                <div class="slide">
+                    <h2>Tipos de Fracciones en la Vida Diaria</h2>
+                    <p>Aquí tienes tres ejemplos de cómo aplicamos distintas formas de fracciones:</p>
+                    
+                    <div style="display: flex; gap: 15px; justify-content: center; width: 100%; max-width: 780px; margin-top: 10px;">
+                        <div style="flex: 1; background: #faf5ff; border: 2px solid var(--primary-purple); padding: 12px; border-radius: 12px; text-align: left;">
+                            <span style="font-weight: bold; color: #6b21a8; display: block; margin-bottom: 6px;">1. Fracción Propia</span>
+                            <p style="font-size: 0.9rem; color: #6b21a8;">El numerador es menor. <br>Ejemplo: Usamos 
+                                <span class="mixed-num"><div class="fraction" style="font-size: 0.8rem;"><span class="num">3</span><span class="den">4</span></div></span>
+                                de taza de leche para hacer un panqueque.
+                            </p>
+                        </div>
+                        <div style="flex: 1; background: #eff6ff; border: 2px solid #3b82f6; padding: 12px; border-radius: 12px; text-align: left;">
+                            <span style="font-weight: bold; color: #1e40af; display: block; margin-bottom: 6px;">2. Número Mixto</span>
+                            <p style="font-size: 0.9rem; color: #1e40af;">Combina entero y fracción. <br>Ejemplo: Corremos 
+                                <span class="mixed-num"><span class="integer" style="font-size: 1rem;">1</span><div class="fraction" style="font-size: 0.8rem;"><span class="num">1</span><span class="den">2</span></div></span>
+                                kilómetros en el entrenamiento matutino.
+                            </p>
+                        </div>
+                        <div style="flex: 1; background: #fdf2f8; border: 2px solid #db2777; padding: 12px; border-radius: 12px; text-align: left;">
+                            <span style="font-weight: bold; color: #be185d; display: block; margin-bottom: 6px;">3. Fracción Impropia</span>
+                            <p style="font-size: 0.9rem; color: #be185d;">El numerador es mayor. <br>Ejemplo: Si tenemos 6 trozos de 
+                                <span class="mixed-num"><div class="fraction" style="font-size: 0.8rem;"><span class="num">1</span><span class="den">4</span></div></span>
+                                de pastel, tenemos 
+                                <span class="mixed-num"><div class="fraction" style="font-size: 0.8rem;"><span class="num">6</span><span class="den">4</span></div></span>
+                                de pastel en total.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. QUIZ 1 -->
+                <div class="slide">
+                    <h2>Cuestionario - Pregunta 1</h2>
+                    <p>Un agricultor empaca un total de <strong>180 huevos</strong> en cajas medianas. Si en cada caja caben exactamente 12 huevos...</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuántas cajas llenas de huevos completará en total?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'Divide 180 entre 12.')">A)
+                            12 cajas</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, true, this, '¡Excelente! Realizamos la división: 180 ÷ 12 = 15 cajas completas.', '')">B)
+                            15 cajas</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'Multiplicaste en lugar de dividir.')">C)
+                            2,160 cajas</button>
+                    </div>
+                    <div id="feedback-1" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 8. QUIZ 2 -->
+                <div class="slide">
+                    <h2>Cuestionario - Pregunta 2</h2>
+                    <p>Tenemos 
+                        <span class="mixed-num"><span class="integer" style="font-size:1.1rem;">2</span><div class="fraction" style="font-size:0.8rem;"><span class="num">1</span><span class="den">2</span></div></span>
+                        barras de chocolate y las queremos partir en porciones de 
+                        <span class="mixed-num"><div class="fraction" style="font-size:0.8rem;"><span class="num">1</span><span class="den">2</span></div></span>
+                        barra cada una.
+                    </p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuántas porciones de chocolate obtendremos en total?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, false, this, '', 'Haz la división fraccionaria: (5/2) ÷ (1/2).')">A)
+                            2 porciones</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, false, this, '', 'Recuerda que cada barra entera contiene 2 porciones de 1/2 chocolate.')">B)
+                            4 porciones</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, true, this, '¡Excelente! En 2 barras hay 4 mitades, y con la otra mitad tenemos 5 porciones en total.', '')">C)
+                            5 porciones</button>
+                    </div>
+                    <div id="feedback-2" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 9. QUIZ 3 -->
+                <div class="slide">
+                    <h2>Cuestionario - Pregunta 3</h2>
+                    <p>Un lapicero de gel cuesta exactamente <strong>Q2.50</strong> en la tienda escolar.</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuánto costará comprar 6 de esos mismos lapiceros?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(3, true, this, '¡Excelente! Multiplicamos: 6 × 2.50 = Q15.00 de costo total.', '')">A)
+                            Q15.00</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(3, false, this, '', 'Eso costaría si compraras 5 lapiceros (5 × 2.50 = 12.50).')">B)
+                            Q12.50</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(3, false, this, '', 'Q8.50 es el resultado de sumar 6 + 2.50. Debes multiplicar.')">C)
+                            Q8.50</button>
+                    </div>
+                    <div id="feedback-3" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 10. Final -->
+                <div class="slide">
+                    <div style="font-size: 80px;">🎯</div>
+                    <h2>¡Misión Cumplida!</h2>
+                    <p>¡Has dominado las operaciones con números naturales, fracciones y decimales en problemas diarios!</p>
+                    <button onclick="goToSlide(0)"
+                        style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Volver a jugar</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 10</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const container = document.getElementById('slide-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const slideNum = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+
+        function updateGallery() {
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slides.forEach((slide, index) => slide.classList.toggle('active', index === currentSlide));
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            slideNum.innerText = `${currentSlide + 1} / ${slides.length}`;
+            progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+        }
+
+        function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateGallery(); } }
+        function prevSlide() { if (currentSlide > 0) { currentSlide--; updateGallery(); } }
+        function goToSlide(n) { currentSlide = n; updateGallery(); }
+
+        document.addEventListener('keydown', e => { 
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide(); 
+            if (e.key === 'ArrowLeft') prevSlide(); 
+        });
+
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
+        document.addEventListener('touchend', e => {
+            let touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 40) nextSlide();
+            if (touchEndX > touchStartX + 40) prevSlide();
+        }, false);
+
+        // Quiz Logic
+        function checkQuiz(qId, isCorrect, btn, correctMsg, incorrectMsg) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const containerOpts = btn.parentElement;
+
+            if (isCorrect) {
+                containerOpts.querySelectorAll('.option-btn').forEach(b => {
+                    b.disabled = true;
+                    b.style.opacity = "0.5";
+                });
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                btn.style.background = "#dcfce7";
+                btn.style.borderColor = "#10b981";
+                feedback.innerHTML = `✅ ¡Correcto! ${correctMsg}`;
+                feedback.style.color = "#10b981";
+            } else {
+                btn.style.background = "#fee2e2";
+                btn.style.borderColor = "#dc2626";
+                btn.disabled = true;
+                feedback.innerHTML = `❌ <span>${incorrectMsg}</span> <button onclick="resetQuiz(${qId})" style="margin-left:10px; background:var(--primary-blue-dark); color:white; border:none; padding:4px 10px; border-radius:15px; cursor:pointer; font-size:0.8rem;">Reintentar</button>`;
+                feedback.style.color = "#dc2626";
+            }
+        }
+
+        function resetQuiz(qId) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const containerOpts = feedback.parentElement.querySelector('.quiz-container');
+            containerOpts.querySelectorAll('.option-btn').forEach(b => {
+                b.disabled = false;
+                b.style.opacity = "1";
+                b.style.background = "white";
+                b.style.borderColor = "#e2e8f0";
+            });
+            feedback.innerHTML = "";
+        }
+
+        // Pizza Simulator Logic
+        function cortarPizza() {
+            const qty = parseFloat(document.getElementById('pizza-qty').value);
+            const size = parseFloat(document.getElementById('portion-size').value);
+            const visualEl = document.getElementById('pizza-visual-container');
+            const mathEl = document.getElementById('pizza-math-result');
+
+            // Generate pizza slice emojis
+            const totalPortions = Math.round(qty / size);
+            let slices = "";
+            for (let i = 0; i < totalPortions; i++) {
+                slices += "🍕 ";
+            }
+            visualEl.innerHTML = slices;
+
+            // Mathematical representation
+            let qtyHtml = "";
+            if (qty === 1.5) {
+                qtyHtml = `<span class="mixed-num"><span class="integer">1</span><div class="fraction"><span class="num">1</span><span class="den">2</span></div></span>`;
+            } else if (qty === 2.0) {
+                qtyHtml = `<span class="mixed-num"><span class="integer">2</span></span>`;
+            } else if (qty === 2.5) {
+                qtyHtml = `<span class="mixed-num"><span class="integer">2</span><div class="fraction"><span class="num">1</span><span class="den">2</span></div></span>`;
+            }
+
+            let sizeHtml = "";
+            if (size === 0.5) {
+                sizeHtml = `<span class="mixed-num"><div class="fraction"><span class="num">1</span><span class="den">2</span></div></span>`;
+            } else {
+                sizeHtml = `<span class="mixed-num"><div class="fraction"><span class="num">1</span><span class="den">4</span></div></span>`;
+            }
+
+            // Calculation steps
+            // Write fractions using vertical format
+            const numVal = Math.round(qty * 2);
+            const convFrac = `<span class="mixed-num"><div class="fraction"><span class="num">${numVal}</span><span class="den">2</span></div></span>`;
+            
+            mathEl.innerHTML = `${qtyHtml} ÷ ${sizeHtml} = ${convFrac} ÷ ${sizeHtml} = <strong>${totalPortions} porciones</strong>`;
+        }
+
+        // Initial pizza slice
+        cortarPizza();
+        updateGallery();
+    </script>
+</body>
+
+</html>

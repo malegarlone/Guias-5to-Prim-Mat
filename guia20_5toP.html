@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 20: Interpretación y Cálculos Estadísticos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 540px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 600px) or (max-width: 960px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 30px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.3rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.4rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.05rem;
+            color: #444;
+            max-width: 750px;
+            line-height: 1.5;
+            margin-bottom: 0.4rem;
+        }
+
+        .info-card {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            background: #f0f8ff;
+            margin: 0.5rem 0;
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.3rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 15px;
+        }
+
+        #next-btn {
+            right: 15px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #888;
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #edf2f7;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+            max-width: 600px;
+            margin: 0.5rem auto;
+        }
+
+        .option-btn {
+            padding: 0.7rem 1.1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        /* Fraction CSS */
+        .math-fraction {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            padding: 0 4px;
+        }
+        .fraction-num {
+            border-bottom: 2px solid var(--primary-blue-dark);
+            padding-bottom: 2px;
+            font-weight: bold;
+        }
+        .fraction-den {
+            padding-top: 2px;
+            font-weight: bold;
+        }
+
+        /* Stats visualizer style */
+        .stat-input-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+        .stat-input {
+            width: 55px;
+            padding: 6px;
+            border-radius: 6px;
+            border: 2px solid #cbd5e1;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        .calc-panel {
+            background: #f1f5f9;
+            border: 2px solid #cbd5e1;
+            border-radius: 16px;
+            padding: 15px;
+            width: 100%;
+            max-width: 700px;
+        }
+        .action-btn {
+            background: var(--primary-orange);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: transform 0.2s;
+        }
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+        .results-box {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            justify-content: space-around;
+        }
+        .result-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px;
+            flex: 1;
+            text-align: center;
+        }
+        .result-title {
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--primary-blue-dark);
+            display: block;
+        }
+        .result-val {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary-orange);
+            display: block;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 5to Primaria</span>
+            <span>Guía 20: Interpretación y Cálculos Estadísticos</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                <!-- 1. Portada -->
+                <div class="slide active">
+                    <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">📊📋📈</div>
+                    <h1>Interpretación y Cálculos Estadísticos</h1>
+                    <h2>Lección 20 &bull; 5&deg; Primaria</h2>
+                    <p style="color: #64748b; font-style: italic;">¡Aprende a recolectar datos en tablas, interpretar gráficas y calcular la media, mediana y moda de forma divertida!</p>
+                </div>
+
+                <!-- 2. Recolectar Datos en Tablas -->
+                <div class="slide">
+                    <div style="font-size: 40px; margin-bottom: 5px;">📋</div>
+                    <h2>Recolectar Datos</h2>
+                    <p>La <strong>estadística</strong> inicia recolectando respuestas (datos) sobre gustos, tallas, o puntuaciones, organizándolos en una <strong>tabla de frecuencias</strong>:</p>
+                    
+                    <div class="info-card" style="text-align: left; background: #fffcf2; border: 1.5px dashed #f59e0b; max-width: 580px;">
+                        <h3 style="color: #b45309; margin-bottom: 5px;">Ejemplo: Sabores de Helado Favoritos</h3>
+                        <p style="font-size: 0.95rem; color: #78350f; line-height: 1.5;">Le preguntamos a 10 alumnos de la clase su sabor favorito de helado:</p>
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.9rem;">
+                            <tr style="border-bottom: 1px solid #cbd5e1;">
+                                <td style="padding: 4px;">🍫 Chocolate</td>
+                                <td style="text-align: right; font-weight: bold; color: var(--primary-orange);">5 alumnos (Frecuencia: 5)</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #cbd5e1;">
+                                <td style="padding: 4px;">🍓 Fresa</td>
+                                <td style="text-align: right; font-weight: bold; color: var(--primary-orange);">3 alumnos (Frecuencia: 3)</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 4px;">🍦 Vainilla</td>
+                                <td style="text-align: right; font-weight: bold; color: var(--primary-orange);">2 alumnos (Frecuencia: 2)</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3. Interpretar Tablas y Gráficas -->
+                <div class="slide">
+                    <h2>Interpretar Tablas y Gráficas</h2>
+                    <p>Una vez hecha la tabla, podemos dibujar un <strong>gráfico de barras</strong> o un <strong>pictograma</strong> para ver cuál tiene la barra más alta (el más preferido) o la más baja (el menos preferido).</p>
+                    
+                    <div style="display: flex; gap: 20px; width: 100%; max-width: 750px; margin-top: 15px;">
+                        <div class="info-card" style="flex: 1; background: #f0fdf4; border: 1px solid #bbf7d0; text-align: left;">
+                            <span style="font-weight: bold; color: #166534;">🌟 Valor Máximo o Moda:</span>
+                            <p style="font-size: 0.9rem; color: #166534; margin-top: 5px;">Es el dato con mayor frecuencia (la barra más alta). En el helado, la moda es Chocolate (5 votos).</p>
+                        </div>
+                        <div class="info-card" style="flex: 1; background: #eff6ff; border: 1px solid #bfdbfe; text-align: left;">
+                            <span style="font-weight: bold; color: #1e40af;">➕ Tamaño de la Muestra:</span>
+                            <p style="font-size: 0.9rem; color: #1e40af; margin-top: 5px;">Es la suma de todos los datos recolectados. Para los helados es: 5 + 3 + 2 = 10 alumnos estudiados.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. La Media Aritmética (Promedio) -->
+                <div class="slide">
+                    <h2>La Media Aritmética (Media)</h2>
+                    <p>La <strong>Media</strong> es el valor promedio. Se calcula sumando todos los datos numéricos y dividiendo el resultado entre la cantidad total de datos.</p>
+                    
+                    <div style="display: flex; flex-direction: column; align-items: center; margin-top: 10px;">
+                        <span style="font-size: 0.95rem; font-weight: bold; color: var(--primary-blue-dark); margin-bottom: 5px;">Ejemplo: Edades de 3 hermanos: 6, 8 y 10 años</span>
+                        <div class="math-equation">
+                            <span>Media</span>
+                            <span>=</span>
+                            <div class="math-fraction">
+                                <span class="fraction-num">6 + 8 + 10</span>
+                                <span class="fraction-den">3 hermanos</span>
+                            </div>
+                            <span>=</span>
+                            <div class="math-fraction">
+                                <span class="fraction-num">24</span>
+                                <span class="fraction-den">3</span>
+                            </div>
+                            <span>=</span>
+                            <strong style="color: var(--primary-green); font-size: 1.4rem;">8 años</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. La Mediana y la Moda -->
+                <div class="slide">
+                    <h2>La Mediana y la Moda</h2>
+                    <p>Son dos medidas de centralización muy útiles para entender nuestros datos:</p>
+                    
+                    <div style="display: flex; gap: 20px; justify-content: center; width: 100%; max-width: 750px; margin-top: 15px;">
+                        <div style="flex: 1; background: #faf5ff; border: 2px solid var(--primary-purple); padding: 12px; border-radius: 12px; text-align: left;">
+                            <h3 style="color: #6b21a8;">📌 La Mediana</h3>
+                            <p style="font-size: 0.9rem; color: #475569; margin-top: 5px;">Es el dato que está en <strong>medio</strong> de todos cuando los ordenamos de menor a mayor.</p>
+                            <p style="font-size: 0.85rem; color: #6b21a8; font-weight: bold; margin-top: 8px;">Ej: 3, 5, 8 ➔ La mediana es 5.</p>
+                        </div>
+                        
+                        <div style="flex: 1; background: #fff7ed; border: 2px solid var(--primary-orange); padding: 12px; border-radius: 12px; text-align: left;">
+                            <h3 style="color: #c2410c;">👑 La Moda</h3>
+                            <p style="font-size: 0.9rem; color: #475569; margin-top: 5px;">Es el dato que tiene <strong>mayor frecuencia</strong>; es decir, el que más veces se repite.</p>
+                            <p style="font-size: 0.85rem; color: #c2410c; font-weight: bold; margin-top: 8px;">Ej: 4, 7, 7, 9 ➔ La moda es 7.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Calculadora Estadística Interactiva -->
+                <div class="slide">
+                    <h2>Calculadora de Datos no Agrupados</h2>
+                    <p>Ingresa 5 calificaciones escolares y pulsa "Calcular" para ver de forma visual cómo se hallan la media, mediana y moda:</p>
+                    
+                    <div class="calc-panel">
+                        <div class="stat-input-row">
+                            <input type="number" id="num-1" value="8" min="0" max="10" class="stat-input">
+                            <input type="number" id="num-2" value="9" min="0" max="10" class="stat-input">
+                            <input type="number" id="num-3" value="7" min="0" max="10" class="stat-input">
+                            <input type="number" id="num-4" value="9" min="0" max="10" class="stat-input">
+                            <input type="number" id="num-5" value="10" min="0" max="10" class="stat-input">
+                            <button onclick="calcularEstadistica()" class="action-btn">Calcular ⚡</button>
+                        </div>
+                        
+                        <div style="font-size: 0.9rem; color: #4b5563; margin-bottom: 5px;" id="sorting-steps">
+                            Valores ordenados: 7, 8, 9, 9, 10
+                        </div>
+                        
+                        <div class="results-box">
+                            <div class="result-card">
+                                <span class="result-title">Media (Promedio)</span>
+                                <span class="result-val" id="res-media">8.6</span>
+                            </div>
+                            <div class="result-card" style="border-color: var(--primary-purple);">
+                                <span class="result-title" style="color:var(--primary-purple)">Mediana (Centro)</span>
+                                <span class="result-val" id="res-mediana" style="color:var(--primary-purple)">9</span>
+                            </div>
+                            <div class="result-card" style="border-color: var(--primary-green);">
+                                <span class="result-title" style="color:var(--primary-green)">Moda (Se repite)</span>
+                                <span class="result-val" id="res-moda" style="color:var(--primary-green)">9</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. QUIZ 1 -->
+                <div class="slide">
+                    <h2>Cuestionario - Pregunta 1</h2>
+                    <p>Un pictograma registra las manzanas vendidas. Si cada manzana dibujada 🍎 equivale a 5 manzanas reales...</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">Si en una fila hay 6 manzanas dibujadas (🍎 🍎 🍎 🍎 🍎 🍎), ¿cuántas manzanas se vendieron realmente?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'Recuerda que cada dibujo vale por 5 manzanas. Multiplica 6 por 5.')">A)
+                            6 manzanas</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, true, this, '¡Excelente! Multiplicamos 6 iconos × 5 manzanas/icono = 30 manzanas reales vendidas.', '')">B)
+                            30 manzanas</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'Ese valor sería si multiplicaras por 2, pero la clave es 5.')">C)
+                            12 manzanas</button>
+                    </div>
+                    <div id="feedback-1" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 8. QUIZ 2 -->
+                <div class="slide">
+                    <h2>Cuestionario - Pregunta 2</h2>
+                    <p>Las calificaciones obtenidas por Pedro en sus últimas tres tareas de ciencias son: <strong>8, 9 y 10</strong>.</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuál es la media aritmética (promedio) de sus notas?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, false, this, '', 'Suma las notas (8+9+10 = 27) y luego divídelo entre 3 tareas.')">A)
+                            27</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, true, this, '¡Excelente! Sumamos 8+9+10 = 27, y 27 ÷ 3 = 9 de media.', '')">B)
+                            9</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, false, this, '', '8 es la nota más baja, no el promedio.')">C)
+                            8</button>
+                    </div>
+                    <div id="feedback-2" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 9. QUIZ 3 -->
+                <div class="slide">
+                    <h2>Cuestionario - Pregunta 3</h2>
+                    <p>Se recolecta el número de goles de un equipo en 5 partidos: <strong>2, 1, 3, 2, 4</strong>.</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">Al ordenar los datos de menor a mayor (1, 2, 2, 3, 4), ¿cuál es la mediana?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(3, false, this, '', 'La mediana es el número que queda exactamente en medio cuando están ordenados.')">A)
+                            3</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(3, false, this, '', 'Ese es el total de partidos, no la mediana.')">B)
+                            5</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(3, true, this, '¡Correcto! El número que se ubica exactamente en la posición central es el 2.', '')">C)
+                            2</button>
+                    </div>
+                    <div id="feedback-3" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 10. Final -->
+                <div class="slide">
+                    <div style="font-size: 80px;">🎯</div>
+                    <h2>¡Misión Cumplida!</h2>
+                    <p>¡Eres un experto recolectando datos, interpretando gráficas y calculando la media, mediana y moda!</p>
+                    <button onclick="goToSlide(0)"
+                        style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Volver a jugar</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 10</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const container = document.getElementById('slide-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const slideNum = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+
+        function updateGallery() {
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slides.forEach((slide, index) => slide.classList.toggle('active', index === currentSlide));
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            slideNum.innerText = `${currentSlide + 1} / ${slides.length}`;
+            progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+        }
+
+        function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateGallery(); } }
+        function prevSlide() { if (currentSlide > 0) { currentSlide--; updateGallery(); } }
+        function goToSlide(n) { currentSlide = n; updateGallery(); }
+
+        document.addEventListener('keydown', e => { 
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide(); 
+            if (e.key === 'ArrowLeft') prevSlide(); 
+        });
+
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
+        document.addEventListener('touchend', e => {
+            let touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 40) nextSlide();
+            if (touchEndX > touchStartX + 40) prevSlide();
+        }, false);
+
+        // Quiz Logic
+        function checkQuiz(qId, isCorrect, btn, correctMsg, incorrectMsg) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const containerOpts = btn.parentElement;
+
+            if (isCorrect) {
+                containerOpts.querySelectorAll('.option-btn').forEach(b => {
+                    b.disabled = true;
+                    b.style.opacity = "0.5";
+                });
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                btn.style.background = "#dcfce7";
+                btn.style.borderColor = "#10b981";
+                feedback.innerHTML = `✅ ¡Correcto! ${correctMsg}`;
+                feedback.style.color = "#10b981";
+            } else {
+                btn.style.background = "#fee2e2";
+                btn.style.borderColor = "#dc2626";
+                btn.disabled = true;
+                feedback.innerHTML = `❌ <span>${incorrectMsg}</span> <button onclick="resetQuiz(${qId})" style="margin-left:10px; background:var(--primary-blue-dark); color:white; border:none; padding:4px 10px; border-radius:15px; cursor:pointer; font-size:0.8rem;">Reintentar</button>`;
+                feedback.style.color = "#dc2626";
+            }
+        }
+
+        function resetQuiz(qId) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const containerOpts = feedback.parentElement.querySelector('.quiz-container');
+            containerOpts.querySelectorAll('.option-btn').forEach(b => {
+                b.disabled = false;
+                b.style.opacity = "1";
+                b.style.background = "white";
+                b.style.borderColor = "#e2e8f0";
+            });
+            feedback.innerHTML = "";
+        }
+
+        // Statistical Calculation Logic
+        function calcularEstadistica() {
+            const n1 = parseFloat(document.getElementById('num-1').value);
+            const n2 = parseFloat(document.getElementById('num-2').value);
+            const n3 = parseFloat(document.getElementById('num-3').value);
+            const n4 = parseFloat(document.getElementById('num-4').value);
+            const n5 = parseFloat(document.getElementById('num-5').value);
+
+            if (isNaN(n1) || isNaN(n2) || isNaN(n3) || isNaN(n4) || isNaN(n5)) {
+                alert("Por favor, ingresa los 5 números.");
+                return;
+            }
+
+            const arr = [n1, n2, n3, n4, n5];
+            
+            // Sum and Mean
+            const sum = arr.reduce((acc, curr) => acc + curr, 0);
+            const media = sum / 5;
+            document.getElementById('res-media').innerText = media % 1 === 0 ? media : media.toFixed(1);
+
+            // Mediana
+            const sorted = [...arr].sort((a, b) => a - b);
+            document.getElementById('sorting-steps').innerText = `Valores ordenados de menor a mayor: ${sorted.join(', ')}`;
+            
+            const mediana = sorted[2]; // The 3rd item (index 2) in a sorted array of 5 elements is the median
+            document.getElementById('res-mediana').innerText = mediana;
+
+            // Moda
+            const freqs = {};
+            let maxFreq = 0;
+            let moda = "Ninguna";
+            
+            arr.forEach(num => {
+                freqs[num] = (freqs[num] || 0) + 1;
+                if (freqs[num] > maxFreq) {
+                    maxFreq = freqs[num];
+                }
+            });
+
+            // Find elements with maxFreq (only if it repeats, i.e., maxFreq > 1)
+            if (maxFreq > 1) {
+                const modas = [];
+                for (const key in freqs) {
+                    if (freqs[key] === maxFreq) {
+                        modas.push(key);
+                    }
+                }
+                moda = modas.join(', ');
+            }
+            
+            document.getElementById('res-moda').innerText = moda;
+        }
+
+        // Initial calculate
+        calcularEstadistica();
+        updateGallery();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 17: Proporcionalidad, Porcentajes y Regla de Tres</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 540px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 600px) or (max-width: 960px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 30px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.3rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.4rem;
+        }
+
+        p {
+            font-size: 1.05rem;
+            color: #444;
+            max-width: 750px;
+            line-height: 1.5;
+            margin-bottom: 0.4rem;
+        }
+
+        .info-card {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            background: #f0f8ff;
+            margin: 0.5rem 0;
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.3rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 15px;
+        }
+
+        #next-btn {
+            right: 15px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #888;
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #edf2f7;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+            max-width: 600px;
+            margin: 0.5rem auto;
+        }
+
+        .option-btn {
+            padding: 0.7rem 1.1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        /* Proportional Table style */
+        .prop-table {
+            border-collapse: collapse;
+            width: 80%;
+            max-width: 450px;
+            margin: 10px 0;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .prop-table th, .prop-table td {
+            border: 1px solid #cbd5e1;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .prop-table th {
+            background-color: var(--primary-blue-dark);
+            color: white;
+        }
+        .highlight-col-a {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+        }
+        .highlight-col-b {
+            background-color: #fff7ed;
+            color: #c2410c;
+        }
+        .step-display {
+            font-size: 1.1rem;
+            padding: 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            min-height: 48px;
+            width: 100%;
+            max-width: 600px;
+            margin-top: 10px;
+        }
+
+        /* Fraction CSS */
+        .math-fraction {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            padding: 0 4px;
+            font-size: 1.1rem;
+        }
+        .fraction-num {
+            border-bottom: 2px solid var(--primary-blue-dark);
+            padding-bottom: 2px;
+            font-weight: bold;
+        }
+        .fraction-den {
+            padding-top: 2px;
+            font-weight: bold;
+        }
+
+        .math-equation {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            background: white;
+            border: 2px dashed #94a3b8;
+            padding: 8px 15px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary-blue-dark);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 5to Primaria</span>
+            <span>Guía 17: Proporcionalidad y Regla de Tres</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                <!-- 1. Portada -->
+                <div class="slide active">
+                    <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">🤝📈⚖️</div>
+                    <h1>Proporcionalidad y Regla de Tres</h1>
+                    <h2>Lección 17 &bull; 5&deg; Primaria</h2>
+                    <p style="color: #64748b; font-style: italic;">¡Aprende a razonar proporcionalmente, calcular porcentajes y resolver problemas con la regla de tres simple directa!</p>
+                </div>
+
+                <!-- 2. ¿Qué es una proporción? -->
+                <div class="slide">
+                    <div style="font-size: 50px; margin-bottom: 5px;">🧐</div>
+                    <h2>¿Qué es una Proporción?</h2>
+                    <p>Una <strong>razón</strong> es la comparación de dos números mediante una división (ej. 2 de cada 3).</p>
+                    <p>Una <strong>proporción</strong> es simplemente la igualdad entre dos razones. Significa que ambas relaciones crecen o disminuyen de la misma manera.</p>
+                    <div class="info-card">
+                        <p style="font-size: 1.1rem; color: var(--primary-blue-dark); font-weight: bold;">La Regla Fundamental</p>
+                        <p style="font-size: 0.95rem; color: #475569; margin-top: 5px;">Si una cantidad aumenta al doble, la otra cantidad también debe aumentar al doble para mantener la proporción.</p>
+                    </div>
+                </div>
+
+                <!-- 3. Tres Ejemplos en la Vida Real -->
+                <div class="slide">
+                    <h2>Proporciones en la Vida Real</h2>
+                    <p>Las proporciones están a nuestro alrededor. Mira estos tres ejemplos prácticos:</p>
+                    
+                    <div style="display: flex; gap: 15px; justify-content: center; width: 100%; max-width: 780px; margin-top: 10px;">
+                        <div style="flex: 1; background: #f0fdf4; border: 2px solid var(--primary-green); padding: 12px; border-radius: 12px; text-align: left;">
+                            <span style="font-size: 1.6rem;">🥞 Receta de Cocina</span>
+                            <p style="font-size: 0.9rem; color: #166534; margin-top: 8px;">Para hacer 4 hotcakes usamos 1 taza de harina. Si queremos hacer 8 hotcakes (el doble), necesitaremos 2 tazas de harina (el doble).</p>
+                        </div>
+                        <div style="flex: 1; background: #eff6ff; border: 2px solid #3b82f6; padding: 12px; border-radius: 12px; text-align: left;">
+                            <span style="font-size: 1.6rem;">📓 Cuadernos Escolares</span>
+                            <p style="font-size: 0.9rem; color: #1e40af; margin-top: 8px;">Si 1 cuaderno cuesta Q10, entonces comprar 3 cuadernos (el triple de cantidad) nos costará Q30 (el triple de dinero).</p>
+                        </div>
+                        <div style="flex: 1; background: #fff7ed; border: 2px solid var(--primary-orange); padding: 12px; border-radius: 12px; text-align: left;">
+                            <span style="font-size: 1.6rem;">🚲 Paseo en Bicicleta</span>
+                            <p style="font-size: 0.9rem; color: #c2410c; margin-top: 8px;">Si viajas a una velocidad constante y recorres 15 km en 1 hora, en un tiempo de 2 horas habrás recorrido 30 km.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Tabla de Proporciones Interactiva -->
+                <div class="slide">
+                    <h2>La Tabla de Proporcionalidad</h2>
+                    <p>Observa la relación entre balones de fútbol comprados y su costo total. Haz clic en las filas para ver cómo se mantiene la proporción usando colores:</p>
+                    
+                    <table class="prop-table">
+                        <thead>
+                            <tr>
+                                <th>Balones (Cantidad)</th>
+                                <th>Costo (Quetzales)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr onclick="mostrarFila(1, 1, 60)" style="cursor:pointer;" id="fila-1">
+                                <td class="highlight-col-a">1</td>
+                                <td class="highlight-col-b">Q60</td>
+                            </tr>
+                            <tr onclick="mostrarFila(2, 2, 120)" style="cursor:pointer;" id="fila-2">
+                                <td class="highlight-col-a">2</td>
+                                <td class="highlight-col-b">Q120</td>
+                            </tr>
+                            <tr onclick="mostrarFila(3, 3, 180)" style="cursor:pointer;" id="fila-3">
+                                <td class="highlight-col-a">3</td>
+                                <td class="highlight-col-b">Q180</td>
+                            </tr>
+                            <tr onclick="mostrarFila(4, 4, 240)" style="cursor:pointer;" id="fila-4">
+                                <td class="highlight-col-a">4</td>
+                                <td class="highlight-col-b">Q240</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="step-display" id="prop-message">
+                        Haz clic en cualquier fila para ver el análisis de proporcionalidad.
+                    </div>
+                </div>
+
+                <!-- 5. Porcentajes (Relación sobre 100) -->
+                <div class="slide">
+                    <div style="font-size: 50px; margin-bottom: 5px;">🏷️</div>
+                    <h2>Porcentajes: ¿Qué significan?</h2>
+                    <p>Un <strong>porcentaje (%)</strong> es una razón que compara una cantidad con un total de 100 partes. Significa "por cada 100".</p>
+                    
+                    <div style="display: flex; gap: 20px; justify-content: center; width: 100%; max-width: 700px; margin-top: 15px;">
+                        <div class="info-card" style="background: #faf5ff; border: 1.5px solid var(--primary-purple); flex: 1;">
+                            <h3 style="color: #6b21a8;">El 20% de Descuento</h3>
+                            <p style="font-size: 0.95rem; color: #6b21a8; margin-top: 8px; text-align: left;">Si compras un balón de fútbol de <strong>Q100</strong> con un <strong>20%</strong> de descuento, te descuentan <strong>Q20</strong> (20 de cada 100). ¡Pagas solo Q80!</p>
+                        </div>
+                        <div class="info-card" style="background: #f0fdf4; border: 1.5px solid var(--primary-green); flex: 1;">
+                            <h3 style="color: #15803d;">Cálculo rápido</h3>
+                            <p style="font-size: 0.95rem; color: #15803d; margin-top: 8px; text-align: left;">Para calcular el 15% de Q300:<br>Multiplicas la cantidad por la fracción: <br>300 × (15/100) = 3 × 15 = <strong>Q45</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Regla de Tres Simple Directa -->
+                <div class="slide">
+                    <h2>La Regla de Tres Simple Directa</h2>
+                    <p>Cuando tenemos una proporción y nos falta un valor, la regla de tres directa nos ayuda a encontrarlo usando una ecuación cruzada:</p>
+                    
+                    <div style="display: flex; gap: 20px; align-items: center; justify-content: center; width: 100%; max-width: 700px; margin-top: 10px;">
+                        <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; width: 220px;">
+                            Si <span style="color: #1d4ed8;">A</span> ➔ <span style="color: #c2410c;">B</span><br>
+                            entonces <span style="color: #1d4ed8;">C</span> ➔ <span style="color: var(--primary-green);">X</span>
+                        </div>
+                        <div style="font-size: 1.8rem; color: #94a3b8;">➔</div>
+                        <div class="math-equation">
+                            <span style="color: var(--primary-green); font-weight: bold;">X</span>
+                            <span>=</span>
+                            <div class="math-fraction">
+                                <span class="fraction-num"><span style="color: #c2410c;">B</span> × <span style="color: #1d4ed8;">C</span></span>
+                                <span class="fraction-den"><span style="color: #1d4ed8;">A</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card" style="margin-top: 15px; padding: 8px 15px; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;">
+                        Regla: Multiplicamos los dos datos cruzados y dividimos entre el dato que se encuentra al lado.
+                    </div>
+                </div>
+
+                <!-- 7. QUIZ 1 -->
+                <div class="slide">
+                    <h2>Cuestionario - Pregunta 1</h2>
+                    <p>Para hacer 6 panes se necesitan 3 tazas de harina. Si queremos hacer 12 panes...</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuántas tazas de harina necesitamos para mantener la proporción?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'Si los panes aumentan al doble (de 6 a 12), la harina también debe aumentar al doble.')">A)
+                            3 tazas</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, true, this, '¡Excelente! Como 12 es el doble de 6, multiplicamos 3 tazas × 2 = 6 tazas de harina.', '')">B)
+                            6 tazas</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(1, false, this, '', 'Eso sería si la relación fuera inversa, pero la harina y los panes son proporciones directas.')">C)
+                            9 tazas</button>
+                    </div>
+                    <div id="feedback-1" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 8. QUIZ 2 -->
+                <div class="slide">
+                    <h2>Cuestionario - Pregunta 2</h2>
+                    <p>Si 4 lápices iguales cuestan Q12 en la librería...</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuánto costará comprar 10 de esos mismos lápices usando la Regla de Tres Directa?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, false, this, '', 'Haz el cálculo cruzado: (12 × 10) y luego divídelo entre 4.')">A)
+                            Q120</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, false, this, '', 'El costo total debe ser mayor a Q12, pero menor a Q120.')">B)
+                            Q24</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(2, true, this, '¡Correcto! Ecuación: (10 × 12) ÷ 4 = 120 ÷ 4 = Q30.', '')">C)
+                            Q30</button>
+                    </div>
+                    <div id="feedback-2" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 9. QUIZ 3 -->
+                <div class="slide">
+                    <h2>Cuestionario - Pregunta 3</h2>
+                    <p>Un suéter de lana que cuesta Q200 tiene un 15% de descuento en la tienda.</p>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿De cuántos quetzales es el descuento que se aplicará?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn"
+                            onclick="checkQuiz(3, true, this, '¡Perfecto! Como 15% es 15 de cada 100, para Q200 es el doble: 15 × 2 = Q30.', '')">A)
+                            Q30</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(3, false, this, '', 'Recuerda que el descuento es del 15% por cada 100 quetzales.')">B)
+                            Q15</button>
+                        <button class="option-btn"
+                            onclick="checkQuiz(3, false, this, '', 'Q150 es lo que pagarías por el suéter, no la cantidad descontada.')">C)
+                            Q150</button>
+                    </div>
+                    <div id="feedback-3" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 10. Final -->
+                <div class="slide">
+                    <div style="font-size: 80px;">🎯</div>
+                    <h2>¡Misión Cumplida!</h2>
+                    <p>¡Eres un experto dominando razones, proporciones y porcentajes!</p>
+                    <button onclick="goToSlide(0)"
+                        style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Volver a jugar</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 10</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const container = document.getElementById('slide-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const slideNum = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+
+        function updateGallery() {
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slides.forEach((slide, index) => slide.classList.toggle('active', index === currentSlide));
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            slideNum.innerText = `${currentSlide + 1} / ${slides.length}`;
+            progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+        }
+
+        function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateGallery(); } }
+        function prevSlide() { if (currentSlide > 0) { currentSlide--; updateGallery(); } }
+        function goToSlide(n) { currentSlide = n; updateGallery(); }
+
+        document.addEventListener('keydown', e => { 
+            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide(); 
+            if (e.key === 'ArrowLeft') prevSlide(); 
+        });
+
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
+        document.addEventListener('touchend', e => {
+            let touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 40) nextSlide();
+            if (touchEndX > touchStartX + 40) prevSlide();
+        }, false);
+
+        // Quiz Logic
+        function checkQuiz(qId, isCorrect, btn, correctMsg, incorrectMsg) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const containerOpts = btn.parentElement;
+
+            if (isCorrect) {
+                containerOpts.querySelectorAll('.option-btn').forEach(b => {
+                    b.disabled = true;
+                    b.style.opacity = "0.5";
+                });
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                btn.style.background = "#dcfce7";
+                btn.style.borderColor = "#10b981";
+                feedback.innerHTML = `✅ ¡Correcto! ${correctMsg}`;
+                feedback.style.color = "#10b981";
+            } else {
+                btn.style.background = "#fee2e2";
+                btn.style.borderColor = "#dc2626";
+                btn.disabled = true;
+                feedback.innerHTML = `❌ <span>${incorrectMsg}</span> <button onclick="resetQuiz(${qId})" style="margin-left:10px; background:var(--primary-blue-dark); color:white; border:none; padding:4px 10px; border-radius:15px; cursor:pointer; font-size:0.8rem;">Reintentar</button>`;
+                feedback.style.color = "#dc2626";
+            }
+        }
+
+        function resetQuiz(qId) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const containerOpts = feedback.parentElement.querySelector('.quiz-container');
+            containerOpts.querySelectorAll('.option-btn').forEach(b => {
+                b.disabled = false;
+                b.style.opacity = "1";
+                b.style.background = "white";
+                b.style.borderColor = "#e2e8f0";
+            });
+            feedback.innerHTML = "";
+        }
+
+        // Table Interactive logic
+        function mostrarFila(index, qty, cost) {
+            // Remove selection border/highlight from all rows
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`fila-${i}`).style.outline = "none";
+            }
+            
+            // Highlight selected row
+            const selectedRow = document.getElementById(`fila-${index}`);
+            selectedRow.style.outline = "2px solid var(--primary-orange)";
+            
+            // Generate message with color formatting matching headers
+            const msgEl = document.getElementById('prop-message');
+            msgEl.innerHTML = `Para <strong style="color: #1d4ed8;">${qty}</strong> balón(es), el costo es <strong style="color: #c2410c;">Q${cost}</strong>. Relación constante: <span class="math-fraction"><span class="fraction-num">Q${cost}</span><span class="fraction-den">${qty} balones</span></span> = <strong>Q60 por balón</strong>.`;
+        }
+
+        updateGallery();
+    </script>
+</body>
+
+</html>
