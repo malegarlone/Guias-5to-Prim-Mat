@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 16: Producto de Matrices - 5to Bachillerato</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary-blue: #1e3a8a;
+            --primary-gold: #b45309;
+            --primary-teal: #0f766e;
+            --primary-slate: #334155;
+            --accent-red: #be123c;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #cbd5e1;
+            color: #0f172a;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 1024px;
+            height: 600px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-slate);
+            color: white;
+            padding: 0 1.5rem;
+            height: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+            font-weight: 500;
+            z-index: 200;
+            letter-spacing: 0.5px;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 650px) or (max-width: 1024px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 30px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.8rem;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.1rem;
+            color: var(--primary-teal);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            border-bottom: 2px solid var(--bg-light);
+            padding-bottom: 5px;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: #334155;
+            max-width: 850px;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .info-card {
+            padding: 1.5rem;
+            border-radius: 8px;
+            background: #f1f5f9;
+            margin: 1rem 0;
+            width: 100%;
+            max-width: 800px;
+            text-align: left;
+            border-left: 5px solid var(--primary-blue);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .math-block {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-size: 1.4rem;
+            margin: 15px 0;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #e2e8f0;
+            color: var(--primary-slate);
+            font-size: 1.5rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            background-color: #f8fafc;
+            color: var(--primary-blue);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 20px;
+        }
+
+        #next-btn {
+            right: 20px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            padding: 0;
+            bottom: 2rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: #64748b;
+            z-index: 100;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 6px;
+            background: var(--primary-gold);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            width: 100%;
+            max-width: 650px;
+            margin: 1rem auto;
+        }
+
+        .option-btn {
+            padding: 1rem 1.5rem;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            color: var(--primary-slate);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-blue);
+            background: #f0f9ff;
+        }
+        
+        .flex-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .highlight-row { background-color: rgba(30, 58, 138, 0.1); border-radius: 4px; }
+        .highlight-col { background-color: rgba(15, 118, 110, 0.1); border-radius: 4px; }
+
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 5to Bachillerato</span>
+            <span>Lección 16: Producto Matricial</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                
+                <!-- 1. Portada -->
+                <div class="slide active">
+                    <div style="font-size: 4rem; margin-bottom: 20px; color: var(--primary-blue);">✖️🧮</div>
+                    <h1>El Producto de Matrices</h1>
+                    <h2>El "Corazón" del Álgebra Lineal</h2>
+                    <p style="text-align: center; color: #64748b; font-size: 1.2rem;">Multiplicar matrices no es multiplicar celda por celda. Es una coreografía exacta entre filas y columnas.</p>
+                </div>
+
+                <!-- 2. La Condición -->
+                <div class="slide">
+                    <h2>¿Se pueden multiplicar?</h2>
+                    <p>Antes de hacer cualquier cálculo, debes verificar las dimensiones. La regla estricta para multiplicar \( A \times B \) es:</p>
+                    
+                    <div class="info-card" style="border-color: var(--accent-red); background: #fff1f2; text-align: center;">
+                        <p style="font-weight: bold; font-size: 1.2rem; margin:0; color: var(--accent-red);">El número de COLUMNAS de A debe ser igual al número de FILAS de B.</p>
+                    </div>
+                    
+                    <div class="math-block" style="border-color: var(--primary-slate); font-family: 'Inter', sans-serif; font-size: 1.2rem; padding: 20px;">
+                        \( A \) (<span style="color:var(--primary-blue);">Filas</span> &times; <strong style="color:var(--accent-red); font-size: 1.5rem;">Col</strong>) &nbsp;&nbsp;&times;&nbsp;&nbsp; \( B \) (<strong style="color:var(--accent-red); font-size: 1.5rem;">Filas</strong> &times; <span style="color:var(--primary-teal);">Col</span>)
+                    </div>
+                    <p style="margin-top: 10px;">¡Los números internos deben chocar y ser iguales!</p>
+                </div>
+
+                <!-- 3. Dimensión de Respuesta -->
+                <div class="slide">
+                    <h2>La Dimensión del Resultado</h2>
+                    <p>Si la multiplicación es posible (los números internos coinciden), ¿de qué tamaño será la matriz respuesta \( C \)?</p>
+                    
+                    <div class="math-block" style="border-color: var(--primary-gold); font-family: 'Inter', sans-serif; font-size: 1.2rem;">
+                        Matriz A <strong style="font-size:1.6rem;">(2 &times; 3)</strong> &nbsp;&times;&nbsp; Matriz B <strong style="font-size:1.6rem;">(3 &times; 4)</strong><br><br>
+                        Los 3 internos coinciden. ¡Sí se puede!<br><br>
+                        El resultado tomará los números externos: <strong style="color:var(--primary-gold); font-size:1.6rem;">(2 &times; 4)</strong>
+                    </div>
+                    
+                    <p style="max-width: 600px; margin-top: 15px;">La matriz resultado \( C \) tendrá las <span style="color:var(--primary-blue); font-weight:bold;">Filas de A</span> y las <span style="color:var(--primary-teal); font-weight:bold;">Columnas de B</span>.</p>
+                </div>
+
+                <!-- 4. Regla Fila x Columna -->
+                <div class="slide">
+                    <h2>La Coreografía: Fila por Columna</h2>
+                    <p>Para encontrar el número en la posición \( c_{11} \) del resultado, tomas <strong>toda la Fila 1</strong> de la primera matriz y la multiplicas por <strong>toda la Columna 1</strong> de la segunda matriz.</p>
+                    
+                    <div class="info-card" style="border-color: var(--primary-teal); background: #f0fdfa;">
+                        <p style="text-align: center; margin-bottom: 10px; font-weight: bold;">Procedimiento del Producto Punto:</p>
+                        <ol style="margin-left: 30px; line-height: 1.8;">
+                            <li>Multiplicas el 1er número de la fila por el 1er número de la columna.</li>
+                            <li>Multiplicas el 2do número de la fila por el 2do número de la columna.</li>
+                            <li><strong>Sumas esos dos resultados.</strong> Ese número único es tu respuesta para esa celda.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- 5. Planteamiento del Ejemplo -->
+                <div class="slide">
+                    <h2>Ejemplo Detallado (2x2 &times; 2x2)</h2>
+                    <p>Vamos a multiplicar la Matriz A por la Matriz B. Como ambas son \( 2 \times 2 \), el resultado será \( 2 \times 2 \).</p>
+                    
+                    <div class="flex-container">
+                        <div class="math-block" style="border-color: var(--primary-blue);">
+                            \( A = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix} \)
+                        </div>
+                        <div style="font-size: 2rem; font-weight: bold;">&times;</div>
+                        <div class="math-block" style="border-color: var(--primary-teal);">
+                            \( B = \begin{bmatrix} 5 & 6 \\ 7 & 8 \end{bmatrix} \)
+                        </div>
+                    </div>
+                    
+                    <p style="margin-top: 20px; font-size: 1.2rem;">En las siguientes diapositivas, calcularemos cada una de las 4 celdas del resultado paso a paso.</p>
+                </div>
+
+                <!-- 6. Paso 1: c11 -->
+                <div class="slide">
+                    <h2>Calculando \( c_{11} \) (Fila 1 &times; Columna 1)</h2>
+                    <p>Tomamos la <span style="color:var(--primary-blue); font-weight:bold;">Fila 1</span> de A y la multiplicamos por la <span style="color:var(--primary-teal); font-weight:bold;">Columna 1</span> de B.</p>
+                    
+                    <div class="flex-container">
+                        <div class="math-block" style="border:none; background: transparent;">
+                            \( \begin{bmatrix} \mathbf{\color{var(--primary-blue)}{1}} & \mathbf{\color{var(--primary-blue)}{2}} \\ 3 & 4 \end{bmatrix} \)
+                        </div>
+                        <div style="font-size: 2rem; font-weight: bold;">&times;</div>
+                        <div class="math-block" style="border:none; background: transparent;">
+                            \( \begin{bmatrix} \mathbf{\color{var(--primary-teal)}{5}} & 6 \\ \mathbf{\color{var(--primary-teal)}{7}} & 8 \end{bmatrix} \)
+                        </div>
+                    </div>
+                    
+                    <div class="info-card" style="text-align: center; font-size: 1.4rem;">
+                        <p style="font-family: 'Cambria Math', serif;">\( c_{11} = (1 \times 5) + (2 \times 7) \)</p>
+                        <p style="font-family: 'Cambria Math', serif; margin-top: 10px;">\( c_{11} = 5 + 14 \)</p>
+                        <p style="font-family: 'Cambria Math', serif; margin-top: 10px; color: var(--accent-red); font-weight: bold;">\( c_{11} = 19 \)</p>
+                    </div>
+                </div>
+
+                <!-- 7. Paso 2: c12 -->
+                <div class="slide">
+                    <h2>Calculando \( c_{12} \) (Fila 1 &times; Columna 2)</h2>
+                    <p>Mantenemos la <span style="color:var(--primary-blue); font-weight:bold;">Fila 1</span> de A, pero ahora la multiplicamos por la <span style="color:var(--primary-teal); font-weight:bold;">Columna 2</span> de B.</p>
+                    
+                    <div class="flex-container">
+                        <div class="math-block" style="border:none; background: transparent;">
+                            \( \begin{bmatrix} \mathbf{\color{var(--primary-blue)}{1}} & \mathbf{\color{var(--primary-blue)}{2}} \\ 3 & 4 \end{bmatrix} \)
+                        </div>
+                        <div style="font-size: 2rem; font-weight: bold;">&times;</div>
+                        <div class="math-block" style="border:none; background: transparent;">
+                            \( \begin{bmatrix} 5 & \mathbf{\color{var(--primary-teal)}{6}} \\ 7 & \mathbf{\color{var(--primary-teal)}{8}} \end{bmatrix} \)
+                        </div>
+                    </div>
+                    
+                    <div class="info-card" style="text-align: center; font-size: 1.4rem;">
+                        <p style="font-family: 'Cambria Math', serif;">\( c_{12} = (1 \times 6) + (2 \times 8) \)</p>
+                        <p style="font-family: 'Cambria Math', serif; margin-top: 10px;">\( c_{12} = 6 + 16 \)</p>
+                        <p style="font-family: 'Cambria Math', serif; margin-top: 10px; color: var(--accent-red); font-weight: bold;">\( c_{12} = 22 \)</p>
+                    </div>
+                </div>
+
+                <!-- 8. Paso 3: c21 -->
+                <div class="slide">
+                    <h2>Calculando \( c_{21} \) (Fila 2 &times; Columna 1)</h2>
+                    <p>Bajamos a la <span style="color:var(--primary-blue); font-weight:bold;">Fila 2</span> de A, y la multiplicamos por la <span style="color:var(--primary-teal); font-weight:bold;">Columna 1</span> de B.</p>
+                    
+                    <div class="flex-container">
+                        <div class="math-block" style="border:none; background: transparent;">
+                            \( \begin{bmatrix} 1 & 2 \\ \mathbf{\color{var(--primary-blue)}{3}} & \mathbf{\color{var(--primary-blue)}{4}} \end{bmatrix} \)
+                        </div>
+                        <div style="font-size: 2rem; font-weight: bold;">&times;</div>
+                        <div class="math-block" style="border:none; background: transparent;">
+                            \( \begin{bmatrix} \mathbf{\color{var(--primary-teal)}{5}} & 6 \\ \mathbf{\color{var(--primary-teal)}{7}} & 8 \end{bmatrix} \)
+                        </div>
+                    </div>
+                    
+                    <div class="info-card" style="text-align: center; font-size: 1.4rem;">
+                        <p style="font-family: 'Cambria Math', serif;">\( c_{21} = (3 \times 5) + (4 \times 7) \)</p>
+                        <p style="font-family: 'Cambria Math', serif; margin-top: 10px;">\( c_{21} = 15 + 28 \)</p>
+                        <p style="font-family: 'Cambria Math', serif; margin-top: 10px; color: var(--accent-red); font-weight: bold;">\( c_{21} = 43 \)</p>
+                    </div>
+                </div>
+
+                <!-- 9. Paso 4: c22 -->
+                <div class="slide">
+                    <h2>Calculando \( c_{22} \) (Fila 2 &times; Columna 2)</h2>
+                    <p>Finalmente, la <span style="color:var(--primary-blue); font-weight:bold;">Fila 2</span> de A por la <span style="color:var(--primary-teal); font-weight:bold;">Columna 2</span> de B.</p>
+                    
+                    <div class="flex-container">
+                        <div class="math-block" style="border:none; background: transparent;">
+                            \( \begin{bmatrix} 1 & 2 \\ \mathbf{\color{var(--primary-blue)}{3}} & \mathbf{\color{var(--primary-blue)}{4}} \end{bmatrix} \)
+                        </div>
+                        <div style="font-size: 2rem; font-weight: bold;">&times;</div>
+                        <div class="math-block" style="border:none; background: transparent;">
+                            \( \begin{bmatrix} 5 & \mathbf{\color{var(--primary-teal)}{6}} \\ 7 & \mathbf{\color{var(--primary-teal)}{8}} \end{bmatrix} \)
+                        </div>
+                    </div>
+                    
+                    <div class="info-card" style="text-align: center; font-size: 1.4rem;">
+                        <p style="font-family: 'Cambria Math', serif;">\( c_{22} = (3 \times 6) + (4 \times 8) \)</p>
+                        <p style="font-family: 'Cambria Math', serif; margin-top: 10px;">\( c_{22} = 18 + 32 \)</p>
+                        <p style="font-family: 'Cambria Math', serif; margin-top: 10px; color: var(--accent-red); font-weight: bold;">\( c_{22} = 50 \)</p>
+                    </div>
+                </div>
+
+                <!-- 10. Matriz Final y Conmutatividad -->
+                <div class="slide">
+                    <h2>La Matriz Final</h2>
+                    <p>Juntando nuestras 4 respuestas, hemos completado la multiplicación:</p>
+                    
+                    <div class="math-block" style="border-color: var(--primary-gold); font-size: 1.8rem;">
+                        \( A \times B = \begin{bmatrix} 19 & 22 \\ 43 & 50 \end{bmatrix} \)
+                    </div>
+                    
+                    <div class="info-card" style="border-color: var(--accent-red); background: #fff1f2; margin-top: 20px;">
+                        <p style="font-weight: bold; color: var(--accent-red); margin-bottom: 5px; text-align: center;">⚠️ ¡Atención! ¡El orden importa!</p>
+                        <p style="text-align: center;">En los números reales, \( 3 \times 5 = 5 \times 3 \).<br>
+                        En las matrices, <strong>\( A \times B \neq B \times A \)</strong>.<br>
+                        ¡La multiplicación de matrices <strong>NO es conmutativa</strong>!</p>
+                    </div>
+                </div>
+
+                <!-- 11. QUIZ 1 -->
+                <div class="slide">
+                    <h2>Quiz 1: Condiciones de Multiplicación</h2>
+                    <p>Deseas multiplicar la Matriz M (de dimensión \( 4 \times 3 \)) por la Matriz N (de dimensión \( 3 \times 5 \)). ¿Es posible esta operación?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn" onclick="checkQuiz(1, true, this, '¡Correcto! Los números internos coinciden (3 y 3). La matriz resultante será de 4x5.', '')">A) Sí, porque las columnas de M son iguales a las filas de N.</button>
+                        <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'En la multiplicación de matrices no se requiere que tengan la misma dimensión, solo que los números internos coincidan.')">B) No, porque no tienen exactamente la misma dimensión.</button>
+                        <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'Los números externos (4 y 5) dictan el tamaño de la respuesta, no si se puede realizar la operación.')">C) No, porque los números externos (4 y 5) son diferentes.</button>
+                    </div>
+                    <div id="feedback-1" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 12. QUIZ 2 -->
+                <div class="slide">
+                    <h2>Quiz 2: Dimensión Final</h2>
+                    <p>Si multiplicas una matriz fila de \( 1 \times 3 \) por una matriz columna de \( 3 \times 1 \), ¿cuál será la dimensión de la matriz resultante?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Los 3 internos coinciden, así que se puede operar. Debes fijarte en los números externos.')">A) \( 3 \times 3 \)</button>
+                        <button class="option-btn" onclick="checkQuiz(2, true, this, '¡Excelente! Los números externos son 1 y 1. El resultado será una matriz de una sola celda (1x1).', '')">B) \( 1 \times 1 \)</button>
+                        <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Esto no representa una dimensión válida para el resultado.')">C) Una matriz de \( 4 \times 4 \).</button>
+                    </div>
+                    <div id="feedback-2" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 13. QUIZ 3 -->
+                <div class="slide">
+                    <h2>Quiz 3: Ley Conmutativa</h2>
+                    <p>¿Qué sucede si calculamos \( A \times B \) y luego \( B \times A \) con dos matrices cuadradas \( 2 \times 2 \)?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'Las matrices no funcionan como los números reales. El orden de las filas y columnas cambia drásticamente el resultado.')">A) Obtendremos exactamente el mismo resultado porque el orden no altera el producto.</button>
+                        <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'Al ser ambas 2x2, B x A sí se puede calcular (sus internos coincidirán).')">B) \( B \times A \) será "No Definida" y marcará error.</button>
+                        <button class="option-btn" onclick="checkQuiz(3, true, this, '¡Perfecto! La multiplicación de matrices no es conmutativa, por lo que casi siempre darán resultados diferentes.', '')">C) Obtendremos resultados diferentes, porque la multiplicación de matrices no es conmutativa.</button>
+                    </div>
+                    <div id="feedback-3" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+            </div> <!-- slide-container -->
+        </div> <!-- viewport -->
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 13</span>
+        </div>
+        <div class="progress-bar" id="progress-bar"></div>
+    </div> <!-- app-container -->
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const container = document.getElementById('slide-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const slideNum = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+
+        function updateGallery() {
+            container.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slides.forEach((slide, index) => slide.classList.toggle('active', index === currentSlide));
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === slides.length - 1;
+            slideNum.innerText = `${currentSlide + 1} / ${slides.length}`;
+            progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
+            
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateGallery(); } }
+        function prevSlide() { if (currentSlide > 0) { currentSlide--; updateGallery(); } }
+
+        document.addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === ' ') nextSlide(); if (e.key === 'ArrowLeft') prevSlide(); });
+
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX, false);
+        document.addEventListener('touchend', e => {
+            let touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 40) nextSlide();
+            if (touchEndX > touchStartX + 40) prevSlide();
+        }, false);
+
+        function checkQuiz(qId, isCorrect, btn, correctMsg, incorrectMsg) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const container = btn.parentElement;
+
+            if (isCorrect) {
+                container.querySelectorAll('.option-btn').forEach(b => {
+                    b.disabled = true;
+                    b.style.opacity = "0.5";
+                });
+                btn.disabled = false;
+                btn.style.opacity = "1";
+                btn.style.background = "#dcfce7";
+                btn.style.borderColor = "#059669";
+                btn.style.color = "#065f46";
+                feedback.innerHTML = `✅ &iexcl;Correcto! ${correctMsg}`;
+                feedback.style.color = "#059669";
+            } else {
+                btn.style.background = "#fee2e2";
+                btn.style.borderColor = "#e11d48";
+                btn.style.color = "#9f1239";
+                btn.disabled = true;
+                feedback.innerHTML = `❌ <span>${incorrectMsg}</span> <button onclick="resetQuiz(${qId})" style="margin-left:10px; background:var(--primary-slate); color:white; border:none; padding:5px 12px; border-radius:6px; cursor:pointer; font-size:0.85rem;">Reintentar</button>`;
+                feedback.style.color = "#e11d48";
+            }
+        }
+
+        function resetQuiz(qId) {
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const container = feedback.parentElement.querySelector('.quiz-container');
+            container.querySelectorAll('.option-btn').forEach(b => {
+                b.disabled = false;
+                b.style.opacity = "1";
+                b.style.background = "white";
+                b.style.borderColor = "#cbd5e1";
+                b.style.color = "var(--primary-slate)";
+            });
+            feedback.innerHTML = "";
+        }
+
+        updateGallery();
+    </script>
+</body>
+
+</html>
