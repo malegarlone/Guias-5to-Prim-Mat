@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía 24: Calendarios Cholq'ij y Haab'</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 540px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 600px) or (max-width: 960px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 30px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.3rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.4rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 1.05rem;
+            color: #444;
+            max-width: 750px;
+            line-height: 1.5;
+            margin-bottom: 0.4rem;
+        }
+
+        .info-card {
+            padding: 1rem;
+            border-radius: 12px;
+            background: #f0f8ff;
+            margin: 0.5rem 0;
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.3rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 15px;
+        }
+
+        #next-btn {
+            right: 15px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #888;
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #edf2f7;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+            max-width: 600px;
+            margin: 0.5rem auto;
+        }
+
+        .option-btn {
+            padding: 0.7rem 1.1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        .columns-container {
+            display: flex;
+            gap: 15px;
+            margin: 10px 0;
+            width: 100%;
+            max-width: 780px;
+        }
+
+        .column-card {
+            flex: 1;
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 10px 15px;
+            text-align: center;
+        }
+
+        .column-card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary-blue-dark);
+            border-bottom: 2px dashed #cbd5e1;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+        }
+
+        .widget-box {
+            background: #f1f5f9;
+            border: 2px solid #cbd5e1;
+            border-radius: 16px;
+            padding: 15px 25px;
+            width: 100%;
+            max-width: 650px;
+            margin-top: 5px;
+        }
+
+        .widget-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 8px 0;
+        }
+
+        .widget-label {
+            font-weight: bold;
+            color: var(--primary-blue-dark);
+            font-size: 1.05rem;
+        }
+
+        .widget-slider {
+            flex: 1;
+            margin: 0 20px;
+            accent-color: var(--primary-purple);
+        }
+
+        .widget-val {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-purple);
+            width: 120px;
+            text-align: right;
+        }
+
+        .conversion-grid {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            justify-content: space-around;
+        }
+
+        .conversion-box {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            flex: 1;
+            text-align: center;
+        }
+
+        .conversion-val {
+            display: block;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-blue-dark);
+        }
+
+        .conversion-lbl {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 5to Primaria</span>
+            <span>Guía 24: Calendarios Cholq'ij y Haab'</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                
+                <!-- 1. Portada -->
+                <div class="slide active">
+                    <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">☀️📅🌽</div>
+                    <h1>Calendarios Cholq'ij y Haab'</h1>
+                    <h2>Lección 24 &bull; 5&deg; Primaria</h2>
+                    <p style="color: #64748b; font-style: italic;">¡Aprende sobre la ciencia astronómica de los calendarios sagrado y solar de la cultura maya en Guatemala!</p>
+                </div>
+
+                <!-- 2. El Calendario Cholq'ij -->
+                <div class="slide">
+                    <h2>El Calendario Sagrado: Cholq'ij (Tzolk'in)</h2>
+                    <p>Es la cuenta sagrada de <strong>260 días</strong>, formada por la combinación matemática de 20 nawales y 13 números:</p>
+                    
+                    <div class="info-card" style="border-left: 5px solid var(--primary-orange); background: #fffbeb;">
+                        <h3 style="color: var(--primary-orange);">Estructura Sagrada:</h3>
+                        <p style="font-size: 1.2rem; font-weight: bold; color: var(--primary-blue-dark);">20 Nawales × 13 Tonos = 260 Días del Cholq'ij</p>
+                    </div>
+
+                    <div class="columns-container">
+                        <div class="column-card">
+                            <div class="column-card-title">🌿 20 Nawales</div>
+                            <p style="font-size: 0.95rem; text-align: left; color: #475569;">Representan energías de la naturaleza y del ser humano (B'atz', E, Aj, No'j, Kej).</p>
+                        </div>
+                        <div class="column-card">
+                            <div class="column-card-title">🔢 13 Tonos</div>
+                            <p style="font-size: 0.95rem; text-align: left; color: #475569;">Números del 1 al 13 que acompañan continuamente a cada nawal.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. El Calendario Solar Haab' -->
+                <div class="slide">
+                    <h2>El Calendario Solar: Haab'</h2>
+                    <p>El calendario solar maya, llamado <strong>Haab'</strong>, es una cuenta de <strong>365 días</strong> que se aproxima al año solar. La palabra <em>haab</em> significa <em>año</em> en idioma maya yucateco.</p>
+                    
+                    <div class="info-card" style="border-left: 5px solid var(--primary-green); background: #f0fdf4;">
+                        <h3 style="color: var(--primary-green);">Estructura del Año Haab':</h3>
+                        <p style="font-size: 1.15rem; font-weight: bold; color: var(--primary-blue-dark);">(18 Meses × 20 Días) + 5 Días adicionales (Wayeb') = 365 Días</p>
+                    </div>
+
+                    <div class="columns-container">
+                        <div class="column-card" style="border-color: var(--primary-green);">
+                            <div class="column-card-title" style="color: var(--primary-green);">🗓️ 18 Meses (Uinales)</div>
+                            <p style="font-size: 0.9rem; text-align: left; color: #334155;">Cada mes consta de 20 días con nombre propio, sumando 360 días.</p>
+                        </div>
+                        <div class="column-card" style="border-color: var(--primary-yellow);">
+                            <div class="column-card-title" style="color: #b45309;">✨ El Mes Wayeb'</div>
+                            <p style="font-size: 0.9rem; text-align: left; color: #334155;">Mes final de 5 días dedicado a la reflexión del nuevo ciclo.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Astronomía Maya Contemporánea -->
+                <div class="slide">
+                    <h2>Astronomía Maya y el Ciclo del Maíz</h2>
+                    <p>La astronomía de observación visual todavía es practicada por los mayas contemporáneos en su tierra natal.</p>
+
+                    <div class="columns-container">
+                        <div class="column-card" style="border-color: #0369a1;">
+                            <div class="column-card-title" style="color: #0369a1;">🌽 Ciclo Agrícola del Maíz</div>
+                            <p style="font-size: 0.95rem; text-align: left; color: #334155; line-height: 1.5;">
+                                El entendimiento continuo de los astros y el Sol sirve para calcular la siembra y cosecha del maíz.
+                            </p>
+                        </div>
+                        <div class="column-card" style="border-color: var(--primary-purple);">
+                            <div class="column-card-title" style="color: var(--primary-purple);">🔥 Ceremonias y Rituales</div>
+                            <p style="font-size: 0.95rem; text-align: left; color: #334155; line-height: 1.5;">
+                                Guía la celebración de ceremonias comunitarias en profunda armonía con la naturaleza.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Significado Cultural de los 52 Años -->
+                <div class="slide">
+                    <h2>La Rueda Calendárica: Significado Cultural</h2>
+                    <p>La Rueda Calendárica resulta del entretejido entre el Cholq'ij (260 días) y el Haab' (365 días). Cuando transcurren 52 años, ambos calendarios vuelven a coincidir exactamente en el mismo día.</p>
+
+                    <div class="columns-container" style="margin-top: 8px;">
+                        <div class="column-card" style="border-color: var(--primary-purple);">
+                            <div class="column-card-title" style="color: var(--primary-purple);">👵 La Sabiduría de los 52 Años</div>
+                            <p style="font-size: 0.92rem; text-align: left; color: #334155; line-height: 1.45;">
+                                En la cultura maya, cumplir 52 años marca un ciclo de vida completo. A esta edad las personas son reconocidas con el título y respeto de <strong>Abuelos y Abuelas Sabias (Ri K'amöl B'ey)</strong> por su experiencia de vida.
+                            </p>
+                        </div>
+                        <div class="column-card" style="border-color: #0369a1;">
+                            <div class="column-card-title" style="color: #0369a1;">🔥 Seguimiento en los Pueblos Actuales</div>
+                            <p style="font-size: 0.92rem; text-align: left; color: #334155; line-height: 1.45;">
+                                En comunidades de Guatemala como <strong>Momostenango (Totonicapán), Chichicastenango (Quiché), Sololá y Alta Verapaz</strong>, los Ajq'ijab' (guías espirituales) mantienen vivo el conteo diario para ceremonias, siembras y orientación comunitaria.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Explorador Interactivo -->
+                <div class="slide">
+                    <h2>¡Explorador del Tiempo Maya!</h2>
+                    <p>Mueve la barra deslizante para recorrer los días continuos del ciclo sagrado Cholq'ij:</p>
+                    
+                    <div class="widget-box">
+                        <div class="widget-row">
+                            <span class="widget-label">Avanzar Días:</span>
+                            <input type="range" min="1" max="260" value="1" class="widget-slider" id="maya-slider" oninput="explorarMaya(this.value)">
+                            <span class="widget-val" id="val-dias">Día 1</span>
+                        </div>
+                        
+                        <div class="conversion-grid">
+                            <div class="conversion-box">
+                                <span class="conversion-val" id="res-maya" style="color: var(--primary-purple);">1 B'atz'</span>
+                                <span class="conversion-lbl">Tono y Nawal Actual</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. QUIZ 1 -->
+                <div class="slide">
+                    <h2>Reto 1: Estructura del Haab'</h2>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cómo está compuesto el calendario solar maya Haab' de 365 días?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'El Haab tiene 18 uinales de 20 días.')">A) 12 meses de 30 días exactos sin días adicionales.</button>
+                        <button class="option-btn" onclick="checkQuiz(1, true, this, '¡Correcto! 18 meses (uinales) de 20 días = 360 días, más los 5 días del Wayeb = 365 días.', '')">B) 18 meses de 20 días (uinales) más 1 mes de 5 días (Wayeb').</button>
+                        <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'Esa es la estructura del Cholqij de 260 días.')">C) 20 meses de 13 días sin días extras.</button>
+                    </div>
+                    <div id="feedback-1" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 8. QUIZ 2 -->
+                <div class="slide">
+                    <h2>Reto 2: La Rueda Calendárica</h2>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuántos años deben pasar para que una combinación exacta entre el Tzolk'in y el Haab' vuelva a repetirse?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn" onclick="checkQuiz(2, false, this, '', '100 años es un siglo en el calendario gregoriano.')">A) 100 años</button>
+                        <button class="option-btn" onclick="checkQuiz(2, true, this, '¡Excelente! La Rueda Calendárica completa su ciclo exacto cada 52 años Haab (18,980 días).', '')">B) 52 años</button>
+                        <button class="option-btn" onclick="checkQuiz(2, false, this, '', '260 días es la duración del calendario Cholqij sagrado.')">C) 260 años</button>
+                    </div>
+                    <div id="feedback-2" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 9. QUIZ 3 -->
+                <div class="slide">
+                    <h2>Reto 3: Astronomía y Maíz</h2>
+                    <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Para qué sirve principalmente el entendimiento continuo de los ciclos del Sol y astros en la actualidad?</p>
+                    <div class="quiz-container">
+                        <button class="option-btn" onclick="checkQuiz(3, true, this, '¡Perfecto! Guía el ciclo agrícola del maíz y las ceremonias comunitarias.', '')">A) Para calcular el ciclo agrícola del cultivo del maíz y guiar ceremonias.</button>
+                        <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'La astronomía maya tiene objetivos agrícolas y espirituales.')">B) Para fabricar baterías electrónicas.</button>
+                        <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'Los astros sirven para medir los ciclos del sol y la tierra.')">C) Únicamente para medir la velocidad de las olas.</button>
+                    </div>
+                    <div id="feedback-3" style="margin-top: 1rem; font-weight: 600; min-height: 24px;"></div>
+                </div>
+
+                <!-- 10. Final -->
+                <div class="slide">
+                    <div style="font-size: 80px;">🎯</div>
+                    <h2>¡Misión Cumplida!</h2>
+                    <p>¡Has aprendido la ciencia matemática y sabiduría de los calendarios mayas!</p>
+                    <button onclick="goToSlide(0)"
+                        style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Volver a jugar</button>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 10</span>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 10;
+        const slideContainer = document.getElementById('slide-container');
+        const slideNumDisplay = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        const nawales = ["B'atz'", "E", "Aj", "I'x", "Tz'ikin", "Ajmaq", "No'j", "Tijax", "Kawoq", "Ajpu", "Imox", "Iq'", "Ak'abal", "K'at", "Kan", "Kame", "Kej", "Q'anil", "Toj", "Tz'i'"];
+
+        function updateSlide() {
+            slideContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slideNumDisplay.textContent = `${currentSlide + 1} / ${totalSlides}`;
+            
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(num) {
+            currentSlide = num;
+            updateSlide();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        function explorarMaya(diaCount) {
+            document.getElementById('val-dias').textContent = `Día ${diaCount}`;
+            const tono = ((diaCount - 1) % 13) + 1;
+            const nawal = nawales[(diaCount - 1) % 20];
+            document.getElementById('res-maya').textContent = `${tono} ${nawal}`;
+        }
+
+        function checkQuiz(quizNum, isCorrect, btnElement, correctMsg, wrongMsg) {
+            const container = btnElement.parentElement;
+            const buttons = container.querySelectorAll('.option-btn');
+            const feedback = document.getElementById(`feedback-${quizNum}`);
+
+            buttons.forEach(btn => {
+                btn.style.borderColor = '#e2e8f0';
+                btn.style.background = 'white';
+                btn.style.color = '#1e293b';
+            });
+
+            if (isCorrect) {
+                btnElement.style.borderColor = 'var(--primary-green)';
+                btnElement.style.background = '#f0fdf4';
+                btnElement.style.color = '#166534';
+                feedback.style.color = 'var(--primary-green)';
+                feedback.textContent = correctMsg;
+            } else {
+                btnElement.style.borderColor = 'var(--primary-red)';
+                btnElement.style.background = '#fef2f2';
+                btnElement.style.color = '#991b1b';
+                feedback.style.color = 'var(--primary-red)';
+                feedback.textContent = wrongMsg;
+            }
+        }
+
+        // Initialize progress bar and slider state
+        updateSlide();
+    </script>
+</body>
+
+</html>
