@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lección 4: Perímetro y Área de Figuras Planas Combinadas - 5to Primaria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 540px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 600px) or (max-width: 960px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 12px 65px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.4rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.2rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 0.92rem;
+            color: #444;
+            max-width: 820px;
+            line-height: 1.5;
+            margin-bottom: 0.3rem;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.3rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 15px;
+        }
+
+        #next-btn {
+            right: 15px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 1.2rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #888;
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #edf2f7;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            width: 100%;
+            max-width: 620px;
+            margin: 0.4rem auto;
+        }
+
+        .option-btn {
+            padding: 0.7rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        .content-box-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 820px;
+            flex: 1;
+            margin: 4px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 5to Primaria</span>
+            <span>Lección 4: Perímetro y Área de Figuras Combinadas</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                
+                <!-- 1. Portada -->
+                <div class="slide active">
+                    <div class="content-box-vertical">
+                        <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">🏠🧩📐</div>
+                        <h1>Figuras Planas Combinadas</h1>
+                        <h2>Lección 4 &bull; 5&deg; Primaria</h2>
+                        <p style="color: #64748b; font-style: italic;">¡Aprende el método de descomposición para calcular el perímetro total y el área compuesta de figuras formadas por rectángulos, triángulos y círculos!</p>
+                    </div>
+                </div>
+
+                <!-- 2. Formulario de Áreas de Figuras Planas Comunes -->
+                <div class="slide">
+                    <h2>Formulario: Áreas de Figuras Planas Básicas</h2>
+                    <p>Antes de combinar figuras compuestas, debemos dominar las fórmulas fundamentales de superficie:</p>
+
+                    <div class="content-box-vertical" style="width: 100%; gap: 10px;">
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 100%;">
+                            
+                            <!-- Rectángulo -->
+                            <div style="background: #ffffff; border-left: 5px solid #0284c7; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 0 10px 10px 0; padding: 10px 8px; text-align: center;">
+                                <h3 style="color: #0284c7; font-size: 0.92rem; margin-bottom: 4px;">Rectángulo</h3>
+                                <svg width="100" height="60" viewBox="0 0 100 60" style="display: block; margin: auto;">
+                                    <rect x="15" y="10" width="70" height="40" fill="#e0f2fe" stroke="#0284c7" stroke-width="2.5"/>
+                                    <text x="50" y="58" fill="#0369a1" font-size="10" text-anchor="middle" font-weight="bold">Base (b)</text>
+                                    <text x="8" y="33" fill="#0369a1" font-size="10" text-anchor="middle" font-weight="bold">a</text>
+                                </svg>
+                                <div style="background: #f0f9ff; padding: 4px; border-radius: 6px; font-weight: bold; color: #0369a1; font-size: 0.9rem; margin-top: 4px;">
+                                    Área = b &times; a
+                                </div>
+                            </div>
+
+                            <!-- Cuadrado -->
+                            <div style="background: #ffffff; border-left: 5px solid var(--primary-green); box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 0 10px 10px 0; padding: 10px 8px; text-align: center;">
+                                <h3 style="color: var(--primary-green); font-size: 0.92rem; margin-bottom: 4px;">Cuadrado</h3>
+                                <svg width="100" height="60" viewBox="0 0 100 60" style="display: block; margin: auto;">
+                                    <rect x="30" y="10" width="40" height="40" fill="#f0fdf4" stroke="#22c55e" stroke-width="2.5"/>
+                                    <text x="50" y="58" fill="#166534" font-size="10" text-anchor="middle" font-weight="bold">Lado (l)</text>
+                                </svg>
+                                <div style="background: #f0fdf4; padding: 4px; border-radius: 6px; font-weight: bold; color: #166534; font-size: 0.9rem; margin-top: 4px;">
+                                    Área = l&sup2; (l &times; l)
+                                </div>
+                            </div>
+
+                            <!-- Triángulo -->
+                            <div style="background: #ffffff; border-left: 5px solid var(--primary-orange); box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 0 10px 10px 0; padding: 10px 8px; text-align: center;">
+                                <h3 style="color: var(--primary-orange); font-size: 0.92rem; margin-bottom: 4px;">Triángulo</h3>
+                                <svg width="100" height="60" viewBox="0 0 100 60" style="display: block; margin: auto;">
+                                    <polygon points="50,10 15,48 85,48" fill="#fffbeb" stroke="#db6015" stroke-width="2.5"/>
+                                    <line x1="50" y1="10" x2="50" y2="48" stroke="#b45309" stroke-dasharray="3,2" stroke-width="2"/>
+                                    <text x="50" y="58" fill="#b45309" font-size="10" text-anchor="middle" font-weight="bold">b</text>
+                                    <text x="58" y="30" fill="#b45309" font-size="10" font-weight="bold">h</text>
+                                </svg>
+                                <div style="background: #fffbeb; padding: 4px; border-radius: 6px; font-weight: bold; color: var(--primary-orange); font-size: 0.9rem; margin-top: 4px;">
+                                    Área = (b &times; h) / 2
+                                </div>
+                            </div>
+
+                            <!-- Círculo -->
+                            <div style="background: #ffffff; border-left: 5px solid var(--primary-purple); box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 0 10px 10px 0; padding: 10px 8px; text-align: center;">
+                                <h3 style="color: var(--primary-purple); font-size: 0.92rem; margin-bottom: 4px;">Círculo</h3>
+                                <svg width="100" height="60" viewBox="0 0 100 60" style="display: block; margin: auto;">
+                                    <circle cx="50" cy="30" r="22" fill="#f3e8ff" stroke="#8b5cf6" stroke-width="2.5"/>
+                                    <line x1="50" y1="30" x2="72" y2="30" stroke="#6b21a8" stroke-width="2"/>
+                                    <circle cx="50" cy="30" r="3" fill="#6b21a8"/>
+                                    <text x="61" y="25" fill="#6b21a8" font-size="10" font-weight="bold">r</text>
+                                </svg>
+                                <div style="background: #f3e8ff; padding: 4px; border-radius: 6px; font-weight: bold; color: #6b21a8; font-size: 0.9rem; margin-top: 4px;">
+                                    Área = &pi; &times; r&sup2;
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Formulario de Rombo, Trapecio y Paralelogramo -->
+                <div class="slide">
+                    <h2>Áreas Especiales: Rombo, Trapecio y Paralelogramo</h2>
+                    <p>Fórmulas para cuadriláteros especiales y figuras regulares:</p>
+
+                    <div class="content-box-vertical" style="width: 100%; gap: 10px;">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; width: 100%;">
+                            
+                            <!-- Rombo -->
+                            <div style="background: #ffffff; border-left: 5px solid #e11d48; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 0 10px 10px 0; padding: 12px 10px; text-align: center;">
+                                <h3 style="color: #e11d48; font-size: 0.98rem; margin-bottom: 4px;">Rombo</h3>
+                                <p style="font-size: 0.78rem; color: #475569; margin-bottom: 4px;">Multiplica sus dos diagonales y divide entre 2:</p>
+                                <svg width="120" height="70" viewBox="0 0 120 70" style="display: block; margin: auto;">
+                                    <polygon points="60,8 105,35 60,62 15,35" fill="#ffe4e6" stroke="#e11d48" stroke-width="2.5"/>
+                                    <line x1="15" y1="35" x2="105" y2="35" stroke="#9f1239" stroke-dasharray="3,2" stroke-width="2"/>
+                                    <line x1="60" y1="8" x2="60" y2="62" stroke="#9f1239" stroke-dasharray="3,2" stroke-width="2"/>
+                                    <text x="60" y="30" fill="#9f1239" font-size="10" font-weight="bold" text-anchor="middle">D (mayor) y d (menor)</text>
+                                </svg>
+                                <div style="background: #ffe4e6; padding: 6px; border-radius: 6px; font-weight: bold; color: #9f1239; font-size: 0.95rem; margin-top: 6px;">
+                                    Área = (D &times; d) / 2
+                                </div>
+                            </div>
+
+                            <!-- Trapecio -->
+                            <div style="background: #ffffff; border-left: 5px solid #d97706; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 0 10px 10px 0; padding: 12px 10px; text-align: center;">
+                                <h3 style="color: #d97706; font-size: 0.98rem; margin-bottom: 4px;">Trapecio</h3>
+                                <p style="font-size: 0.78rem; color: #475569; margin-bottom: 4px;">Suma sus bases (b + B), multiplica por altura (h) y divide entre 2:</p>
+                                <svg width="120" height="70" viewBox="0 0 120 70" style="display: block; margin: auto;">
+                                    <polygon points="35,12 85,12 110,58 10,58" fill="#fef3c7" stroke="#d97706" stroke-width="2.5"/>
+                                    <line x1="35" y1="12" x2="35" y2="58" stroke="#92400e" stroke-dasharray="3,2" stroke-width="2"/>
+                                    <text x="60" y="10" fill="#92400e" font-size="10" text-anchor="middle" font-weight="bold">base b</text>
+                                    <text x="60" y="68" fill="#92400e" font-size="10" text-anchor="middle" font-weight="bold">Base mayor B</text>
+                                </svg>
+                                <div style="background: #fef3c7; padding: 6px; border-radius: 6px; font-weight: bold; color: #92400e; font-size: 0.95rem; margin-top: 6px;">
+                                    Área = [(B + b) &times; h] / 2
+                                </div>
+                            </div>
+
+                            <!-- Paralelogramo -->
+                            <div style="background: #ffffff; border-left: 5px solid #059669; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 0 10px 10px 0; padding: 12px 10px; text-align: center;">
+                                <h3 style="color: #059669; font-size: 0.98rem; margin-bottom: 4px;">Paralelogramo</h3>
+                                <p style="font-size: 0.78rem; color: #475569; margin-bottom: 4px;">Multiplica la base por la altura perpendicular (h):</p>
+                                <svg width="120" height="70" viewBox="0 0 120 70" style="display: block; margin: auto;">
+                                    <polygon points="30,12 110,12 90,58 10,58" fill="#d1fae5" stroke="#059669" stroke-width="2.5"/>
+                                    <line x1="30" y1="12" x2="30" y2="58" stroke="#065f46" stroke-dasharray="3,2" stroke-width="2"/>
+                                    <text x="50" y="68" fill="#065f46" font-size="10" text-anchor="middle" font-weight="bold">Base (b)</text>
+                                    <text x="36" y="38" fill="#065f46" font-size="10" font-weight="bold">h</text>
+                                </svg>
+                                <div style="background: #d1fae5; padding: 6px; border-radius: 6px; font-weight: bold; color: #065f46; font-size: 0.95rem; margin-top: 6px;">
+                                    Área = Base &times; Altura
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Método de Suma (Unión de Áreas) con Ejemplo Resuelto -->
+                <div class="slide">
+                    <h2>Método 1: Suma de Áreas (Unión)</h2>
+                    <p>Consiste en dividir la figura compuesta en rectángulos o triángulos simples y SUMAR todas sus superficies parciales.</p>
+
+                    <div class="content-box-vertical" style="width: 100%; gap: 10px;">
+                        <div style="display: flex; gap: 20px; width: 100%; align-items: center;">
+                            <!-- Ilustración SVG del Método de Suma (Forma L) -->
+                            <div style="flex: 1; max-width: 340px; background: #ffffff; padding: 10px; border-radius: 12px; border-left: 6px solid var(--primary-green); box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                                <svg width="310" height="200" viewBox="0 0 310 200" style="display: block; margin: auto;">
+                                    <polygon points="40,20 130,20 130,110 250,110 250,180 40,180" fill="#f0fdf4" stroke="#22c55e" stroke-width="3.5"/>
+                                    <line x1="40" y1="110" x2="130" y2="110" stroke="#166534" stroke-dasharray="5,4" stroke-width="2.5"/>
+                                    
+                                    <text x="85" y="65" fill="#166534" font-weight="bold" font-size="15" text-anchor="middle">Área A1 (4 &times; 8)</text>
+                                    <text x="145" y="150" fill="#166534" font-weight="bold" font-size="15" text-anchor="middle">Área A2 (9 &times; 3)</text>
+                                </svg>
+                            </div>
+
+                            <!-- Explicación y Ejemplo Resuelto en Pasos de Corrido -->
+                            <div style="flex: 1.1; text-align: left; background: #ffffff; border-left: 6px solid var(--primary-green); box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 0 12px 12px 0; padding: 14px 18px;">
+                                <h3 style="color: #166534; font-size: 1.05rem; margin-bottom: 8px;">📋 Procedimiento Resuelto Paso a Paso:</h3>
+                                
+                                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.88rem; color: #334155;">
+                                    <div style="background: #f8fafc; padding: 6px 10px; border-radius: 6px; white-space: nowrap; overflow-x: auto;">
+                                        <span style="color: #0284c7; font-weight: bold;">Paso 1:</span> Calcular Rectángulo 1 &rarr; A1 = Base &times; Altura = 4 cm &times; 8 cm = 32 cm&sup2;.
+                                    </div>
+                                    <div style="background: #f8fafc; padding: 6px 10px; border-radius: 6px; white-space: nowrap; overflow-x: auto;">
+                                        <span style="color: var(--primary-orange); font-weight: bold;">Paso 2:</span> Calcular Rectángulo 2 &rarr; A2 = Base &times; Altura = 9 cm &times; 3 cm = 27 cm&sup2;.
+                                    </div>
+                                    <div style="background: #f8fafc; padding: 6px 10px; border-radius: 6px; white-space: nowrap; overflow-x: auto;">
+                                        <span style="color: #166534; font-weight: bold;">Paso 3:</span> Sumar Áreas &rarr; Área Total = A1 + A2 = 32 cm&sup2; + 27 cm&sup2; = 59 cm&sup2;.
+                                    </div>
+                                    <div style="background: #f0fdf4; padding: 6px 10px; border-radius: 6px; font-weight: bold; color: #166534; white-space: nowrap; overflow-x: auto;">
+                                        <span>Resultado Final:</span> El área total de la figura en 'L' es de 59 cm&sup2;.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Método de Resta (Huecos) con Ejemplo Resuelto -->
+                <div class="slide">
+                    <h2>Método 2: Resta de Áreas (Huecos)</h2>
+                    <p>Consiste en calcular el área del marco exterior grande y RESTAR el espacio o ventana recortada del interior.</p>
+
+                    <div class="content-box-vertical" style="width: 100%; gap: 10px;">
+                        <div style="display: flex; gap: 20px; width: 100%; align-items: center;">
+                            <!-- Ilustración SVG del Método de Resta (Marco) -->
+                            <div style="flex: 1; max-width: 340px; background: #ffffff; padding: 10px; border-radius: 12px; border-left: 6px solid var(--primary-orange); box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                                <svg width="310" height="200" viewBox="0 0 310 200" style="display: block; margin: auto;">
+                                    <rect x="55" y="20" width="200" height="160" fill="#fffbeb" stroke="#db6015" stroke-width="3.5"/>
+                                    <rect x="115" y="65" width="80" height="70" fill="#ffffff" stroke="#244b5a" stroke-width="2.5"/>
+                                    
+                                    <text x="155" y="45" fill="#b45309" font-weight="bold" font-size="13" text-anchor="middle">Marco (10 &times; 10 cm)</text>
+                                    <text x="155" y="105" fill="#244b5a" font-weight="bold" font-size="12" text-anchor="middle">Hueco (4 &times; 4 cm)</text>
+                                </svg>
+                            </div>
+
+                            <!-- Explicación y Ejemplo Resuelto en Pasos de Corrido -->
+                            <div style="flex: 1.1; text-align: left; background: #ffffff; border-left: 6px solid var(--primary-orange); box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 0 12px 12px 0; padding: 14px 18px;">
+                                <h3 style="color: var(--primary-orange); font-size: 1.05rem; margin-bottom: 8px;">📋 Procedimiento Resuelto Paso a Paso:</h3>
+                                
+                                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.88rem; color: #334155;">
+                                    <div style="background: #f8fafc; padding: 6px 10px; border-radius: 6px; white-space: nowrap; overflow-x: auto;">
+                                        <span style="color: #0284c7; font-weight: bold;">Paso 1:</span> Área Grande Exterior &rarr; A_grande = 10 cm &times; 10 cm = 100 cm&sup2;.
+                                    </div>
+                                    <div style="background: #f8fafc; padding: 6px 10px; border-radius: 6px; white-space: nowrap; overflow-x: auto;">
+                                        <span style="color: var(--primary-orange); font-weight: bold;">Paso 2:</span> Área del Hueco Interior &rarr; A_hueco = 4 cm &times; 4 cm = 16 cm&sup2;.
+                                    </div>
+                                    <div style="background: #f8fafc; padding: 6px 10px; border-radius: 6px; white-space: nowrap; overflow-x: auto;">
+                                        <span style="color: #166534; font-weight: bold;">Paso 3:</span> Restar Superficie Hueca &rarr; A_sombreada = 100 cm&sup2; - 16 cm&sup2; = 84 cm&sup2;.
+                                    </div>
+                                    <div style="background: #fffbeb; padding: 6px 10px; border-radius: 6px; font-weight: bold; color: var(--primary-orange); white-space: nowrap; overflow-x: auto;">
+                                        <span>Resultado Final:</span> El área sombreada del marco es de 84 cm&sup2;.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Laboratorio Interactivo: Creador de Figuras Combinadas -->
+                <div class="slide">
+                    <h2>¡Laboratorio Interactivo de Figuras Compuestas!</h2>
+                    <p>Haz clic en los botones para unir distintas figuras y calcular automáticamente el área total desglosada:</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 12px 16px; border-radius: 16px; border: 2px solid #cbd5e1; max-width: 840px;">
+                        <div style="display: flex; gap: 15px; width: 100%; align-items: center; justify-content: center;">
+                            
+                            <div style="flex: 1.1; max-width: 380px;">
+                                <svg width="340" height="190" viewBox="0 0 340 190" style="display: block; margin: auto; background: #f8fafc; border-radius: 12px; border: 1px solid #cbd5e1;">
+                                    <polygon points="170,20 90,80 250,80" fill="#fffbeb" stroke="#db6015" stroke-width="3"/>
+                                    <rect x="90" y="80" width="160" height="90" fill="#f0fdf4" stroke="#22c55e" stroke-width="3"/>
+                                    <text x="170" y="60" fill="#b45309" font-weight="bold" font-size="13" text-anchor="middle">Techo (Área = 24 cm&sup2;)</text>
+                                    <text x="170" y="130" fill="#166534" font-weight="bold" font-size="13" text-anchor="middle">Base (Área = 48 cm&sup2;)</text>
+                                </svg>
+                            </div>
+
+                            <div style="flex: 0.9; text-align: left; display: flex; flex-direction: column; gap: 8px;">
+                                <button class="option-btn" style="border-color: #22c55e;" onclick="calcCombined('casa')">🏠 Casa: Triángulo (24) + Rectángulo (48)</button>
+                                <button class="option-btn" style="border-color: #0284c7;" onclick="calcCombined('ele')">🧩 Forma L: Rectángulo 1 (30) + Rectángulo 2 (20)</button>
+
+                                <div style="background: #f0fdf4; padding: 8px 12px; border-radius: 10px; border: 1.5px solid var(--primary-green);">
+                                    <span style="font-size: 0.75rem; color: #166534; font-weight: bold;">CÁLCULO DESGLOSADO:</span>
+                                    <span id="lbl-combined-calc" style="font-size: 0.95rem; font-weight: bold; color: var(--primary-blue-dark); display: block;">Área 1 (24) + Área 2 (48)</span>
+                                    <span id="res-combined-total" style="font-size: 1.15rem; font-weight: bold; color: var(--primary-orange); display: block;">Área Total = 72 cm&sup2;</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. QUIZ 1 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 1: Método de Descomposición</h2>
+                        <p>Para calcular el área de una figura compuesta en forma de casa (triángulo + rectángulo)...</p>
+                        <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Qué procedimiento matemático debemos seguir?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(1, true, this, '¡Correcto! Calculamos el área del triángulo, la del rectángulo y las SUMAMOS.', '')">A) Calcular el área de cada figura por separado y SUMARLAS.</button>
+                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'Si restamos, estaríamos quitando una parte de la casa.')">B) Calcular las áreas y RESTARLAS.</button>
+                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'Las áreas se suman, no se multiplican entre sí.')">C) Multiplicar el área del triángulo por el área del rectángulo.</button>
+                        </div>
+                        <div id="feedback-1" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 8. QUIZ 2 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 2: Áreas Sombreadas con Huecos</h2>
+                        <p>Una hoja de papel rectangular de <strong>50 cm&sup2;</strong> tiene un agujero en el centro de <strong>10 cm&sup2;</strong>.</p>
+                        <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuál es el área de papel que queda alrededor del agujero?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(2, true, this, '¡Excelente! Restamos el hueco interior: 50 - 10 = 40 cm².', '')">A) 40 cm&sup2;</button>
+                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', '60 cm² sería si sumáramos el agujero.')">B) 60 cm&sup2;</button>
+                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Multiplicar no aplica para encontrar el sobrante.')">C) 500 cm&sup2;</button>
+                        </div>
+                        <div id="feedback-2" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 9. QUIZ 3 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 3: Perímetro de Figuras Compuestas</h2>
+                        <p>Al calcular el <strong>perímetro total</strong> de una figura combinada...</p>
+                        <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Qué lados debemos tomar en cuenta para sumar?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(3, true, this, '¡Fantástico! El perímetro solo incluye las líneas del BORDE EXTERIOR visible.', '')">A) Únicamente las líneas del BORDE EXTERIOR visible.</button>
+                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'Las líneas divisorias interiores no forman parte del contorno.')">B) Todas las líneas, incluyendo las divisiones por dentro.</button>
+                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'Solo un lado no da la medida del perímetro completo.')">C) Solo la base inferior.</button>
+                        </div>
+                        <div id="feedback-3" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 10. Final -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <div style="font-size: 80px;">🎯</div>
+                        <h2>¡Misión Cumplida!</h2>
+                        <p>¡Has dominado el cálculo de perímetro y área en figuras planas combinadas!</p>
+                        <button onclick="goToSlide(0)"
+                            style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Volver a repasar</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 12</span>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 12;
+        const slideContainer = document.getElementById('slide-container');
+        const slideNumDisplay = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        function updateSlide() {
+            slideContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slideNumDisplay.textContent = `${currentSlide + 1} / ${totalSlides}`;
+            
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(num) {
+            currentSlide = num;
+            updateSlide();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        function calcCombined(type) {
+            const calc = document.getElementById('lbl-combined-calc');
+            const total = document.getElementById('res-combined-total');
+
+            if (type === 'casa') {
+                calc.textContent = 'Área Techo (24) + Área Base (48)';
+                total.textContent = 'Área Total = 72 cm²';
+            } else if (type === 'ele') {
+                calc.textContent = 'Rectángulo 1 (30) + Rectángulo 2 (20)';
+                total.textContent = 'Área Total = 50 cm²';
+            }
+        }
+
+        function checkQuiz(quizNum, isCorrect, btnElement, correctMsg, wrongMsg) {
+            const container = btnElement.parentElement;
+            const buttons = container.querySelectorAll('.option-btn');
+            const feedback = document.getElementById(`feedback-${quizNum}`);
+
+            buttons.forEach(btn => {
+                btn.style.borderColor = '#e2e8f0';
+                btn.style.background = 'white';
+                btn.style.color = '#1e293b';
+            });
+
+            if (isCorrect) {
+                btnElement.style.borderColor = 'var(--primary-green)';
+                btnElement.style.background = '#f0fdf4';
+                btnElement.style.color = '#166534';
+                feedback.style.color = 'var(--primary-green)';
+                feedback.textContent = correctMsg;
+            } else {
+                btnElement.style.borderColor = 'var(--primary-red)';
+                btnElement.style.background = '#fef2f2';
+                btnElement.style.color = '#991b1b';
+                feedback.style.color = '#991b1b';
+                feedback.textContent = wrongMsg;
+            }
+        }
+
+        updateSlide();
+    </script>
+</body>
+
+</html>

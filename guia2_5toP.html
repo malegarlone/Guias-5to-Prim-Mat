@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lección 2: Traslación, Representación y Paralelismo en Sólidos Geométricos - 5to Primaria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 540px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 600px) or (max-width: 960px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 12px 65px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.4rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.2rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 0.92rem;
+            color: #444;
+            max-width: 820px;
+            line-height: 1.5;
+            margin-bottom: 0.3rem;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.3rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 15px;
+        }
+
+        #next-btn {
+            right: 15px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 1.2rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #888;
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #edf2f7;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            width: 100%;
+            max-width: 620px;
+            margin: 0.4rem auto;
+        }
+
+        .option-btn {
+            padding: 0.7rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        .content-box-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 820px;
+            flex: 1;
+            margin: 4px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 5to Primaria</span>
+            <span>Lección 2: Sólidos Geométricos y Traslación</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                
+                <!-- 1. Portada -->
+                <div class="slide active">
+                    <div class="content-box-vertical">
+                        <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">🧊📦🚚</div>
+                        <h1>Sólidos Geométricos y Traslación</h1>
+                        <h2>Lección 2 &bull; 5&deg; Primaria</h2>
+                        <p style="color: #64748b; font-style: italic;">¡Aprende las características de prismas, pirámides y cuerpos redondos, identifica caras paralelas y desplaza figuras en el espacio (traslación)!</p>
+                    </div>
+                </div>
+
+                <!-- 2. Clasificación de Sólidos Geométricos (Poliedros y Cuerpos Redondos) -->
+                <div class="slide">
+                    <h2>Clasificación de los Sólidos Geométricos</h2>
+                    <p>Los cuerpos tridimensionales ocupan un lugar en el espacio y se dividen en dos grandes grupos:</p>
+
+                    <div class="content-box-vertical" style="width: 100%; gap: 10px;">
+                        <svg width="740" height="220" viewBox="0 0 740 220" style="display: block; margin: auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                            <!-- Prisma Rectangular (x: 40 a 220) -->
+                            <polygon points="50,70 140,50 140,130 50,150" fill="#f0f9ff" stroke="#0284c7" stroke-width="3.5"/>
+                            <polygon points="140,50 210,70 210,150 140,130" fill="#e0f2fe" stroke="#0284c7" stroke-width="3.5"/>
+                            <polygon points="50,70 120,90 210,70 140,50" fill="#bae6fd" stroke="#0284c7" stroke-width="3.5"/>
+                            <text x="130" y="190" fill="#0369a1" font-weight="bold" font-size="15" text-anchor="middle">Prisma (Caras planas)</text>
+
+                            <!-- Pirámide (x: 280 a 460) -->
+                            <polygon points="370,30 310,150 430,150" fill="#fffbeb" stroke="#db6015" stroke-width="3.5"/>
+                            <polygon points="370,30 430,150 470,120" fill="#fef3c7" stroke="#db6015" stroke-width="3.5"/>
+                            <text x="390" y="190" fill="#b45309" font-weight="bold" font-size="15" text-anchor="middle">Pirámide (Cúspide)</text>
+
+                            <!-- Cilindro (x: 520 a 700) -->
+                            <ellipse cx="610" cy="55" rx="45" ry="16" fill="#f0fdf4" stroke="#22c55e" stroke-width="3.5"/>
+                            <line x1="565" y1="55" x2="565" y2="145" stroke="#22c55e" stroke-width="3.5"/>
+                            <line x1="655" y1="55" x2="655" y2="145" stroke="#22c55e" stroke-width="3.5"/>
+                            <path d="M 565,145 A 45,16 0 0,0 655,145" fill="none" stroke="#22c55e" stroke-width="3.5"/>
+                            <text x="610" y="190" fill="#166534" font-weight="bold" font-size="15" text-anchor="middle">Cilindro (Cuerpo Redondo)</text>
+                        </svg>
+
+                        <div style="width: 100%; background: #ffffff; border-left: 6px solid #0284c7; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border-radius: 0 10px 10px 0; padding: 10px 16px; text-align: left; display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 1.4rem;">💡</span>
+                            <p style="font-size: 0.92rem; color: #334155; margin: 0; font-weight: bold;">
+                                Partes Clave: Caras (superficies planas), Vértices (esquinas) y Aristas (líneas donde se unen las caras).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Paralelismo de Caras y Aristas en Prismas -->
+                <div class="slide">
+                    <h2>Paralelismo en Sólidos Geométricos</h2>
+                    <p>En los prismas y cubos existen <strong>caras opuestas paralelas</strong> que mantienen la misma distancia y nunca se tocan.</p>
+
+                    <div class="content-box-vertical" style="width: 100%; gap: 10px;">
+                        <svg width="740" height="220" viewBox="0 0 740 220" style="display: block; margin: auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                            <!-- Cubo con Caras Paralelas Destacadas -->
+                            <rect x="260" y="70" width="120" height="110" fill="#f0f9ff" stroke="#0284c7" stroke-width="4"/>
+                            <rect x="340" y="30" width="120" height="110" fill="#fffbeb" stroke="#db6015" stroke-width="4" stroke-dasharray="8,5"/>
+                            
+                            <!-- Aristas de Unión Paralelas -->
+                            <line x1="260" y1="70" x2="340" y2="30" stroke="#8b5cf6" stroke-width="3.5"/>
+                            <line x1="380" y1="70" x2="460" y2="30" stroke="#8b5cf6" stroke-width="3.5"/>
+                            <line x1="380" y1="180" x2="460" y2="140" stroke="#8b5cf6" stroke-width="3.5"/>
+                            <line x1="260" y1="180" x2="340" y2="140" stroke="#8b5cf6" stroke-width="3.5"/>
+
+                            <!-- Cartel Cara Frontal Izquierda -->
+                            <rect x="110" y="110" width="130" height="28" fill="#e0f2fe" stroke="#0284c7" stroke-width="2" rx="6"/>
+                            <text x="175" y="129" fill="#0369a1" font-weight="bold" font-size="14" text-anchor="middle">Cara Frontal</text>
+                            <line x1="240" y1="124" x2="260" y2="124" stroke="#0284c7" stroke-width="2"/>
+
+                            <!-- Cartel Cara Trasera Derecha -->
+                            <rect x="480" y="60" width="190" height="28" fill="#fffbeb" stroke="#db6015" stroke-width="2" rx="6"/>
+                            <text x="575" y="79" fill="#b45309" font-weight="bold" font-size="14" text-anchor="middle">Cara Trasera (Paralela)</text>
+                            <line x1="460" y1="74" x2="480" y2="74" stroke="#db6015" stroke-width="2"/>
+                        </svg>
+
+                        <div style="width: 100%; background: #ffffff; border-left: 6px solid #0284c7; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border-radius: 0 10px 10px 0; padding: 10px 16px; text-align: left; display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 1.4rem;">💡</span>
+                            <p style="font-size: 0.92rem; color: var(--primary-blue-dark); margin: 0; font-weight: bold;">
+                                Regla de Prismas: La base superior y la base inferior siempre son dos caras perfectamente paralelas.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Traslación de Figuras y Sólidos en el Plano -->
+                <div class="slide">
+                    <h2>¿Qué es la Traslación?</h2>
+                    <p>La <strong>traslación</strong> desdoblada desplaza una figura en línea recta <u>sin alterar su tamaño, forma u orientación</u>.</p>
+
+                    <div class="content-box-vertical" style="width: 100%; gap: 10px;">
+                        <svg width="740" height="220" viewBox="0 0 740 220" style="display: block; margin: auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                            <!-- Figura Inicial A (x:40, y:60, w:160, h:100) -->
+                            <rect x="40" y="60" width="160" height="100" fill="#f0fdf4" stroke="#22c55e" stroke-width="4" rx="8"/>
+                            <text x="120" y="118" fill="#166534" font-weight="bold" font-size="16" text-anchor="middle">Figura Original A</text>
+
+                            <!-- Vector / Flecha de Traslación Amplia Central -->
+                            <line x1="220" y1="110" x2="510" y2="110" stroke="#db6015" stroke-width="5" stroke-dasharray="8,5"/>
+                            <polygon points="530,110 500,98 500,122" fill="#db6015"/>
+                            
+                            <!-- Banner sobre la Flecha de Traslación -->
+                            <rect x="250" y="55" width="230" height="30" fill="#fffbeb" stroke="#db6015" stroke-width="2" rx="6"/>
+                            <text x="365" y="75" fill="#b45309" font-weight="bold" font-size="14" text-anchor="middle">Traslación de 6 unidades &rarr;</text>
+
+                            <!-- Figura Trasladada A' (x:540, y:60, w:160, h:100) -->
+                            <rect x="540" y="60" width="160" height="100" fill="#fffbeb" stroke="#db6015" stroke-width="4" rx="8"/>
+                            <text x="620" y="118" fill="#b45309" font-weight="bold" font-size="16" text-anchor="middle">Figura Trasladada A'</text>
+                        </svg>
+
+                        <div style="width: 100%; background: #ffffff; border-left: 6px solid var(--primary-orange); box-shadow: 0 4px 12px rgba(0,0,0,0.04); border-radius: 0 10px 10px 0; padding: 10px 16px; text-align: left; display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 1.4rem;">💡</span>
+                            <p style="font-size: 0.92rem; color: var(--primary-blue-dark); margin: 0; font-weight: bold;">
+                                Regla de Traslación: Todos los vértices del objeto recorren exactamente la misma distancia en la misma dirección.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Ejemplo 1 Resuelto Paso a Paso: Conteo de Caras, Vértices y Aristas -->
+                <div class="slide">
+                    <h2>Ejemplo 1: Conteo de Elementos en un Prisma Triangular</h2>
+                    <p style="margin-bottom: 2px;">Analizamos los elementos geométricos del prisma triangular desglosado paso a paso:</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 10px 18px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <div style="display: flex; gap: 15px; width: 100%; align-items: center;">
+                            <div style="flex: 1; max-width: 320px;">
+                                <svg width="280" height="180" viewBox="0 0 280 180" style="display: block; margin: auto; background: #f8fafc; border-radius: 12px;">
+                                    <!-- Prisma Triangular -->
+                                    <polygon points="70,40 180,40 125,75" fill="#bae6fd" stroke="#0284c7" stroke-width="3"/>
+                                    <polygon points="70,140 180,140 125,175" fill="#e0f2fe" stroke="#0284c7" stroke-width="3"/>
+                                    <line x1="70" y1="40" x2="70" y2="140" stroke="#0284c7" stroke-width="3"/>
+                                    <line x1="180" y1="40" x2="180" y2="140" stroke="#0284c7" stroke-width="3"/>
+                                    <line x1="125" y1="75" x2="125" y2="175" stroke="#0284c7" stroke-width="3"/>
+                                </svg>
+                            </div>
+                            <div style="flex: 1; text-align: left; font-size: 0.88rem; color: #334155;">
+                                <p style="margin-bottom: 4px; color: #0284c7;">1&deg;) <strong>Caras (5):</strong> 2 bases triangulares + 3 caras laterales rectangulares.</p>
+                                <p style="margin-bottom: 4px; color: var(--primary-orange);">2&deg;) <strong>Vértices (6):</strong> 3 esquinas arriba + 3 esquinas abajo.</p>
+                                <p style="margin-bottom: 4px; color: #166534;">3&deg;) <strong>Aristas (9):</strong> 3 arriba + 3 abajo + 3 verticales.</p>
+                                <p style="margin-bottom: 0; color: #6b21a8; font-weight: bold;">4&deg;) <strong>Bases Paralelas:</strong> Los 2 triángulos de las bases son paralelos.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Ejemplo 2 Resuelto Paso a Paso: Traslación en Coordenadas -->
+                <div class="slide">
+                    <h2>Ejemplo 2: Traslación de un Punto en la Cuadrícula</h2>
+                    <p style="margin-bottom: 2px;">El punto $P(2, 3)$ se traslada <strong>4 unidades a la derecha</strong>. ¿Cuáles son sus nuevas coordenadas $P'$?</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 10px 18px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <div style="display: flex; gap: 15px; width: 100%; align-items: center;">
+                            <div style="flex: 1; max-width: 320px;">
+                                <svg width="280" height="180" viewBox="0 0 280 180" style="display: block; margin: auto; background: #f8fafc; border-radius: 12px;">
+                                    <line x1="30" y1="150" x2="260" y2="150" stroke="#0284c7" stroke-width="3"/>
+                                    <polygon points="270,150 255,144 255,156" fill="#0284c7"/>
+                                    <line x1="30" y1="150" x2="30" y2="25" stroke="#db6015" stroke-width="3"/>
+                                    <polygon points="30,15 24,28 36,28" fill="#db6015"/>
+
+                                    <!-- Punto P(2,3) -->
+                                    <circle cx="90" cy="90" r="6" fill="#db6015"/>
+                                    <text x="80" y="80" fill="#db6015" font-weight="bold" font-size="13">P(2,3)</text>
+
+                                    <!-- Flecha de Traslación (+4 en X) -->
+                                    <line x1="90" y1="90" x2="200" y2="90" stroke="#22c55e" stroke-width="3" stroke-dasharray="4,3"/>
+                                    <polygon points="210,90 198,84 198,96" fill="#22c55e"/>
+
+                                    <!-- Punto Trasladado P'(6,3) -->
+                                    <circle cx="210" cy="90" r="6" fill="#166534"/>
+                                    <text x="210" y="80" fill="#166534" font-weight="bold" font-size="13">P'(6,3)</text>
+                                </svg>
+                            </div>
+                            <div style="flex: 1; text-align: left; font-size: 0.88rem; color: #334155;">
+                                <p style="margin-bottom: 4px;">1&deg;) <strong>Punto Inicial:</strong> $P = (2, 3)$ en el plano.</p>
+                                <p style="margin-bottom: 4px; color: #0284c7;">2&deg;) <strong>Regla de Movimiento:</strong> Sumar +4 al valor del Eje X.</p>
+                                <p style="margin-bottom: 4px; color: var(--primary-orange);">3&deg;) <strong>Cálculo:</strong> Nueva coordenada $X = 2 + 4 = 6$. La $Y$ se mantiene en 3.</p>
+                                <p style="margin-bottom: 0; color: #166534; font-weight: bold;">4&deg;) <strong>Resultado:</strong> El punto trasladado es $P' = (6, 3)$.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. QUIZ 1 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 1: Propiedades de la Traslación</h2>
+                        <p>Al trasladar un sólido geométrico o figura plana en una dirección...</p>
+                        <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Qué sucede con su forma y tamaño originales?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(1, true, this, '¡Correcto! La traslación conserva intactos el tamaño, la forma y la orientación.', '')">A) Permanecen exactamente iguales (se conservan).</button>
+                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'La figura solo se mueve de lugar, no cambia de tamaño.')">B) La figura se vuelve más grande.</button>
+                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'La traslación no cambia la forma de la figura.')">C) La figura se deforma por completo.</button>
+                        </div>
+                        <div id="feedback-1" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 8. QUIZ 2 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 2: Caras Paralelas en Sólidos</h2>
+                        <p>En una caja rectangular o cubo (prisma), la <strong>base superior</strong> y la <strong>base inferior</strong> son...</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(2, true, this, '¡Excelente! Las dos bases opuestas de un prisma son caras paralelas.', '')">A) Caras opuestas totalmente paralelas.</button>
+                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Las bases de un prisma nunca se cruzan.')">B) Caras secantes que se cruzan.</button>
+                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Son caras iguales y paralelas.')">C) Caras desiguales e inclinadas.</button>
+                        </div>
+                        <div id="feedback-2" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 9. QUIZ 3 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 3: Sólidos Geométricos</h2>
+                        <p>¿Qué cuerpo geométrico se caracteriza por tener una <strong>base plana y terminar en una sola punta o cúspide</strong>?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(3, true, this, '¡Fantástico! Las pirámides tienen una base y terminan en una cúspide.', '')">A) La Pirámide</button>
+                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'El prisma tiene 2 bases paralelas idénticas.')">B) El Prisma</button>
+                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'El cilindro tiene 2 bases circulares.')">C) El Cilindro</button>
+                        </div>
+                        <div id="feedback-3" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 10. Final -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <div style="font-size: 80px;">🎯</div>
+                        <h2>¡Misión Cumplida!</h2>
+                        <p>¡Has dominado la representación, paralelismo y traslación de sólidos geométricos!</p>
+                        <button onclick="goToSlide(0)"
+                            style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Volver a repasar</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 10</span>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 10;
+        const slideContainer = document.getElementById('slide-container');
+        const slideNumDisplay = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        function updateSlide() {
+            slideContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slideNumDisplay.textContent = `${currentSlide + 1} / ${totalSlides}`;
+            
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(num) {
+            currentSlide = num;
+            updateSlide();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        function checkQuiz(quizNum, isCorrect, btnElement, correctMsg, wrongMsg) {
+            const container = btnElement.parentElement;
+            const buttons = container.querySelectorAll('.option-btn');
+            const feedback = document.getElementById(`feedback-${quizNum}`);
+
+            buttons.forEach(btn => {
+                btn.style.borderColor = '#e2e8f0';
+                btn.style.background = 'white';
+                btn.style.color = '#1e293b';
+            });
+
+            if (isCorrect) {
+                btnElement.style.borderColor = 'var(--primary-green)';
+                btnElement.style.background = '#f0fdf4';
+                btnElement.style.color = '#166534';
+                feedback.style.color = 'var(--primary-green)';
+                feedback.textContent = correctMsg;
+            } else {
+                btnElement.style.borderColor = 'var(--primary-red)';
+                btnElement.style.background = '#fef2f2';
+                btnElement.style.color = '#991b1b';
+                feedback.style.color = '#991b1b';
+                feedback.textContent = wrongMsg;
+            }
+        }
+
+        updateSlide();
+    </script>
+</body>
+
+</html>

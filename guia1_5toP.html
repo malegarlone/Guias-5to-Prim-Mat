@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lección 1: Triángulos y Cuadriláteros - 5to Primaria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 540px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 600px) or (max-width: 960px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 12px 65px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.4rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.2rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 0.92rem;
+            color: #444;
+            max-width: 820px;
+            line-height: 1.5;
+            margin-bottom: 0.3rem;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.3rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn {
+            left: 15px;
+        }
+
+        #next-btn {
+            right: 15px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 1.2rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #888;
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #edf2f7;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            width: 100%;
+            max-width: 620px;
+            margin: 0.4rem auto;
+        }
+
+        .option-btn {
+            padding: 0.7rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        .content-box-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 820px;
+            flex: 1;
+            margin: 4px 0;
+        }
+
+        .interactive-btn {
+            background: var(--primary-orange);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .interactive-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(219, 96, 21, 0.3);
+            background: #c4500e;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 5to Primaria</span>
+            <span>Lección 1: Triángulos y Cuadriláteros</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                
+                <!-- 1. Portada -->
+                <div class="slide active">
+                    <div class="content-box-vertical">
+                        <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">🔺🟦📐</div>
+                        <h1>Triángulos y Cuadriláteros</h1>
+                        <h2>Lección 1 &bull; 5&deg; Primaria</h2>
+                        <p style="color: #64748b; font-style: italic;">¡Aprende las propiedades geométricas de la suma de ángulos interiores (180&deg; en triángulos y 360&deg; en cuadriláteros) y el trazo de diagonales!</p>
+                    </div>
+                </div>
+
+                <!-- 2. Propiedad Fundamental de Triángulos: Suma de Ángulos Interiores -->
+                <div class="slide">
+                    <h2>Suma de Ángulos Interiores en Triángulos</h2>
+                    <p>En <strong>CUALQUIER triángulo del mundo</strong>, sin importar su tamaño o forma, la suma de sus 3 ángulos interiores siempre es igual a <strong>180&deg;</strong>.</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 14px 20px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <svg width="480" height="200" viewBox="0 0 480 200" style="display: block; margin: auto;">
+                            <!-- Triángulo -->
+                            <polygon points="240,25 70,165 410,165" fill="#f0fdf4" stroke="#22c55e" stroke-width="4"/>
+                            
+                            <!-- Ángulos con Arcos -->
+                            <path d="M 95,165 A 25,25 0 0,0 80,145" fill="none" stroke="#db6015" stroke-width="3"/>
+                            <text x="110" y="155" fill="#db6015" font-weight="bold" font-size="15">A = 60&deg;</text>
+
+                            <path d="M 385,165 A 25,25 0 0,1 370,145" fill="none" stroke="#0284c7" stroke-width="3"/>
+                            <text x="330" y="155" fill="#0284c7" font-weight="bold" font-size="15">B = 60&deg;</text>
+
+                            <path d="M 225,45 A 25,25 0 0,0 255,45" fill="none" stroke="#8b5cf6" stroke-width="3"/>
+                            <text x="240" y="70" fill="#6b21a8" font-weight="bold" font-size="15" text-anchor="middle">C = 60&deg;</text>
+                        </svg>
+
+                        <div style="background: #f0fdf4; border: 2px solid var(--primary-green); border-radius: 12px; padding: 10px 20px; margin-top: 8px; width: 100%;">
+                            <p style="font-size: 1.15rem; font-weight: bold; color: #166534; margin: 0;">
+                                Teorema de Ángulos: A + B + C = 60&deg; + 60&deg; + 60&deg; = 180&deg;
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Propiedad Fundamental de Cuadriláteros: Suma de Ángulos Interiores -->
+                <div class="slide">
+                    <h2>Suma de Ángulos Interiores en Cuadriláteros</h2>
+                    <p>Al dividir un cuadrilátero en 2 triángulos mediante una diagonal, descubrimos que la suma de sus 4 ángulos interiores siempre es igual a <strong>360&deg;</strong>.</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 14px 20px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <svg width="480" height="200" viewBox="0 0 480 200" style="display: block; margin: auto;">
+                            <!-- Cuadrilátero Rectángulo -->
+                            <rect x="80" y="35" width="320" height="130" fill="#f0f9ff" stroke="#0284c7" stroke-width="4"/>
+                            
+                            <!-- Diagonal que lo divide en 2 triángulos (180° + 180° = 360°) -->
+                            <line x1="80" y1="35" x2="400" y2="165" stroke="#db6015" stroke-dasharray="6,4" stroke-width="3"/>
+                            
+                            <!-- Esquinas de 90° -->
+                            <rect x="80" y="35" width="15" height="15" fill="none" stroke="#0284c7" stroke-width="2"/>
+                            <rect x="385" y="35" width="15" height="15" fill="none" stroke="#0284c7" stroke-width="2"/>
+                            <rect x="385" y="150" width="15" height="15" fill="none" stroke="#0284c7" stroke-width="2"/>
+                            <rect x="80" y="150" width="15" height="15" fill="none" stroke="#0284c7" stroke-width="2"/>
+
+                            <text x="240" y="95" fill="#db6015" font-weight="bold" font-size="14" text-anchor="middle">Diagonal (2 Triángulos)</text>
+                        </svg>
+
+                        <div style="background: #fffbeb; border: 2px solid var(--primary-orange); border-radius: 12px; padding: 10px 20px; margin-top: 8px; width: 100%;">
+                            <p style="font-size: 1.15rem; font-weight: bold; color: var(--primary-blue-dark); margin: 0;">
+                                Teorema de Cuadriláteros: 90&deg; + 90&deg; + 90&deg; + 90&deg; = 360&deg; &emsp;(o 180&deg; &times; 2)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Diagonales de un Polígono -->
+                <div class="slide">
+                    <h2>Diagonales en Triángulos y Cuadriláteros</h2>
+                    <p>Una <strong>diagonal</strong> es un segmento de recta que une dos vértices no consecutivos de un polígono.</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 12px 16px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <svg width="540" height="200" viewBox="0 0 540 200" style="display: block; margin: auto;">
+                            <!-- Triángulo (0 Diagonales) -->
+                            <polygon points="120,35 50,155 190,155" fill="#f3e8ff" stroke="#8b5cf6" stroke-width="3.5"/>
+                            <text x="120" y="180" fill="#6b21a8" font-weight="bold" font-size="15" text-anchor="middle">Triángulo: 0 Diagonales</text>
+                            <text x="120" y="195" fill="#64748b" font-size="12" text-anchor="middle">Todos sus vértices son consecutivos</text>
+
+                            <!-- Cuadrado (2 Diagonales) -->
+                            <rect x="330" y="35" width="120" height="120" fill="#f0fdf4" stroke="#22c55e" stroke-width="3.5"/>
+                            <!-- 2 Diagonales cruzadas -->
+                            <line x1="330" y1="35" x2="450" y2="155" stroke="#db6015" stroke-width="2.5" stroke-dasharray="4,3"/>
+                            <line x1="450" y1="35" x2="330" y2="155" stroke="#db6015" stroke-width="2.5" stroke-dasharray="4,3"/>
+                            <text x="390" y="180" fill="#166534" font-weight="bold" font-size="15" text-anchor="middle">Cuadrilátero: 2 Diagonales</text>
+                        </svg>
+
+                        <div style="background: #f3e8ff; border: 1.5px solid #8b5cf6; border-radius: 10px; padding: 6px 14px; margin-top: 6px; width: 100%;">
+                            <p style="font-size: 0.85rem; color: #6b21a8; margin: 0; font-weight: bold;">
+                                💡 Regla Importante: El triángulo es el único polígono que no tiene ninguna diagonal posible.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Ejemplo 1 Resuelto Paso a Paso: Ángulo Faltante en Triángulo -->
+                <div class="slide">
+                    <h2>Ejemplo 1: Encontrar el Ángulo Faltante en un Triángulo</h2>
+                    <p style="margin-bottom: 2px;">Un triángulo tiene dos ángulos de <strong>50&deg; y 70&deg;</strong>. ¿Cuánto mide el tercer ángulo $X$?</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 10px 18px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <div style="display: flex; gap: 15px; width: 100%; align-items: center;">
+                            <div style="flex: 1; max-width: 320px;">
+                                <svg width="280" height="180" viewBox="0 0 280 180" style="display: block; margin: auto; background: #f8fafc; border-radius: 12px;">
+                                    <polygon points="140,25 40,150 240,150" fill="#f0fdf4" stroke="#22c55e" stroke-width="3"/>
+                                    <text x="65" y="145" fill="#db6015" font-weight="bold" font-size="14">50&deg;</text>
+                                    <text x="210" y="145" fill="#0284c7" font-weight="bold" font-size="14">70&deg;</text>
+                                    <text x="140" y="55" fill="#6b21a8" font-weight="bold" font-size="16" text-anchor="middle">X = ?</text>
+                                </svg>
+                            </div>
+                            <div style="flex: 1; text-align: left; font-size: 0.88rem; color: #334155;">
+                                <p style="margin-bottom: 4px;">1&deg;) <strong>Teorema:</strong> La suma de los 3 ángulos debe ser 180&deg;.</p>
+                                <p style="margin-bottom: 4px; color: #0284c7;">2&deg;) <strong>Sumar conocidos:</strong> 50&deg; + 70&deg; = 120&deg;.</p>
+                                <p style="margin-bottom: 4px; color: var(--primary-orange);">3&deg;) <strong>Restar de 180&deg;:</strong> X = 180&deg; - 120&deg; = 60&deg;.</p>
+                                <p style="margin-bottom: 0; color: #166534; font-weight: bold;">4&deg;) <strong>Resultado:</strong> El ángulo faltante X mide 60&deg;.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Ejemplo 2 Resuelto Paso a Paso: Ángulo Faltante en Cuadrilátero -->
+                <div class="slide">
+                    <h2>Ejemplo 2: Ángulo Faltante en un Cuadrilátero</h2>
+                    <p style="margin-bottom: 2px;">Un cuadrilátero tiene 3 ángulos de <strong>100&deg;, 80&deg; y 110&deg;</strong>. ¿Cuánto mide el cuarto ángulo $Y$?</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 10px 18px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <div style="display: flex; gap: 15px; width: 100%; align-items: center;">
+                            <div style="flex: 1; max-width: 320px;">
+                                <svg width="280" height="180" viewBox="0 0 280 180" style="display: block; margin: auto; background: #f8fafc; border-radius: 12px;">
+                                    <polygon points="60,35 220,35 240,150 40,150" fill="#f0f9ff" stroke="#0284c7" stroke-width="3"/>
+                                    <text x="80" y="55" fill="#0284c7" font-weight="bold" font-size="13">100&deg;</text>
+                                    <text x="200" y="55" fill="#0284c7" font-weight="bold" font-size="13">80&deg;</text>
+                                    <text x="210" y="140" fill="#0284c7" font-weight="bold" font-size="13">110&deg;</text>
+                                    <text x="65" y="140" fill="#db6015" font-weight="bold" font-size="16">Y = ?</text>
+                                </svg>
+                            </div>
+                            <div style="flex: 1; text-align: left; font-size: 0.88rem; color: #334155;">
+                                <p style="margin-bottom: 4px;">1&deg;) <strong>Teorema:</strong> La suma de los 4 ángulos debe ser 360&deg;.</p>
+                                <p style="margin-bottom: 4px; color: #0284c7;">2&deg;) <strong>Sumar conocidos:</strong> 100&deg; + 80&deg; + 110&deg; = 290&deg;.</p>
+                                <p style="margin-bottom: 4px; color: var(--primary-orange);">3&deg;) <strong>Restar de 360&deg;:</strong> Y = 360&deg; - 290&deg; = 70&deg;.</p>
+                                <p style="margin-bottom: 0; color: #0369a1; font-weight: bold;">4&deg;) <strong>Resultado:</strong> El ángulo faltante Y mide 70&deg;.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. Laboratorio Interactivo: Calculadora de Ángulo Faltante -->
+                <div class="slide">
+                    <h2>¡Laboratorio Interactivo de Ángulos Faltantes!</h2>
+                    <p>Haz clic para cambiar las medidas de los dos ángulos de un triángulo y calcular el ángulo faltante $C$:</p>
+
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 12px 16px; border-radius: 16px; border: 2px solid #cbd5e1; max-width: 840px;">
+                        <div style="display: flex; gap: 15px; width: 100%; align-items: center; justify-content: center;">
+                            
+                            <div style="flex: 1.1; max-width: 380px;">
+                                <svg width="340" height="190" viewBox="0 0 340 190" style="display: block; margin: auto; background: #f8fafc; border-radius: 12px; border: 1px solid #cbd5e1;">
+                                    <polygon points="170,25 50,155 290,155" fill="#fffbeb" stroke="#db6015" stroke-width="4"/>
+                                    <text id="lbl-ang-a" x="75" y="145" fill="#db6015" font-weight="bold" font-size="14">A = 40&deg;</text>
+                                    <text id="lbl-ang-b" x="250" y="145" fill="#0284c7" font-weight="bold" font-size="14">B = 80&deg;</text>
+                                    <text id="lbl-ang-c" x="170" y="55" fill="#166534" font-weight="bold" font-size="16" text-anchor="middle">C = 60&deg;</text>
+                                </svg>
+                            </div>
+
+                            <div style="flex: 0.9; text-align: left; display: flex; flex-direction: column; gap: 8px;">
+                                <button class="option-btn" style="border-color: #db6015;" onclick="calcAngles(40, 80)">Caso 1: A=40&deg;, B=80&deg; &rarr; C=60&deg;</button>
+                                <button class="option-btn" style="border-color: #0284c7;" onclick="calcAngles(30, 90)">Caso 2: A=30&deg;, B=90&deg; &rarr; C=60&deg;</button>
+                                <button class="option-btn" style="border-color: #22c55e;" onclick="calcAngles(70, 70)">Caso 3: A=70&deg;, B=70&deg; &rarr; C=40&deg;</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. QUIZ 1 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 1: Suma de Ángulos en Triángulos</h2>
+                        <p>¿A cuántos grados equivale siempre la <strong>suma de los 3 ángulos interiores</strong> de un triángulo?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(1, true, this, '¡Correcto! En cualquier triángulo la suma de ángulos interiores es 180°.', '')">A) Exactamente 180&deg;</button>
+                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', '360° es la suma de los ángulos de un cuadrilátero de 4 lados.')">B) Exactamente 360&deg;</button>
+                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', '90° es la medida de un solo ángulo recto.')">C) Exactamente 90&deg;</button>
+                        </div>
+                        <div id="feedback-1" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 9. QUIZ 2 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 2: Diagonales en Polígonos</h2>
+                        <p>¿Cuántas diagonales se pueden trazar desde los vértices de un <strong>triángulo</strong>?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(2, true, this, '¡Excelente! El triángulo es el único polígono con 0 diagonales.', '')">A) Cero (0) diagonales</button>
+                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Los cuadriláteros tienen 2 diagonales.')">B) Dos (2) diagonales</button>
+                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Los vértices del triángulo son consecutivos.')">C) Tres (3) diagonales</button>
+                        </div>
+                        <div id="feedback-2" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 10. QUIZ 3 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 3: Ángulo Faltante en Cuadriláteros</h2>
+                        <p>Tres ángulos de un cuadrilátero miden <strong>90&deg;, 90&deg; y 90&deg;</strong>.</p>
+                        <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuánto debe medir el cuarto ángulo para sumar 360&deg;?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(3, true, this, '¡Fantástico! 360° - (90° + 90° + 90°) = 90°.', '')">A) 90&deg;</button>
+                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', '90° x 3 = 270°. Para llegar a 360° faltan 90°.')">B) 180&deg;</button>
+                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'Recuerda que la suma debe dar 360°.')">C) 45&deg;</button>
+                        </div>
+                        <div id="feedback-3" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- 11. Final -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <div style="font-size: 80px;">🎯</div>
+                        <h2>¡Misión Cumplida!</h2>
+                        <p>¡Has dominado las propiedades de ángulos y diagonales en triángulos y cuadriláteros!</p>
+                        <button onclick="goToSlide(0)"
+                            style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Volver a repasar</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 11</span>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 11;
+        const slideContainer = document.getElementById('slide-container');
+        const slideNumDisplay = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        function updateSlide() {
+            slideContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slideNumDisplay.textContent = `${currentSlide + 1} / ${totalSlides}`;
+            
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(num) {
+            currentSlide = num;
+            updateSlide();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        function calcAngles(a, b) {
+            const c = 180 - (a + b);
+            document.getElementById('lbl-ang-a').textContent = `A = ${a}°`;
+            document.getElementById('lbl-ang-b').textContent = `B = ${b}°`;
+            document.getElementById('lbl-ang-c').textContent = `C = ${c}°`;
+        }
+
+        function checkQuiz(quizNum, isCorrect, btnElement, correctMsg, wrongMsg) {
+            const container = btnElement.parentElement;
+            const buttons = container.querySelectorAll('.option-btn');
+            const feedback = document.getElementById(`feedback-${quizNum}`);
+
+            buttons.forEach(btn => {
+                btn.style.borderColor = '#e2e8f0';
+                btn.style.background = 'white';
+                btn.style.color = '#1e293b';
+            });
+
+            if (isCorrect) {
+                btnElement.style.borderColor = 'var(--primary-green)';
+                btnElement.style.background = '#f0fdf4';
+                btnElement.style.color = '#166534';
+                feedback.style.color = 'var(--primary-green)';
+                feedback.textContent = correctMsg;
+            } else {
+                btnElement.style.borderColor = 'var(--primary-red)';
+                btnElement.style.background = '#fef2f2';
+                btnElement.style.color = '#991b1b';
+                feedback.style.color = '#991b1b';
+                feedback.textContent = wrongMsg;
+            }
+        }
+
+        updateSlide();
+    </script>
+</body>
+
+</html>
