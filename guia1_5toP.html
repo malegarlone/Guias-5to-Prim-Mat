@@ -4,11 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lección 1: Triángulos y Cuadriláteros - 5to Primaria</title>
+    <title>Lección 1: Triángulos y Ángulos Opuestos por el Vértice - 5to Primaria</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -165,13 +164,8 @@
             pointer-events: none;
         }
 
-        #prev-btn {
-            left: 15px;
-        }
-
-        #next-btn {
-            right: 15px;
-        }
+        #prev-btn { left: 15px; }
+        #next-btn { right: 15px; }
 
         .slide-indicators {
             position: absolute;
@@ -264,114 +258,48 @@
     <div id="app-container">
         <header id="global-header">
             <span>Colegio Escolaris - Matemática 5to Primaria</span>
-            <span>Lección 1: Triángulos y Cuadriláteros</span>
+            <span>Lección 1: Triángulos y Ángulos Opuestos por el Vértice</span>
         </header>
 
         <div id="viewport">
             <div class="slide-container" id="slide-container">
                 
-                <!-- 1. Portada -->
+                <!-- Slide 1: Portada -->
                 <div class="slide active">
                     <div class="content-box-vertical">
-                        <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">🔺🟦📐</div>
-                        <h1>Triángulos y Cuadriláteros</h1>
+                        <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">🔺✂️📐</div>
+                        <h1>Triángulos y Ángulos Opuestos</h1>
                         <h2>Lección 1 &bull; 5&deg; Primaria</h2>
-                        <p style="color: #64748b; font-style: italic;">¡Aprende las propiedades geométricas de la suma de ángulos interiores (180&deg; en triángulos y 360&deg; en cuadriláteros) y el trazo de diagonales!</p>
+                        <p style="color: #64748b; font-style: italic;">¡Aprende sobre la suma de ángulos interiores de los triángulos y descubre cómo funcionan las líneas que se cruzan!</p>
                     </div>
                 </div>
 
-                <!-- 2. Propiedad Fundamental de Triángulos: Suma de Ángulos Interiores -->
+                <!-- Slide 2: Triángulos Teorema -->
                 <div class="slide">
                     <h2>Suma de Ángulos Interiores en Triángulos</h2>
-                    <p>En <strong>CUALQUIER triángulo del mundo</strong>, sin importar su tamaño o forma, la suma de sus 3 ángulos interiores siempre es igual a <strong>180&deg;</strong>.</p>
-
+                    <p>En <strong>cualquier triángulo</strong>, sin importar su tamaño o forma, la suma de sus 3 ángulos interiores siempre es exactamente <strong>180&deg;</strong>.</p>
                     <div class="content-box-vertical" style="background: #ffffff; padding: 14px 20px; border-radius: 16px; border: 2px solid #cbd5e1;">
                         <svg width="480" height="200" viewBox="0 0 480 200" style="display: block; margin: auto;">
-                            <!-- Triángulo -->
                             <polygon points="240,25 70,165 410,165" fill="#f0fdf4" stroke="#22c55e" stroke-width="4"/>
-                            
-                            <!-- Ángulos con Arcos -->
                             <path d="M 95,165 A 25,25 0 0,0 80,145" fill="none" stroke="#db6015" stroke-width="3"/>
                             <text x="110" y="155" fill="#db6015" font-weight="bold" font-size="15">A = 60&deg;</text>
-
                             <path d="M 385,165 A 25,25 0 0,1 370,145" fill="none" stroke="#0284c7" stroke-width="3"/>
                             <text x="330" y="155" fill="#0284c7" font-weight="bold" font-size="15">B = 60&deg;</text>
-
                             <path d="M 225,45 A 25,25 0 0,0 255,45" fill="none" stroke="#8b5cf6" stroke-width="3"/>
                             <text x="240" y="70" fill="#6b21a8" font-weight="bold" font-size="15" text-anchor="middle">C = 60&deg;</text>
                         </svg>
-
                         <div style="background: #f0fdf4; border: 2px solid var(--primary-green); border-radius: 12px; padding: 10px 20px; margin-top: 8px; width: 100%;">
                             <p style="font-size: 1.15rem; font-weight: bold; color: #166534; margin: 0;">
-                                Teorema de Ángulos: A + B + C = 60&deg; + 60&deg; + 60&deg; = 180&deg;
+                                Teorema: A + B + C = 60&deg; + 60&deg; + 60&deg; = 180&deg;
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- 3. Propiedad Fundamental de Cuadriláteros: Suma de Ángulos Interiores -->
+                <!-- Slide 3: Ejemplo Triángulo -->
                 <div class="slide">
-                    <h2>Suma de Ángulos Interiores en Cuadriláteros</h2>
-                    <p>Al dividir un cuadrilátero en 2 triángulos mediante una diagonal, descubrimos que la suma de sus 4 ángulos interiores siempre es igual a <strong>360&deg;</strong>.</p>
-
-                    <div class="content-box-vertical" style="background: #ffffff; padding: 14px 20px; border-radius: 16px; border: 2px solid #cbd5e1;">
-                        <svg width="480" height="200" viewBox="0 0 480 200" style="display: block; margin: auto;">
-                            <!-- Cuadrilátero Rectángulo -->
-                            <rect x="80" y="35" width="320" height="130" fill="#f0f9ff" stroke="#0284c7" stroke-width="4"/>
-                            
-                            <!-- Diagonal que lo divide en 2 triángulos (180° + 180° = 360°) -->
-                            <line x1="80" y1="35" x2="400" y2="165" stroke="#db6015" stroke-dasharray="6,4" stroke-width="3"/>
-                            
-                            <!-- Esquinas de 90° -->
-                            <rect x="80" y="35" width="15" height="15" fill="none" stroke="#0284c7" stroke-width="2"/>
-                            <rect x="385" y="35" width="15" height="15" fill="none" stroke="#0284c7" stroke-width="2"/>
-                            <rect x="385" y="150" width="15" height="15" fill="none" stroke="#0284c7" stroke-width="2"/>
-                            <rect x="80" y="150" width="15" height="15" fill="none" stroke="#0284c7" stroke-width="2"/>
-
-                            <text x="240" y="95" fill="#db6015" font-weight="bold" font-size="14" text-anchor="middle">Diagonal (2 Triángulos)</text>
-                        </svg>
-
-                        <div style="background: #fffbeb; border: 2px solid var(--primary-orange); border-radius: 12px; padding: 10px 20px; margin-top: 8px; width: 100%;">
-                            <p style="font-size: 1.15rem; font-weight: bold; color: var(--primary-blue-dark); margin: 0;">
-                                Teorema de Cuadriláteros: 90&deg; + 90&deg; + 90&deg; + 90&deg; = 360&deg; &emsp;(o 180&deg; &times; 2)
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 4. Diagonales de un Polígono -->
-                <div class="slide">
-                    <h2>Diagonales en Triángulos y Cuadriláteros</h2>
-                    <p>Una <strong>diagonal</strong> es un segmento de recta que une dos vértices no consecutivos de un polígono.</p>
-
-                    <div class="content-box-vertical" style="background: #ffffff; padding: 12px 16px; border-radius: 16px; border: 2px solid #cbd5e1;">
-                        <svg width="540" height="200" viewBox="0 0 540 200" style="display: block; margin: auto;">
-                            <!-- Triángulo (0 Diagonales) -->
-                            <polygon points="120,35 50,155 190,155" fill="#f3e8ff" stroke="#8b5cf6" stroke-width="3.5"/>
-                            <text x="120" y="180" fill="#6b21a8" font-weight="bold" font-size="15" text-anchor="middle">Triángulo: 0 Diagonales</text>
-                            <text x="120" y="195" fill="#64748b" font-size="12" text-anchor="middle">Todos sus vértices son consecutivos</text>
-
-                            <!-- Cuadrado (2 Diagonales) -->
-                            <rect x="330" y="35" width="120" height="120" fill="#f0fdf4" stroke="#22c55e" stroke-width="3.5"/>
-                            <!-- 2 Diagonales cruzadas -->
-                            <line x1="330" y1="35" x2="450" y2="155" stroke="#db6015" stroke-width="2.5" stroke-dasharray="4,3"/>
-                            <line x1="450" y1="35" x2="330" y2="155" stroke="#db6015" stroke-width="2.5" stroke-dasharray="4,3"/>
-                            <text x="390" y="180" fill="#166534" font-weight="bold" font-size="15" text-anchor="middle">Cuadrilátero: 2 Diagonales</text>
-                        </svg>
-
-                        <div style="background: #f3e8ff; border: 1.5px solid #8b5cf6; border-radius: 10px; padding: 6px 14px; margin-top: 6px; width: 100%;">
-                            <p style="font-size: 0.85rem; color: #6b21a8; margin: 0; font-weight: bold;">
-                                💡 Regla Importante: El triángulo es el único polígono que no tiene ninguna diagonal posible.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 5. Ejemplo 1 Resuelto Paso a Paso: Ángulo Faltante en Triángulo -->
-                <div class="slide">
-                    <h2>Ejemplo 1: Encontrar el Ángulo Faltante en un Triángulo</h2>
+                    <h2>Ejemplo: Encontrar el Ángulo Faltante</h2>
                     <p style="margin-bottom: 2px;">Un triángulo tiene dos ángulos de <strong>50&deg; y 70&deg;</strong>. ¿Cuánto mide el tercer ángulo $X$?</p>
-
                     <div class="content-box-vertical" style="background: #ffffff; padding: 10px 18px; border-radius: 16px; border: 2px solid #cbd5e1;">
                         <div style="display: flex; gap: 15px; width: 100%; align-items: center;">
                             <div style="flex: 1; max-width: 320px;">
@@ -383,7 +311,7 @@
                                 </svg>
                             </div>
                             <div style="flex: 1; text-align: left; font-size: 0.88rem; color: #334155;">
-                                <p style="margin-bottom: 4px;">1&deg;) <strong>Teorema:</strong> La suma de los 3 ángulos debe ser 180&deg;.</p>
+                                <p style="margin-bottom: 4px;">1&deg;) <strong>Teorema:</strong> La suma total es 180&deg;.</p>
                                 <p style="margin-bottom: 4px; color: #0284c7;">2&deg;) <strong>Sumar conocidos:</strong> 50&deg; + 70&deg; = 120&deg;.</p>
                                 <p style="margin-bottom: 4px; color: var(--primary-orange);">3&deg;) <strong>Restar de 180&deg;:</strong> X = 180&deg; - 120&deg; = 60&deg;.</p>
                                 <p style="margin-bottom: 0; color: #166534; font-weight: bold;">4&deg;) <strong>Resultado:</strong> El ángulo faltante X mide 60&deg;.</p>
@@ -392,40 +320,78 @@
                     </div>
                 </div>
 
-                <!-- 6. Ejemplo 2 Resuelto Paso a Paso: Ángulo Faltante en Cuadrilátero -->
+                <!-- Slide 4: Ángulos Opuestos - Concepto -->
                 <div class="slide">
-                    <h2>Ejemplo 2: Ángulo Faltante en un Cuadrilátero</h2>
-                    <p style="margin-bottom: 2px;">Un cuadrilátero tiene 3 ángulos de <strong>100&deg;, 80&deg; y 110&deg;</strong>. ¿Cuánto mide el cuarto ángulo $Y$?</p>
+                    <h2>Ángulos Opuestos por el Vértice</h2>
+                    <p>Imagina unas tijeras abiertas o el cruce de dos calles. Cuando dos líneas se cruzan, el punto central se llama <strong>vértice</strong>. Los ángulos que quedan "espalda con espalda" se llaman <strong>opuestos por el vértice</strong> y <span style="color: var(--primary-orange); font-weight: bold;">siempre miden lo mismo</span>.</p>
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 14px 20px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <svg width="480" height="200" viewBox="0 0 480 200" style="display: block; margin: auto;">
+                            <!-- Líneas simulando tijeras -->
+                            <line x1="80" y1="30" x2="400" y2="170" stroke="#0284c7" stroke-width="5"/>
+                            <line x1="80" y1="170" x2="400" y2="30" stroke="#0284c7" stroke-width="5"/>
+                            
+                            <!-- Arcos Izquierda y Derecha -->
+                            <path d="M 210,110 A 30,30 0 0,1 210,90" fill="none" stroke="#22c55e" stroke-width="3"/>
+                            <path d="M 270,90 A 30,30 0 0,1 270,110" fill="none" stroke="#22c55e" stroke-width="3"/>
+                            <text x="190" y="105" fill="#166534" font-weight="bold" font-size="16" text-anchor="middle">50&deg;</text>
+                            <text x="290" y="105" fill="#166534" font-weight="bold" font-size="16" text-anchor="middle">50&deg;</text>
+                            
+                            <!-- Arcos Arriba y Abajo -->
+                            <path d="M 218,80 A 40,40 0 0,1 262,80" fill="none" stroke="#db6015" stroke-width="3"/>
+                            <path d="M 218,120 A 40,40 0 0,0 262,120" fill="none" stroke="#db6015" stroke-width="3"/>
+                            <text x="240" y="65" fill="#db6015" font-weight="bold" font-size="16" text-anchor="middle">130&deg;</text>
+                            <text x="240" y="150" fill="#db6015" font-weight="bold" font-size="16" text-anchor="middle">130&deg;</text>
+                            
+                            <!-- Vértice -->
+                            <circle cx="240" cy="100" r="7" fill="#1e293b"/>
+                            <text x="240" y="125" fill="#1e293b" font-size="11" text-anchor="middle">Vértice</text>
+                        </svg>
+                        <div style="background: #fffbeb; border: 2px solid var(--primary-yellow); border-radius: 12px; padding: 10px 20px; margin-top: 8px; width: 100%;">
+                            <p style="font-size: 1.05rem; color: #444; margin: 0;">
+                                💡 Nota: Los que están juntos (adyacentes) forman una línea recta y siempre suman 180° (ej. 130° + 50° = 180°).
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- Slide 5: Ejemplo Ángulos Opuestos -->
+                <div class="slide">
+                    <h2>Ejemplo: Encontrar el Ángulo Opuesto</h2>
+                    <p style="margin-bottom: 2px;">En una intersección, sabemos que el ángulo de la derecha mide <strong>115&deg;</strong>. ¿Cuánto mide el ángulo $X$ (izquierdo) y el ángulo $Y$ (arriba)?</p>
                     <div class="content-box-vertical" style="background: #ffffff; padding: 10px 18px; border-radius: 16px; border: 2px solid #cbd5e1;">
                         <div style="display: flex; gap: 15px; width: 100%; align-items: center;">
                             <div style="flex: 1; max-width: 320px;">
                                 <svg width="280" height="180" viewBox="0 0 280 180" style="display: block; margin: auto; background: #f8fafc; border-radius: 12px;">
-                                    <polygon points="60,35 220,35 240,150 40,150" fill="#f0f9ff" stroke="#0284c7" stroke-width="3"/>
-                                    <text x="80" y="55" fill="#0284c7" font-weight="bold" font-size="13">100&deg;</text>
-                                    <text x="200" y="55" fill="#0284c7" font-weight="bold" font-size="13">80&deg;</text>
-                                    <text x="210" y="140" fill="#0284c7" font-weight="bold" font-size="13">110&deg;</text>
-                                    <text x="65" y="140" fill="#db6015" font-weight="bold" font-size="16">Y = ?</text>
+                                    <line x1="20" y1="40" x2="260" y2="140" stroke="#0284c7" stroke-width="4"/>
+                                    <line x1="20" y1="140" x2="260" y2="40" stroke="#0284c7" stroke-width="4"/>
+                                    
+                                    <!-- Angulo Derecha conocido -->
+                                    <text x="185" y="95" fill="#166534" font-weight="bold" font-size="14">115&deg;</text>
+                                    
+                                    <!-- Angulo X Izquierda -->
+                                    <text x="95" y="95" fill="#db6015" font-weight="bold" font-size="15">X</text>
+
+                                    <!-- Angulo Y Arriba -->
+                                    <text x="140" y="65" fill="#8b5cf6" font-weight="bold" font-size="15">Y</text>
+                                    
+                                    <circle cx="140" cy="90" r="5" fill="#1e293b"/>
                                 </svg>
                             </div>
                             <div style="flex: 1; text-align: left; font-size: 0.88rem; color: #334155;">
-                                <p style="margin-bottom: 4px;">1&deg;) <strong>Teorema:</strong> La suma de los 4 ángulos debe ser 360&deg;.</p>
-                                <p style="margin-bottom: 4px; color: #0284c7;">2&deg;) <strong>Sumar conocidos:</strong> 100&deg; + 80&deg; + 110&deg; = 290&deg;.</p>
-                                <p style="margin-bottom: 4px; color: var(--primary-orange);">3&deg;) <strong>Restar de 360&deg;:</strong> Y = 360&deg; - 290&deg; = 70&deg;.</p>
-                                <p style="margin-bottom: 0; color: #0369a1; font-weight: bold;">4&deg;) <strong>Resultado:</strong> El ángulo faltante Y mide 70&deg;.</p>
+                                <p style="margin-bottom: 4px; color: var(--primary-orange);">1&deg;) <strong>Hallar X:</strong> Como está frente a 115&deg; (opuesto por el vértice), ¡mide exactamente lo mismo! <strong>X = 115&deg;</strong>.</p>
+                                <p style="margin-bottom: 4px; color: #6b21a8;">2&deg;) <strong>Hallar Y:</strong> El ángulo Y está junto a 115&deg; formando una línea recta (180&deg;).</p>
+                                <p style="margin-bottom: 0; color: #166534;">3&deg;) <strong>Calcular:</strong> Y = 180&deg; - 115&deg; = <strong>65&deg;</strong>.</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 7. Laboratorio Interactivo: Calculadora de Ángulo Faltante -->
+                <!-- Slide 6: Laboratorio Triángulos -->
                 <div class="slide">
-                    <h2>¡Laboratorio Interactivo de Ángulos Faltantes!</h2>
+                    <h2>¡Laboratorio Interactivo!</h2>
                     <p>Haz clic para cambiar las medidas de los dos ángulos de un triángulo y calcular el ángulo faltante $C$:</p>
-
                     <div class="content-box-vertical" style="background: #ffffff; padding: 12px 16px; border-radius: 16px; border: 2px solid #cbd5e1; max-width: 840px;">
                         <div style="display: flex; gap: 15px; width: 100%; align-items: center; justify-content: center;">
-                            
                             <div style="flex: 1.1; max-width: 380px;">
                                 <svg width="340" height="190" viewBox="0 0 340 190" style="display: block; margin: auto; background: #f8fafc; border-radius: 12px; border: 1px solid #cbd5e1;">
                                     <polygon points="170,25 50,155 290,155" fill="#fffbeb" stroke="#db6015" stroke-width="4"/>
@@ -434,7 +400,6 @@
                                     <text id="lbl-ang-c" x="170" y="55" fill="#166534" font-weight="bold" font-size="16" text-anchor="middle">C = 60&deg;</text>
                                 </svg>
                             </div>
-
                             <div style="flex: 0.9; text-align: left; display: flex; flex-direction: column; gap: 8px;">
                                 <button class="option-btn" style="border-color: #db6015;" onclick="calcAngles(40, 80)">Caso 1: A=40&deg;, B=80&deg; &rarr; C=60&deg;</button>
                                 <button class="option-btn" style="border-color: #0284c7;" onclick="calcAngles(30, 90)">Caso 2: A=30&deg;, B=90&deg; &rarr; C=60&deg;</button>
@@ -444,57 +409,55 @@
                     </div>
                 </div>
 
-                <!-- 8. QUIZ 1 -->
+                <!-- Slide 7: Quiz 1 -->
                 <div class="slide">
                     <div class="content-box-vertical">
-                        <h2>Reto 1: Suma de Ángulos en Triángulos</h2>
-                        <p>¿A cuántos grados equivale siempre la <strong>suma de los 3 ángulos interiores</strong> de un triángulo?</p>
+                        <h2>Reto 1: Teoría de Triángulos</h2>
+                        <p>En un triángulo cualquiera, ¿cuánto deben sumar siempre todos sus ángulos interiores juntos?</p>
                         <div class="quiz-container">
-                            <button class="option-btn" onclick="checkQuiz(1, true, this, '¡Correcto! En cualquier triángulo la suma de ángulos interiores es 180°.', '')">A) Exactamente 180&deg;</button>
-                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', '360° es la suma de los ángulos de un cuadrilátero de 4 lados.')">B) Exactamente 360&deg;</button>
-                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', '90° es la medida de un solo ángulo recto.')">C) Exactamente 90&deg;</button>
+                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'Esa es la medida de un solo ángulo recto (como la esquina de un cuadrado).')">A) 90&deg;</button>
+                            <button class="option-btn" onclick="checkQuiz(1, true, this, '¡Correcto! La suma de los tres ángulos internos siempre es 180°.', '')">B) 180&deg;</button>
+                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'Esa es la suma para un cuadrilátero, no para un triángulo.')">C) 360&deg;</button>
                         </div>
                         <div id="feedback-1" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
                     </div>
                 </div>
 
-                <!-- 9. QUIZ 2 -->
+                <!-- Slide 8: Quiz 2 -->
                 <div class="slide">
                     <div class="content-box-vertical">
-                        <h2>Reto 2: Diagonales en Polígonos</h2>
-                        <p>¿Cuántas diagonales se pueden trazar desde los vértices de un <strong>triángulo</strong>?</p>
+                        <h2>Reto 2: Ángulo Faltante</h2>
+                        <p>Un triángulo tiene un ángulo de <strong>90&deg;</strong> y otro de <strong>30&deg;</strong>. ¿Cuánto debe medir el tercer ángulo?</p>
                         <div class="quiz-container">
-                            <button class="option-btn" onclick="checkQuiz(2, true, this, '¡Excelente! El triángulo es el único polígono con 0 diagonales.', '')">A) Cero (0) diagonales</button>
-                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Los cuadriláteros tienen 2 diagonales.')">B) Dos (2) diagonales</button>
-                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Los vértices del triángulo son consecutivos.')">C) Tres (3) diagonales</button>
+                            <button class="option-btn" onclick="checkQuiz(2, true, this, '¡Excelente! 90 + 30 = 120. Para llegar a 180, faltan 60°.', '')">A) 60&deg;</button>
+                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Si el tercero fuera 90°, la suma sería 90+30+90 = 210°. ¡Se pasa de 180°!')">B) 90&deg;</button>
+                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', '180° es el total de la suma de los tres, no la medida de un solo ángulo aquí.')">C) 180&deg;</button>
                         </div>
                         <div id="feedback-2" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
                     </div>
                 </div>
 
-                <!-- 10. QUIZ 3 -->
+                <!-- Slide 9: Quiz 3 -->
                 <div class="slide">
                     <div class="content-box-vertical">
-                        <h2>Reto 3: Ángulo Faltante en Cuadriláteros</h2>
-                        <p>Tres ángulos de un cuadrilátero miden <strong>90&deg;, 90&deg; y 90&deg;</strong>.</p>
-                        <p style="font-weight: bold; color: var(--primary-blue-dark);">¿Cuánto debe medir el cuarto ángulo para sumar 360&deg;?</p>
+                        <h2>Reto 3: Ángulos Opuestos</h2>
+                        <p>Dos líneas se cruzan formando una "X". Si el ángulo del lado derecho mide <strong>115&deg;</strong>, ¿cuánto mide el ángulo del lado izquierdo (su opuesto por el vértice)?</p>
                         <div class="quiz-container">
-                            <button class="option-btn" onclick="checkQuiz(3, true, this, '¡Fantástico! 360° - (90° + 90° + 90°) = 90°.', '')">A) 90&deg;</button>
-                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', '90° x 3 = 270°. Para llegar a 360° faltan 90°.')">B) 180&deg;</button>
-                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'Recuerda que la suma debe dar 360°.')">C) 45&deg;</button>
+                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'Ese sería el ángulo adyacente (arriba o abajo), porque completaría 180°.')">A) 65&deg;</button>
+                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'Los ángulos opuestos son iguales, no suman el total de la línea.')">B) 180&deg;</button>
+                            <button class="option-btn" onclick="checkQuiz(3, true, this, '¡Correcto! Los ángulos que están frente a frente siempre miden exactamente lo mismo.', '')">C) 115&deg;</button>
                         </div>
                         <div id="feedback-3" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
                     </div>
                 </div>
 
-                <!-- 11. Final -->
+                <!-- Slide 10: Final -->
                 <div class="slide">
                     <div class="content-box-vertical">
                         <div style="font-size: 80px;">🎯</div>
                         <h2>¡Misión Cumplida!</h2>
-                        <p>¡Has dominado las propiedades de ángulos y diagonales en triángulos y cuadriláteros!</p>
-                        <button onclick="goToSlide(0)"
-                            style="background: var(--primary-orange); color: white; border: none; padding: 1rem 2rem; border-radius: 30px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">Volver a repasar</button>
+                        <p>¡Has superado todos los retos de triángulos y ángulos opuestos!</p>
+                        <button onclick="goToSlide(0)" class="interactive-btn" style="padding: 1rem 2rem; border-radius: 30px; margin-top: 1.5rem; font-size: 1.1rem;">Volver a repasar</button>
                     </div>
                 </div>
 
@@ -505,7 +468,7 @@
         <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
 
         <div class="slide-indicators">
-            <span id="slide-num">1 / 11</span>
+            <span id="slide-num">1 / 10</span>
         </div>
 
         <div class="progress-bar-container">
@@ -515,7 +478,7 @@
 
     <script>
         let currentSlide = 0;
-        const totalSlides = 11;
+        const totalSlides = 10;
         const slideContainer = document.getElementById('slide-container');
         const slideNumDisplay = document.getElementById('slide-num');
         const progressBar = document.getElementById('progress-bar');
@@ -602,5 +565,4 @@
         updateSlide();
     </script>
 </body>
-
 </html>
