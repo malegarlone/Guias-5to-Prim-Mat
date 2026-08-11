@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lección 2.1: Prismas Rectangulares - 5to Primaria</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #db6015;
+            --primary-yellow: #f7be00;
+            --primary-blue-dark: #244b5a;
+            --primary-green: #22c55e;
+            --primary-red: #ef4444;
+            --primary-purple: #8b5cf6;
+            --bg-light: #f8fafc;
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e2e8f0;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 960px;
+            height: 540px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        header {
+            background-color: var(--primary-blue-dark);
+            color: white;
+            padding: 0 1.5rem;
+            height: 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            z-index: 200;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        #viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        @media (max-height: 600px) or (max-width: 960px) {
+            #app-container {
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+
+        .slide-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            padding: 12px 65px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity var(--transition-speed);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.1rem;
+            color: var(--primary-orange);
+            margin-bottom: 0.4rem;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.2rem;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: 0.92rem;
+            color: #444;
+            max-width: 820px;
+            line-height: 1.5;
+            margin-bottom: 0.3rem;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            z-index: 250;
+            border: 1px solid #ddd;
+            color: var(--primary-blue-dark);
+            font-size: 1.3rem;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #prev-btn { left: 15px; }
+        #next-btn { right: 15px; }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 1.2rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #888;
+            z-index: 100;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #edf2f7;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-orange);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            width: 100%;
+            max-width: 620px;
+            margin: 0.4rem auto;
+        }
+
+        .option-btn {
+            padding: 0.7rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-orange);
+            background: #fffcf9;
+        }
+
+        .content-box-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 820px;
+            flex: 1;
+            margin: 4px 0;
+        }
+
+        .interactive-btn {
+            background: var(--primary-orange);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .interactive-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(219, 96, 21, 0.3);
+            background: #c4500e;
+        }
+
+        .interactive-btn.blue { background: #0284c7; }
+        .interactive-btn.blue:hover { background: #0369a1; box-shadow: 0 4px 10px rgba(2,132,199,0.3); }
+
+        .interactive-btn.green { background: #22c55e; }
+        .interactive-btn.green:hover { background: #16a34a; box-shadow: 0 4px 10px rgba(34,197,94,0.3); }
+
+        /* SVG Prism Styles */
+        .prism-face { fill: rgba(2, 132, 199, 0.1); stroke: #0284c7; stroke-width: 2; transition: all 0.3s; }
+        .prism-face.highlight-parallel { fill: rgba(34, 197, 94, 0.4); stroke: #16a34a; stroke-width: 3; }
+        .prism-face.highlight-perpendicular1 { fill: rgba(219, 96, 21, 0.4); stroke: #c4500e; stroke-width: 3; }
+        .prism-face.highlight-perpendicular2 { fill: rgba(139, 92, 246, 0.4); stroke: #7c3aed; stroke-width: 3; }
+
+        .prism-edge { stroke: #1e293b; stroke-width: 3; transition: all 0.3s; }
+        .prism-edge.highlight-parallel { stroke: #22c55e; stroke-width: 5; }
+        .prism-edge.highlight-perpendicular1 { stroke: #db6015; stroke-width: 5; }
+        .prism-edge.highlight-perpendicular2 { stroke: #8b5cf6; stroke-width: 5; }
+        .prism-edge-dashed { stroke: #64748b; stroke-width: 2; stroke-dasharray: 4,4; }
+    </style>
+</head>
+
+<body>
+    <div id="app-container">
+        <header id="global-header">
+            <span>Colegio Escolaris - Matemática 5to Primaria</span>
+            <span>Lección 2.1: Prismas Rectangulares</span>
+        </header>
+
+        <div id="viewport">
+            <div class="slide-container" id="slide-container">
+                
+                <!-- Slide 1: Portada -->
+                <div class="slide active">
+                    <div class="content-box-vertical">
+                        <div style="font-size: 80px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">📦📏</div>
+                        <h1>Prismas Rectangulares</h1>
+                        <h2>Caras y Aristas: Paralelismo y Perpendicularidad</h2>
+                        <p style="color: #64748b; font-style: italic;">Descubre los secretos de las cajas que usamos todos los días y cómo sus partes se conectan entre sí de forma perfecta.</p>
+                    </div>
+                </div>
+
+                <!-- Slide 2: Conceptos Básicos -->
+                <div class="slide">
+                    <h2>Caras y Aristas</h2>
+                    <p>Imagina una caja de zapatos. Sus paredes planas se llaman <strong>Caras</strong>, y las líneas donde se doblan las paredes se llaman <strong>Aristas</strong>.</p>
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 14px 20px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <svg width="300" height="200" viewBox="0 0 300 200" style="display: block; margin: auto;">
+                            <!-- Dashed back lines -->
+                            <line x1="80" y1="50" x2="220" y2="50" class="prism-edge-dashed" />
+                            <line x1="80" y1="50" x2="80" y2="130" class="prism-edge-dashed" />
+                            <line x1="80" y1="130" x2="140" y2="170" class="prism-edge-dashed" />
+                            
+                            <!-- Faces -->
+                            <!-- Back -->
+                            <polygon points="80,50 220,50 220,130 80,130" fill="rgba(241, 245, 249, 0.5)" />
+                            <!-- Bottom -->
+                            <polygon points="80,130 220,130 280,170 140,170" fill="rgba(226, 232, 240, 0.5)" />
+                            <!-- Front -->
+                            <polygon points="140,90 280,90 280,170 140,170" class="prism-face" fill="rgba(219, 96, 21, 0.2)" stroke="#db6015"/>
+                            <!-- Top -->
+                            <polygon points="80,50 220,50 280,90 140,90" class="prism-face" fill="rgba(248, 250, 252, 0.8)"/>
+                            <!-- Right -->
+                            <polygon points="220,50 280,90 280,170 220,130" class="prism-face" />
+                            <!-- Left -->
+                            <polygon points="80,50 140,90 140,170 80,130" class="prism-face" />
+
+                            <!-- Solid lines (Edges) -->
+                            <line x1="140" y1="90" x2="280" y2="90" class="prism-edge" /> <!-- Front Top -->
+                            <line x1="140" y1="170" x2="280" y2="170" class="prism-edge" /> <!-- Front Bottom -->
+                            <line x1="140" y1="90" x2="140" y2="170" class="prism-edge" stroke="#0284c7" stroke-width="5"/> <!-- Front Left (Highlighted) -->
+                            <line x1="280" y1="90" x2="280" y2="170" class="prism-edge" /> <!-- Front Right -->
+                            
+                            <line x1="80" y1="50" x2="140" y2="90" class="prism-edge" /> <!-- Top Left -->
+                            <line x1="220" y1="50" x2="280" y2="90" class="prism-edge" /> <!-- Top Right -->
+                            <line x1="220" y1="50" x2="220" y2="130" class="prism-edge" /> <!-- Back Right -->
+                            <line x1="220" y1="130" x2="280" y2="170" class="prism-edge" /> <!-- Bottom Right -->
+
+                            <!-- Labels -->
+                            <circle cx="210" cy="130" r="4" fill="#db6015" />
+                            <text x="210" y="145" fill="#db6015" font-weight="bold" font-size="14" text-anchor="middle">Cara (Pared)</text>
+
+                            <circle cx="140" cy="130" r="4" fill="#0284c7" />
+                            <text x="70" y="135" fill="#0284c7" font-weight="bold" font-size="14">Arista (Línea)</text>
+                        </svg>
+                        <div style="background: #f8fafc; border: 2px solid #94a3b8; border-radius: 12px; padding: 10px 20px; margin-top: 8px; width: 100%;">
+                            <p style="font-size: 1.05rem; color: #334155; margin: 0;">
+                                💡 Un prisma rectangular (como un cuarto) tiene <strong>6 caras</strong> y <strong>12 aristas</strong>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 3: Paralelismo de Caras -->
+                <div class="slide">
+                    <h2>Paralelismo entre Caras</h2>
+                    <p>Dos caras son <strong>paralelas</strong> cuando están una frente a la otra y <span style="color: var(--primary-green); font-weight: bold;">nunca se van a tocar</span>, ¡por más que las estires infinitamente!</p>
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 14px 20px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <svg width="340" height="180" viewBox="0 0 340 180" style="display: block; margin: auto;">
+                            <!-- Dashed back lines -->
+                            <line x1="80" y1="30" x2="220" y2="30" class="prism-edge-dashed" />
+                            <line x1="80" y1="30" x2="80" y2="110" class="prism-edge-dashed" />
+                            <line x1="80" y1="110" x2="140" y2="150" class="prism-edge-dashed" />
+                            
+                            <!-- Faces -->
+                            <!-- Back -->
+                            <polygon points="80,30 220,30 220,110 80,110" fill="rgba(241, 245, 249, 0.3)" />
+                            
+                            <!-- BOTTOM (Parallel 1) -->
+                            <polygon points="80,110 220,110 280,150 140,150" class="prism-face highlight-parallel" />
+                            
+                            <!-- Front -->
+                            <polygon points="140,70 280,70 280,150 140,150" fill="rgba(241, 245, 249, 0.3)" stroke="#94a3b8"/>
+                            
+                            <!-- TOP (Parallel 2) -->
+                            <polygon points="80,30 220,30 280,70 140,70" class="prism-face highlight-parallel" />
+                            
+                            <!-- Right -->
+                            <polygon points="220,30 280,70 280,150 220,110" fill="rgba(241, 245, 249, 0.3)" stroke="#94a3b8" />
+                            <!-- Left -->
+                            <polygon points="80,30 140,70 140,150 80,110" fill="rgba(241, 245, 249, 0.3)" stroke="#94a3b8" />
+
+                            <!-- Solid edges outline -->
+                            <line x1="140" y1="70" x2="280" y2="70" class="prism-edge" stroke="#94a3b8" stroke-width="1"/>
+                            <line x1="140" y1="150" x2="280" y2="150" class="prism-edge" stroke="#94a3b8" stroke-width="1"/>
+                            <line x1="140" y1="70" x2="140" y2="150" class="prism-edge" stroke="#94a3b8" stroke-width="1"/>
+                            <line x1="280" y1="70" x2="280" y2="150" class="prism-edge" stroke="#94a3b8" stroke-width="1"/>
+                            <line x1="80" y1="30" x2="140" y2="70" class="prism-edge" stroke="#94a3b8" stroke-width="1"/>
+                            <line x1="220" y1="30" x2="280" y2="70" class="prism-edge" stroke="#94a3b8" stroke-width="1"/>
+                            <line x1="220" y1="30" x2="220" y2="110" class="prism-edge" stroke="#94a3b8" stroke-width="1"/>
+                            <line x1="220" y1="110" x2="280" y2="150" class="prism-edge" stroke="#94a3b8" stroke-width="1"/>
+                        </svg>
+
+                        <div style="background: #f0fdf4; border: 2px solid var(--primary-green); border-radius: 12px; padding: 10px 20px; margin-top: 8px; width: 100%;">
+                            <p style="font-size: 1.15rem; font-weight: bold; color: #166534; margin: 0;">
+                                Ejemplo: ¡El techo (cara de arriba) y el piso (cara de abajo) son paralelos!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 4: Perpendicularidad de Caras -->
+                <div class="slide">
+                    <h2>Perpendicularidad entre Caras</h2>
+                    <p>Dos caras son <strong>perpendiculares</strong> cuando se cruzan o chocan formando una "L" perfecta (un ángulo de 90°).</p>
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 14px 20px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <svg width="340" height="180" viewBox="0 0 340 180" style="display: block; margin: auto;">
+                            <!-- Dashed back lines -->
+                            <line x1="80" y1="30" x2="220" y2="30" class="prism-edge-dashed" />
+                            <line x1="80" y1="30" x2="80" y2="110" class="prism-edge-dashed" />
+                            <line x1="80" y1="110" x2="140" y2="150" class="prism-edge-dashed" />
+                            
+                            <!-- Faces -->
+                            <!-- Back -->
+                            <polygon points="80,30 220,30 220,110 80,110" fill="rgba(241, 245, 249, 0.3)" />
+                            
+                            <!-- BOTTOM (Perpendicular 1) -->
+                            <polygon points="80,110 220,110 280,150 140,150" class="prism-face highlight-perpendicular1" />
+                            
+                            <!-- Front -->
+                            <polygon points="140,70 280,70 280,150 140,150" fill="rgba(241, 245, 249, 0.3)" stroke="#94a3b8"/>
+                            
+                            <!-- Right (Perpendicular 2) -->
+                            <polygon points="220,30 280,70 280,150 220,110" class="prism-face highlight-perpendicular2" />
+                            
+                            <!-- Left -->
+                            <polygon points="80,30 140,70 140,150 80,110" fill="rgba(241, 245, 249, 0.3)" stroke="#94a3b8" />
+                            <!-- Top -->
+                            <polygon points="80,30 220,30 280,70 140,70" fill="rgba(241, 245, 249, 0.3)" stroke="#94a3b8" />
+
+                            <!-- Edge where they meet -->
+                            <line x1="220" y1="110" x2="280" y2="150" stroke="#1e293b" stroke-width="4" stroke-linecap="round"/>
+                            <rect x="250" y="125" width="10" height="10" fill="none" stroke="#1e293b" stroke-width="2" transform="skewY(-15)"/>
+                        </svg>
+
+                        <div style="background: #fffbeb; border: 2px solid var(--primary-orange); border-radius: 12px; padding: 10px 20px; margin-top: 8px; width: 100%;">
+                            <p style="font-size: 1.15rem; font-weight: bold; color: var(--primary-blue-dark); margin: 0;">
+                                Ejemplo: ¡Cualquier pared de tu cuarto choca de forma perpendicular con el piso!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 5: Paralelismo y Perpendicularidad en Aristas -->
+                <div class="slide">
+                    <h2>¿Y qué pasa con las Aristas?</h2>
+                    <p>Al igual que las caras, las líneas (aristas) también pueden ser paralelas (como dos rieles de tren) o perpendiculares (formando una cruz ➕ o esquina 📐).</p>
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 12px 16px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <svg width="400" height="160" viewBox="0 0 400 160" style="display: block; margin: auto;">
+                            <!-- Cube -->
+                            <!-- Back -->
+                            <rect x="120" y="20" width="80" height="80" fill="rgba(241, 245, 249, 0.3)" stroke="#cbd5e1"/>
+                            <!-- Connecting lines -->
+                            <line x1="120" y1="20" x2="160" y2="60" stroke="#cbd5e1"/>
+                            <line x1="200" y1="20" x2="240" y2="60" stroke="#cbd5e1"/>
+                            <line x1="120" y1="100" x2="160" y2="140" stroke="#cbd5e1"/>
+                            <line x1="200" y1="100" x2="240" y2="140" stroke="#cbd5e1"/>
+                            <!-- Front -->
+                            <rect x="160" y="60" width="80" height="80" fill="rgba(241, 245, 249, 0.3)" stroke="#cbd5e1"/>
+
+                            <!-- Highlighted Edges - Parallel -->
+                            <line x1="160" y1="60" x2="240" y2="60" class="prism-edge highlight-parallel"/>
+                            <line x1="160" y1="140" x2="240" y2="140" class="prism-edge highlight-parallel"/>
+                            <text x="75" y="105" fill="#16a34a" font-weight="bold" font-size="13">Paralelas ( = )</text>
+
+                            <!-- Highlighted Edges - Perpendicular -->
+                            <line x1="240" y1="60" x2="240" y2="140" class="prism-edge highlight-perpendicular1"/>
+                            <line x1="240" y1="140" x2="200" y2="100" class="prism-edge highlight-perpendicular2"/>
+                            <text x="250" y="115" fill="#c4500e" font-weight="bold" font-size="13">Perpendiculares ( L )</text>
+                        </svg>
+                        <div style="background: #f8fafc; border: 1.5px solid #94a3b8; border-radius: 10px; padding: 6px 14px; margin-top: 6px; width: 100%;">
+                            <p style="font-size: 0.85rem; color: #334155; margin: 0; font-weight: bold;">
+                                Las aristas verticales (como columnas) son paralelas entre sí. Una arista vertical y una horizontal que se tocan son perpendiculares.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 6: Explorer -->
+                <div class="slide">
+                    <h2>Explorador Interactivo</h2>
+                    <p>Haz clic en los botones para iluminar el prisma rectangular y descubrir sus relaciones.</p>
+                    <div class="content-box-vertical" style="background: #ffffff; padding: 10px 18px; border-radius: 16px; border: 2px solid #cbd5e1;">
+                        <div style="display: flex; gap: 15px; width: 100%; align-items: center; justify-content: space-around;">
+                            <div style="flex: 1; max-width: 250px;">
+                                <svg width="220" height="200" viewBox="0 0 220 200" style="display: block; margin: auto;">
+                                    <polygon points="50,40 150,40 150,110 50,110" fill="none" stroke="#94a3b8" />
+                                    <!-- BOTTOM -->
+                                    <polygon id="exp-f-bot" points="50,110 150,110 190,140 90,140" class="prism-face" fill="rgba(241, 245, 249, 0.7)"/>
+                                    <!-- TOP -->
+                                    <polygon id="exp-f-top" points="50,40 150,40 190,70 90,70" class="prism-face" fill="rgba(241, 245, 249, 0.7)"/>
+                                    <!-- LEFT -->
+                                    <polygon id="exp-f-lef" points="50,40 90,70 90,140 50,110" class="prism-face" fill="rgba(241, 245, 249, 0.7)"/>
+                                    <!-- RIGHT -->
+                                    <polygon id="exp-f-rig" points="150,40 190,70 190,140 150,110" class="prism-face" fill="rgba(241, 245, 249, 0.7)"/>
+                                    <!-- FRONT -->
+                                    <polygon id="exp-f-fro" points="90,70 190,70 190,140 90,140" class="prism-face" fill="rgba(241, 245, 249, 0.7)"/>
+                                </svg>
+                            </div>
+                            <div style="flex: 1; text-align: left; display: flex; flex-direction: column; gap: 8px;">
+                                <button class="interactive-btn green" onclick="highlight('parallel')">Ver Caras Paralelas</button>
+                                <button class="interactive-btn blue" onclick="highlight('perp')">Ver Caras Perpendiculares</button>
+                                <button class="interactive-btn" onclick="highlight('clear')" style="background: #64748b;">Limpiar / Reiniciar</button>
+                                <p id="exp-text" style="font-size:0.85rem; margin-top:5px; color:#444;">Haz clic en un botón.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 7: Quiz 1 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 1: Paralelismo de Caras</h2>
+                        <p>Imagina una caja de cereal parada en una mesa. ¿Cómo es la relación geométrica entre la <strong>cara de la base (abajo)</strong> y la <strong>cara de la tapa (arriba)</strong>?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'Perpendiculares significa que forman una L. ¡La tapa y la base nunca se tocan!')">A) Son perpendiculares</button>
+                            <button class="option-btn" onclick="checkQuiz(1, true, this, '¡Correcto! Están frente a frente y, por más que se extiendan, nunca chocarán.', '')">B) Son paralelas</button>
+                            <button class="option-btn" onclick="checkQuiz(1, false, this, '', 'Las aristas son las líneas de los bordes, pero la tapa y base enteras son caras.')">C) Son aristas vecinas</button>
+                        </div>
+                        <div id="feedback-1" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- Slide 8: Quiz 2 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 2: Perpendicularidad en una Habitación</h2>
+                        <p>Si miras tu cuarto (que es un prisma rectangular), ¿qué relación existe entre la <strong>pared de tu derecha</strong> y el <strong>piso</strong>?</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Si fueran paralelas, el piso y la pared nunca se tocarían, pero se unen en una esquina (arista).')">A) Son paralelas</button>
+                            <button class="option-btn" onclick="checkQuiz(2, false, this, '', 'Al tocarse forman un ángulo recto, no un ángulo plano de 180°.')">B) No tienen ninguna relación</button>
+                            <button class="option-btn" onclick="checkQuiz(2, true, this, '¡Excelente! El piso y cualquier pared lateral chocan formando un ángulo de 90° (una esquina de L).', '')">C) Son perpendiculares</button>
+                        </div>
+                        <div id="feedback-2" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- Slide 9: Quiz 3 -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <h2>Reto 3: El secreto de las Aristas</h2>
+                        <p>Si miras un marco cuadrado de una puerta, la <strong>arista vertical</strong> (el borde que va de arriba a abajo) y la <strong>arista horizontal</strong> (el borde del piso)...</p>
+                        <div class="quiz-container">
+                            <button class="option-btn" onclick="checkQuiz(3, true, this, '¡Genial! Al unirse en la esquina del piso forman una L, por lo tanto son perpendiculares.', '')">A) Son perpendiculares porque forman una esquina de 90° al tocarse.</button>
+                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'Recuerda que una es vertical y la otra horizontal, ¡se cruzan en la esquina!')">B) Son paralelas porque apuntan a la misma dirección.</button>
+                            <button class="option-btn" onclick="checkQuiz(3, false, this, '', 'Sí se tocan en la base del marco formando la esquina.')">C) Nunca se tocan.</button>
+                        </div>
+                        <div id="feedback-3" style="margin-top: 0.8rem; font-weight: 600; min-height: 24px;"></div>
+                    </div>
+                </div>
+
+                <!-- Slide 10: Final -->
+                <div class="slide">
+                    <div class="content-box-vertical">
+                        <div style="font-size: 80px;">🏆</div>
+                        <h2>¡Misión Cumplida!</h2>
+                        <p>¡Has dominado el paralelismo y perpendicularidad en los prismas rectangulares!</p>
+                        <button onclick="goToSlide(0)" class="interactive-btn" style="padding: 1rem 2rem; border-radius: 30px; margin-top: 1.5rem; font-size: 1.1rem;">Volver a repasar</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled aria-label="Anterior">&#8592;</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" aria-label="Siguiente">&#8594;</button>
+
+        <div class="slide-indicators">
+            <span id="slide-num">1 / 10</span>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 10;
+        const slideContainer = document.getElementById('slide-container');
+        const slideNumDisplay = document.getElementById('slide-num');
+        const progressBar = document.getElementById('progress-bar');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        function updateSlide() {
+            slideContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+            slideNumDisplay.textContent = `${currentSlide + 1} / ${totalSlides}`;
+            
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function goToSlide(num) {
+            currentSlide = num;
+            updateSlide();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+        });
+
+        // Interactive explorer functions
+        function resetFaces() {
+            const faces = ['exp-f-bot', 'exp-f-top', 'exp-f-lef', 'exp-f-rig', 'exp-f-fro'];
+            faces.forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.remove('highlight-parallel', 'highlight-perpendicular1', 'highlight-perpendicular2');
+            });
+        }
+
+        function highlight(mode) {
+            resetFaces();
+            const textEl = document.getElementById('exp-text');
+            if (mode === 'parallel') {
+                document.getElementById('exp-f-top').classList.add('highlight-parallel');
+                document.getElementById('exp-f-bot').classList.add('highlight-parallel');
+                textEl.textContent = 'Caras paralelas: La de arriba y la de abajo nunca se tocan.';
+                textEl.style.color = '#16a34a';
+            } else if (mode === 'perp') {
+                document.getElementById('exp-f-bot').classList.add('highlight-perpendicular1');
+                document.getElementById('exp-f-fro').classList.add('highlight-perpendicular2');
+                textEl.textContent = 'Caras perpendiculares: El piso choca contra la pared frontal (forman 90°).';
+                textEl.style.color = '#0284c7';
+            } else {
+                textEl.textContent = 'Haz clic en un botón.';
+                textEl.style.color = '#444';
+            }
+        }
+
+        function checkQuiz(quizNum, isCorrect, btnElement, correctMsg, wrongMsg) {
+            const container = btnElement.parentElement;
+            const buttons = container.querySelectorAll('.option-btn');
+            const feedback = document.getElementById(`feedback-${quizNum}`);
+
+            buttons.forEach(btn => {
+                btn.style.borderColor = '#e2e8f0';
+                btn.style.background = 'white';
+                btn.style.color = '#1e293b';
+            });
+
+            if (isCorrect) {
+                btnElement.style.borderColor = 'var(--primary-green)';
+                btnElement.style.background = '#f0fdf4';
+                btnElement.style.color = '#166534';
+                feedback.style.color = 'var(--primary-green)';
+                feedback.textContent = correctMsg;
+            } else {
+                btnElement.style.borderColor = 'var(--primary-red)';
+                btnElement.style.background = '#fef2f2';
+                btnElement.style.color = '#991b1b';
+                feedback.style.color = '#991b1b';
+                feedback.textContent = wrongMsg;
+            }
+        }
+
+        updateSlide();
+    </script>
+</body>
+</html>
